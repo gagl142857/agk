@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>천사키우기(AGK)</title>
+    <style>
+        html,
+        body {
+            /* 높이 */
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            color: #747474;
+            /* 가로는 기본적으로 뷰포트기준이므로 100%임 */
+            /* width: 100%; */
+            font-size: 14px;
+            /* 글자의 굵기 normal 이 400, bold가 700 */
+            font-weight: 500;
+            /* 패딩으로인한 박스사이즈 변경을 제한하는 필수옵션 */
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const 상단바 = document.createElement("div");
+        상단바.style.width = "100%";
+        상단바.style.height = "56px";
+        상단바.style.position = "fixed";
+        상단바.style.top = "0";
+        상단바.style.left = "0";
+        상단바.style.borderBottom = "0.2px solid #999999";
+        상단바.style.boxSizing = "border-box";
+        document.body.append(상단바);
+
+        const 상단바컨테이너 = document.createElement("div");
+        상단바컨테이너.style.width = "400px";
+        상단바컨테이너.style.height = "56px";
+        상단바컨테이너.style.position = "absolute";
+        상단바컨테이너.style.left = "50%";
+        상단바컨테이너.style.top = "50%";
+        상단바컨테이너.style.transform = "translate(-50%, -50%)";
+        상단바컨테이너.style.boxSizing = "border-box";
+        // 상단바컨테이너.style.backgroundColor = "#e0e0e0";
+        상단바.append(상단바컨테이너);
+
+        const 타이틀과아이디 = document.createElement("div");
+        타이틀과아이디.textContent = "천사키우기(agk)";
+        타이틀과아이디.style.position = "absolute";
+        타이틀과아이디.style.left = "8px";
+        타이틀과아이디.style.top = "50%";
+        타이틀과아이디.style.transform = "translateY(-50%)";
+        타이틀과아이디.style.cursor = "pointer";
+        타이틀과아이디.style.boxSizing = "border-box";
+        // 타이틀과아이디.style.whiteSpace = "nowrap"; // 줄바꿈 방지
+        상단바컨테이너.append(타이틀과아이디);
+
+        const 우측그룹 = document.createElement("div");
+        우측그룹.style.position = "absolute";
+        우측그룹.style.right = "8px";
+        우측그룹.style.top = "50%";
+        우측그룹.style.transform = "translateY(-50%)";
+        우측그룹.style.boxSizing = "border-box";
+        우측그룹.style.display = "none";
+        상단바컨테이너.append(우측그룹);
+
+        const 메뉴_메인 = document.createElement("span");
+        메뉴_메인.textContent = "메인";
+        메뉴_메인.style.display = "inline-block";
+        메뉴_메인.style.cursor = "pointer";
+
+        const 메뉴_던전 = document.createElement("span");
+        메뉴_던전.textContent = "던전";
+        메뉴_던전.style.display = "inline-block";
+        메뉴_던전.style.cursor = "pointer";
+        메뉴_던전.style.marginLeft = "8px";
+
+        const 메뉴_월드 = document.createElement("span");
+        메뉴_월드.textContent = "월드";
+        메뉴_월드.style.display = "inline-block";
+        메뉴_월드.style.cursor = "pointer";
+        메뉴_월드.style.marginLeft = "8px";
+
+        const 메뉴_길드 = document.createElement("span");
+        메뉴_길드.textContent = "길드";
+        메뉴_길드.style.display = "inline-block";
+        메뉴_길드.style.cursor = "pointer";
+        메뉴_길드.style.marginLeft = "8px";
+
+        const 메뉴_정보 = document.createElement("span");
+        메뉴_정보.textContent = "정보";
+        메뉴_정보.style.display = "inline-block";
+        메뉴_정보.style.cursor = "pointer";
+        메뉴_정보.style.marginLeft = "8px";
+
+        우측그룹.append(메뉴_메인, 메뉴_던전, 메뉴_월드, 메뉴_길드, 메뉴_정보);
+
+        const 화면설명 = document.createElement("div");
+        화면설명.style.position = "absolute";
+        화면설명.style.top = (상단바.offsetHeight + 8) + "px";
+        화면설명.style.width = "400px";
+        화면설명.style.left = "50%";
+        화면설명.style.transform = "translateX(-50%)";
+        화면설명.style.boxSizing = "border-box";
+        화면설명.style.borderBottom = "0.2px solid #999999";
+        화면설명.style.paddingBottom = "8px";
+        화면설명.style.textAlign = "center";
+        화면설명.innerHTML = `아이디는 6자 이상의 영문만 가능합니다<br>비밀번호도 6자 이상으로 만들어주세요`;
+        document.body.append(화면설명);
+
+        const 로그인화면 = document.createElement("div");
+        로그인화면.style.position = "absolute";
+        로그인화면.style.top = (화면설명.offsetHeight + 8) + "px";
+        로그인화면.style.left = "0";
+        로그인화면.style.right = "0";
+        로그인화면.style.boxSizing = "border-box";
+        화면설명.append(로그인화면);
+
+        const 로그인컨테이너 = document.createElement("div");
+        로그인컨테이너.style.width = "400px";
+        로그인컨테이너.style.margin = "0 auto";
+        로그인컨테이너.style.border = "0.2px solid #747474";
+        로그인컨테이너.style.borderRadius = "8px";
+        로그인컨테이너.style.boxSizing = "border-box";
+        로그인컨테이너.style.padding = "16px";
+        로그인화면.append(로그인컨테이너);
+
+        const 아이디 = document.createElement("input");
+        아이디.type = "text";
+        아이디.placeholder = "아이디 입력";
+        아이디.style.display = "block";
+        아이디.style.width = "50%";
+        아이디.style.height = "28px";
+        아이디.style.margin = "8px auto";
+        아이디.style.boxSizing = "border-box";
+        로그인컨테이너.append(아이디);
+
+        const 비밀번호 = document.createElement("input");
+        비밀번호.type = "password";
+        비밀번호.placeholder = "비밀번호 입력";
+        비밀번호.style.display = "block";
+        비밀번호.style.width = "50%";
+        비밀번호.style.height = "28px";
+        비밀번호.style.margin = "8px auto";
+        비밀번호.style.boxSizing = "border-box";
+        로그인컨테이너.append(비밀번호);
+
+        const 회원가입 = document.createElement("div");
+        회원가입.style.margin = "0 0";
+        회원가입.style.border = "0.2px solid #747474";
+        회원가입.style.borderRadius = "8px";
+        회원가입.style.boxSizing = "border-box";
+        회원가입.innerHTML = `회원가입`;
+        회원가입.style.padding = "8px";
+        회원가입.style.cursor = "pointer";
+        회원가입.style.display = "inline-block";
+        회원가입.style.width = "auto";
+        로그인컨테이너.append(회원가입);
+
+        회원가입.addEventListener("mouseover", () => {
+            회원가입.style.opacity = "0.8";
+        });
+        회원가입.addEventListener("mouseout", () => {
+            회원가입.style.opacity = "1";
+        });
+
+        const 로그인 = document.createElement("div");
+        로그인.style.marginLeft = "8px";
+        로그인.style.border = "0.2px solid #747474";
+        로그인.style.borderRadius = "8px";
+        로그인.style.boxSizing = "border-box";
+        로그인.innerHTML = `로그인`;
+        로그인.style.padding = "8px";
+        로그인.style.cursor = "pointer";
+        로그인.style.display = "inline-block";
+        로그인.style.width = "auto";
+        로그인컨테이너.append(로그인);
+
+        로그인.addEventListener("mouseover", () => {
+            로그인.style.opacity = "0.8";
+        });
+        로그인.addEventListener("mouseout", () => {
+            로그인.style.opacity = "1";
+        });
+
+
+
+
+    </script>
+
+</body>
+
+
+</html>

@@ -33,6 +33,7 @@
 <body>
     <script>
         const 상단바 = document.createElement("div");
+        상단바.id = "상단바";
         상단바.style.width = "100%";
         상단바.style.height = "56px";
         상단바.style.position = "fixed";
@@ -43,6 +44,7 @@
         document.body.append(상단바);
 
         const 상단바컨테이너 = document.createElement("div");
+        상단바컨테이너.id = "상단바컨테이너";
         상단바컨테이너.style.width = "400px";
         상단바컨테이너.style.height = "56px";
         상단바컨테이너.style.position = "absolute";
@@ -54,6 +56,7 @@
         상단바.append(상단바컨테이너);
 
         const 타이틀과아이디 = document.createElement("div");
+        타이틀과아이디.id = "타이틀과아이디";
         타이틀과아이디.textContent = "천사키우기(agk)";
         타이틀과아이디.style.position = "absolute";
         타이틀과아이디.style.left = "8px";
@@ -65,6 +68,7 @@
         상단바컨테이너.append(타이틀과아이디);
 
         const 우측그룹 = document.createElement("div");
+        우측그룹.id = "우측그룹";
         우측그룹.style.position = "absolute";
         우측그룹.style.right = "8px";
         우측그룹.style.top = "50%";
@@ -74,29 +78,34 @@
         상단바컨테이너.append(우측그룹);
 
         const 메뉴_메인 = document.createElement("span");
+        메뉴_메인.id = "메뉴_메인";
         메뉴_메인.textContent = "메인";
         메뉴_메인.style.display = "inline-block";
         메뉴_메인.style.cursor = "pointer";
 
         const 메뉴_던전 = document.createElement("span");
+        메뉴_던전.id = "메뉴_던전";
         메뉴_던전.textContent = "던전";
         메뉴_던전.style.display = "inline-block";
         메뉴_던전.style.cursor = "pointer";
         메뉴_던전.style.marginLeft = "8px";
 
         const 메뉴_월드 = document.createElement("span");
+        메뉴_월드.id = "메뉴_월드";
         메뉴_월드.textContent = "월드";
         메뉴_월드.style.display = "inline-block";
         메뉴_월드.style.cursor = "pointer";
         메뉴_월드.style.marginLeft = "8px";
 
         const 메뉴_길드 = document.createElement("span");
+        메뉴_길드.id = "메뉴_길드";
         메뉴_길드.textContent = "길드";
         메뉴_길드.style.display = "inline-block";
         메뉴_길드.style.cursor = "pointer";
         메뉴_길드.style.marginLeft = "8px";
 
         const 메뉴_정보 = document.createElement("span");
+        메뉴_정보.id = "메뉴_정보";
         메뉴_정보.textContent = "정보";
         메뉴_정보.style.display = "inline-block";
         메뉴_정보.style.cursor = "pointer";
@@ -105,6 +114,7 @@
         우측그룹.append(메뉴_메인, 메뉴_던전, 메뉴_월드, 메뉴_길드, 메뉴_정보);
 
         const 화면설명 = document.createElement("div");
+        화면설명.id = "화면설명";
         화면설명.style.position = "absolute";
         화면설명.style.top = (상단바.offsetHeight + 8) + "px";
         화면설명.style.width = "400px";
@@ -114,10 +124,11 @@
         화면설명.style.borderBottom = "0.2px solid #999999";
         화면설명.style.paddingBottom = "8px";
         화면설명.style.textAlign = "center";
-        화면설명.innerHTML = `아이디는 6자 이상의 영문만 가능합니다<br>비밀번호도 6자 이상으로 만들어주세요`;
+        화면설명.innerHTML = `아이디는 영문만 가능합니다<br>비밀번호는 6자 이상만 가능합니다<br>아이디와 비밀번호를 반드시 메모해두세요`;
         document.body.append(화면설명);
 
         const 로그인화면 = document.createElement("div");
+        로그인화면.id = "로그인화면";
         로그인화면.style.position = "absolute";
         로그인화면.style.top = (화면설명.offsetHeight + 8) + "px";
         로그인화면.style.left = "0";
@@ -126,6 +137,7 @@
         화면설명.append(로그인화면);
 
         const 로그인컨테이너 = document.createElement("div");
+        로그인컨테이너.id = "로그인컨테이너";
         로그인컨테이너.style.width = "400px";
         로그인컨테이너.style.margin = "0 auto";
         로그인컨테이너.style.border = "0.2px solid #747474";
@@ -135,6 +147,7 @@
         로그인화면.append(로그인컨테이너);
 
         const 아이디 = document.createElement("input");
+        아이디.id = "아이디";
         아이디.type = "text";
         아이디.placeholder = "아이디 입력";
         아이디.style.display = "block";
@@ -144,7 +157,16 @@
         아이디.style.boxSizing = "border-box";
         로그인컨테이너.append(아이디);
 
+        // 입력 시 바로 검사
+        아이디.addEventListener("input", () => {
+            if (!/^[A-Za-z]*$/.test(아이디.value)) {
+                메시지표시("아이디는 영문만 입력 가능합니다");
+                아이디.value = 아이디.value.replace(/[^A-Za-z]/g, ""); // 잘못 입력된 문자 제거
+            }
+        });
+
         const 비밀번호 = document.createElement("input");
+        비밀번호.id = "비밀번호";
         비밀번호.type = "password";
         비밀번호.placeholder = "비밀번호 입력";
         비밀번호.style.display = "block";
@@ -155,12 +177,13 @@
         로그인컨테이너.append(비밀번호);
 
         const 회원가입 = document.createElement("div");
+        회원가입.id = "회원가입";
         회원가입.style.margin = "0 0";
         회원가입.style.border = "0.2px solid #747474";
         회원가입.style.borderRadius = "8px";
         회원가입.style.boxSizing = "border-box";
         회원가입.innerHTML = `회원가입`;
-        회원가입.style.padding = "8px";
+        회원가입.style.padding = "6px 8px";
         회원가입.style.cursor = "pointer";
         회원가입.style.display = "inline-block";
         회원가입.style.width = "auto";
@@ -174,12 +197,13 @@
         });
 
         const 로그인 = document.createElement("div");
+        로그인.id = "로그인";
         로그인.style.marginLeft = "8px";
         로그인.style.border = "0.2px solid #747474";
         로그인.style.borderRadius = "8px";
         로그인.style.boxSizing = "border-box";
         로그인.innerHTML = `로그인`;
-        로그인.style.padding = "8px";
+        로그인.style.padding = "6px 8px";
         로그인.style.cursor = "pointer";
         로그인.style.display = "inline-block";
         로그인.style.width = "auto";
@@ -192,8 +216,221 @@
             로그인.style.opacity = "1";
         });
 
+        function 팝업(내용, 취소버튼사용 = true) {
+            return new Promise((resolve) => {
+                // 기존 팝업 제거
+                const 기존팝업 = document.getElementById("메시지팝업");
+                if (기존팝업) 기존팝업.remove();
+
+                // 배경
+                const 배경 = document.createElement("div");
+                배경.id = "메시지팝업";
+                배경.style.position = "fixed";
+                배경.style.top = "0";
+                배경.style.left = "0";
+                배경.style.width = "100%";
+                배경.style.height = "100%";
+                배경.style.display = "flex";
+                배경.style.alignItems = "center";
+                배경.style.justifyContent = "center";
+                배경.style.zIndex = "9999";
+
+                // 팝업 박스
+                const 팝업 = document.createElement("div");
+                팝업.id = "팝업";
+                팝업.style.width = "320px";
+                팝업.style.padding = "8px";
+                팝업.style.border = "0.2px solid #747474";
+                팝업.style.borderRadius = "8px";
+                팝업.style.boxSizing = "border-box";
+                팝업.style.display = "flex";
+                팝업.style.flexDirection = "column";
+                팝업.style.justifyContent = "space-between";
+
+                // 내용
+                const 메시지 = document.createElement("div");
+                메시지.innerHTML = 내용;
+                메시지.style.marginBottom = "8px";
+                팝업.appendChild(메시지);
+
+                // 버튼 컨테이너
+                const 버튼컨테이너 = document.createElement("div");
+                버튼컨테이너.style.display = "flex";
+                버튼컨테이너.style.justifyContent = "flex-end";
+                버튼컨테이너.style.gap = "8px";
+
+                // 취소 버튼
+                if (취소버튼사용) {
+                    const 취소 = document.createElement("div");
+                    취소.innerText = "취소";
+                    취소.id = "취소";
+                    취소.style.border = "0.2px solid #747474";
+                    취소.style.borderRadius = "8px";
+                    취소.style.padding = "6px 8px";
+                    취소.style.cursor = "pointer";
+                    취소.onclick = () => {
+                        배경.remove();
+                        resolve(false); // 취소 → false 반환
+                    };
+                    버튼컨테이너.appendChild(취소);
+                }
+
+                // 확인 버튼
+                const 확인 = document.createElement("div");
+                확인.innerText = "확인";
+                확인.id = "확인";
+                확인.style.border = "0.2px solid #747474";
+                확인.style.borderRadius = "8px";
+                확인.style.padding = "6px 8px";
+                확인.style.cursor = "pointer";
+                확인.onclick = () => {
+                    배경.remove();
+                    resolve(true); // 확인 → true 반환
+                };
+                버튼컨테이너.appendChild(확인);
+
+                팝업.appendChild(버튼컨테이너);
+                배경.appendChild(팝업);
+                document.body.appendChild(배경);
+            });
+        }
+
+        //팝업사용방법
+
+        // const 확인 = await 팝업("아이디는 영문<br>비밀번호는 6자 이상 입력해주세요", false);
+        // return;
+
+        // const 확인 = await 사용자확인("돌이킬 수 없는 실수를 하시겠습니까?");
+        // if (!확인) return;
 
 
+        function 메시지표시(내용) {
+            const msg = document.createElement("div");
+            msg.innerText = 내용;
+            msg.style.position = "absolute";
+
+            // 브라우저 절반 영역 안에서 랜덤 위치
+            const maxX = window.innerWidth / 2;
+            const maxY = window.innerHeight / 2;
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            msg.style.left = `${randomX}px`;
+            msg.style.top = `${randomY}px`;
+
+            msg.style.color = "#747474";
+            msg.style.boxSizing = "border-box";
+            msg.style.pointerEvents = "none";
+            msg.style.zIndex = "9999";
+
+            // 페이드아웃 준비
+            msg.style.opacity = "1";
+            msg.style.transition = "opacity 1s ease";
+
+            document.body.appendChild(msg);
+
+            // 2초 유지 → 1초 동안 페이드아웃 → 제거
+            setTimeout(() => {
+                msg.style.opacity = "0";
+                setTimeout(() => msg.remove(), 1000);
+            }, 2000);
+        }
+
+
+        document.getElementById("회원가입").addEventListener("click", async () => {
+            const 아이디 = document.getElementById("아이디").value.trim();
+            const 비밀번호 = document.getElementById("비밀번호").value.trim();
+
+            if (비밀번호.length < 6) {
+                메시지표시(`아이디는 영문, 비밀번호는 6자 이상 입력하세요`);
+                return;
+            }
+
+            try {
+                const 응답 = await fetch("/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 아이디, 비밀번호 })
+                });
+
+                const 결과 = await 응답.json();
+
+                if (!응답.ok) {
+                    메시지표시(`${결과.오류}`);
+
+                    return;
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        document.addEventListener("keydown", function (e) {
+            const 팝업 = document.getElementById("팝업");
+            if (팝업 && 팝업.style.display !== "none") {
+                if (e.key === "Enter" || e.code === "Space") {
+                    e.preventDefault(); // 스크롤 방지
+                    const 확인버튼 = document.getElementById("확인");
+                    if (확인버튼) 확인버튼.click();
+                }
+            }
+
+            if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return; // 입력창 제외
+
+            const 전투화면열림 = document.getElementById("전투화면")?.style.display === "block";
+
+            //단축키
+            switch (e.key) {
+                case "f":
+                    document.getElementById("전투")?.click();
+                    break;
+
+                case "q":
+                    if (전투화면열림) document.getElementById("전직자동토글")?.click();
+                    break;
+                case "w":
+                    if (전투화면열림) document.getElementById("뽑기자동토글")?.click();
+                    break;
+                case "e":
+                    if (전투화면열림) document.getElementById("스킬자동토글")?.click();
+                    break;
+                case "r":
+                    if (전투화면열림) document.getElementById("풀자동")?.click();
+                    break;
+
+                case "i":
+                    document.getElementById("장비")?.click();
+                    break;
+                case "c":
+                    document.getElementById("유물")?.click();
+                    break;
+                case "a":
+                    document.getElementById("악세")?.click();
+                    break;
+                case "z":
+                    document.getElementById("전직")?.click();
+                    break;
+                case "s":
+                    document.getElementById("스킬")?.click();
+                    break;
+                case "g":
+                    document.getElementById("뽑기")?.click();
+                    break;
+                case "b":
+                    document.getElementById("보스")?.click();
+                    break;
+                case "m":
+                    document.getElementById("마왕전")?.click();
+                    break;
+                case "o":
+                    document.getElementById("우편함")?.click();
+                    break;
+                case "k":
+                    document.getElementById("전당")?.click();
+                    break;
+            }
+        });
 
     </script>
 

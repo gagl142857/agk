@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
@@ -22,19 +23,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ES 모듈에서 __dirname 대체
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 정적파일 제공 (루트 경로 기준)
 app.use(express.static(__dirname));
 
-// 루트("/") 접근 시 agk.html 제공
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "agk.html"));
 });
 
-// 헬스체크
 app.get("/health", (_, res) => {
   res.json({ status: "OK", time: Date.now() });
 });
@@ -43,10 +40,71 @@ app.listen(PORT, () => {
   console.log(`[AGK] 서버 실행중 => http://localhost:${PORT}`);
 });
 
+app.post("/register", async (req, res) => {
+  try {
+    const { 아이디, 비밀번호 } = req.body;
+
+    if (!아이디 || !비밀번호) {
+      return res.status(400).json({ 오류: "아이디와 비밀번호가 필요합니다." });
+    }
+
+    // ① 중복 확인
+    const { data: existing, error: checkError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("유저아이디", 아이디)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error("DB 조회 오류:", checkError);
+      return res.status(500).json({ 오류: "DB 조회 실패" });
+    }
+    if (existing) {
+      return res.status(400).json({ 오류: "이미 사용중인 아이디입니다." });
+    }
+
+    // ② Auth 계정 생성
+    const { data: user, error: authError } = await supabase.auth.admin.createUser({
+      email: `${아이디}@agk.com`,
+      password: 비밀번호,
+      email_confirm: true
+    });
+
+    if (authError) {
+      console.error("Auth 생성 오류:", authError);
+      return res.status(400).json({ 오류: authError.message });
+    }
+
+    // ③ users 테이블에 저장 (id는 자동 생성, 유저UID 따로 저장)
+    const { error: dbError } = await supabase.from("users").insert({
+      유저아이디: 아이디,
+      유저UID: user.user.id   // 새로 만든 컬럼에 Auth UID 저장
+    });
+
+    if (dbError) {
+      console.error("DB 저장 오류:", dbError);
+      return res.status(500).json({ 오류: dbError.message });
+    }
+
+    res.json({ 성공: true, 유저UID: user.user.id, 유저아이디: 아이디 });
+
+  } catch (err) {
+    console.error("서버 오류:", err);
+    res.status(500).json({ 오류: "서버 오류 발생" });
+  }
+});
+
+
+
+
+
+
+
 
 /*
 
-git add . && git commit -m "루트 접근 시 agk.html 자동 로딩 적용" && git push origin main
+git add . && git commit -m "배포" && git push origin main
 
+nodemon server.js
 
 */

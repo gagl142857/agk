@@ -277,7 +277,7 @@ app.post("/lamp", async (req, res) => {
       }
     }
 
-    const idx = 등급순서.indexOf(선택등급) + 1;
+    const idx = 등급순서.indexOf(선택등급);
 
 
     const 옵션후보 = [...특수옵션];
@@ -415,7 +415,7 @@ app.post("/sell", async (req, res) => {
       return res.status(400).json({ 오류: "드랍 없음" });
     }
 
-    const idx = 등급순서.indexOf(data.스탯.드랍.등급) + 1;
+    const idx = 등급순서.indexOf(data.스탯.드랍.등급);
 
     data.스탯.계정.현재경험치 = (data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx));
     data.스탯.램프.현재골드 = (data.스탯.램프.현재골드 || 0) + (50 + (10 * idx));

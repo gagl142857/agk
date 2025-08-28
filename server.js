@@ -36,37 +36,35 @@ app.use(async (req, res, next) => {
     return res.status(403).send("접속이 차단된 IP입니다.");
   }
 
-  // 2. 서버점검 플래그
+  // 로그인/회원가입 전에 id가 없을 수 있음
+  const { id } = req.body || {};
+
   try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("id, 스탯")
-      .limit(1)
-      .single();
+    if (id) {
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, 스탯")
+        .eq("id", id)   // ✅ 현재 유저만 검사
+        .single();
 
-    if (!error && data) {
-      // 서버점검 체크
-      if (Number(data.스탯?.서버점검) === 1) {
-        return res.status(503).json({ 오류: "서버점검중입니다." });
-      }
+      if (!error && data) {
+        if (Number(data.스탯?.서버점검) === 1) {
+          return res.status(503).json({ 오류: "서버점검중입니다." });
+        }
 
-      // 버전 체크 → 1이면 탈퇴 처리
-      if (Number(data.스탯?.버전) === 1) {
-        // 로그 기록
-        await supabase.from("로그기록").insert({
-          스탯: data.스탯,
-          유저아이디: data.스탯.계정.유저아이디,
-          유저닉네임: data.스탯.계정.유저닉네임,
-          내용: `버전 1 자동탈퇴`,
-        });
+        if (Number(data.스탯?.버전) === 1) {
+          await supabase.from("로그기록").insert({
+            스탯: data.스탯,
+            유저아이디: data.스탯.계정.유저아이디,
+            유저닉네임: data.스탯.계정.유저닉네임,
+            내용: `버전 1 자동탈퇴`,
+          });
 
-        // users 테이블 삭제
-        await supabase.from("users").delete().eq("id", data.id);
+          await supabase.from("users").delete().eq("id", data.id);
+          await supabase.auth.admin.deleteUser(data.id);
 
-        // Auth 계정 삭제
-        await supabase.auth.admin.deleteUser(data.id);
-
-        return res.status(410).json({ 오류: "구버전 계정 자동삭제됨" }); // 410 Gone
+          return res.status(410).json({ 오류: "구버전 계정 자동삭제됨" });
+        }
       }
     }
   } catch (err) {

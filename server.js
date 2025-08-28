@@ -23,6 +23,38 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const 차단된IP목록 = ["",];
+
+app.use(async (req, res, next) => {
+  const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
+    .toString()
+    .split(",")[0]
+    .trim();
+
+  // 1. 아이피 차단
+  if (차단된IP목록.includes(clientIP)) {
+    return res.status(403).send("접속이 차단된 IP입니다.");
+  }
+
+  // 2. 서버점검 플래그 (users 안의 스탯 컬럼 활용)
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("스탯->>서버점검")   // JSON 컬럼에서 서버점검 키만 추출
+      .limit(1)                   // 아무 유저 한 명 것만 확인
+      .single();
+
+    if (!error && data && Number(data["스탯->>서버점검"]) === 1) {
+      return res.status(503).json({ 오류: "서버점검중입니다." });
+    }
+  } catch (err) {
+    console.error("서버점검 체크 오류:", err);
+    return res.status(500).json({ 오류: "서버 점검 확인 실패" });
+  }
+
+  next();
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -59,6 +91,13 @@ app.post("/register", async (req, res) => {
 
     const now = new Date();
 
+    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
+      .toString()
+      .split(",")[0]
+      .trim();
+
+
+    //신규유저
     const 기본스탯 = {
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
       생성요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
@@ -90,6 +129,9 @@ app.post("/register", async (req, res) => {
         수량: 200,
       },
       서버: 1,
+      서버점검: 0,
+      최초IP: clientIP,
+      접속IP: clientIP,
     };
 
     const { error: dbError } = await supabase
@@ -140,16 +182,22 @@ app.post("/login", async (req, res) => {
       return res.status(404).json({ 오류: "유저 정보를 찾을 수 없습니다" });
     }
 
+    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
+      .toString()
+      .split(",")[0]
+      .trim();
 
     const now = new Date();
     const 현재접속 = Math.floor(now.getTime() / 3600000);
     const 이전접속 = 유저.스탯?.접속시각 || 현재접속;
-    const 시간차 = 현재접속 - 이전접속;
+    const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
     if (시간차 > 0 && 유저.스탯?.램프) {
-      유저.스탯.램프.수량 = (유저.스탯.램프.수량 || 0) + 시간차 * (유저.스탯.램프.레벨 * 10);
+      유저.스탯.램프.수량 = (유저.스탯.램프.수량 || 0) + 시간차 * (유저.스탯.램프.레벨 * 2);
+      유저.스탯.접속시각 = 현재접속;
     }
 
+    유저.스탯.접속IP = clientIP;
     유저.스탯 = { ...유저.스탯, ...최종스탯계산(유저.스탯) };
     const 스탯 = 유저.스탯;
 
@@ -287,12 +335,11 @@ app.post("/lamp", async (req, res) => {
       선택된옵션.push(옵션후보.splice(idx2, 1)[0]);
     }
 
-    const HP = Math.floor((100 + (30 * idx)) * 장비레벨 * (0.9 + Math.random() * 0.2));
-    const 공격력 = Math.floor((5 + (2 * idx)) * 장비레벨 * (0.9 + Math.random() * 0.2));
-    const 방어력 = Math.floor((2 + (1 * idx)) * 장비레벨 * (0.9 + Math.random() * 0.2));
+    const HP = Math.floor((100 + (30 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
+    const 공격력 = Math.floor((5 + (2 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
+    const 방어력 = Math.floor((2 + (1 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
 
-    // 공속: 소수점 3자리까지만 남기기
-    const 공속원본 = (0.001 + (0.001 * idx)) * 장비레벨 * (0.9 + Math.random() * 0.2);
+    const 공속원본 = (0.001 + (0.001 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3);
     const 공속 = Math.floor(공속원본 * 1000) / 1000;
 
     const [최소, 최대] = 특수옵션범위[선택등급];
@@ -533,7 +580,7 @@ const 장비목록 = [
 ];
 
 const 특수옵션 = [
-  "치명", "콤보", "반격", "스턴", "회피", "스킬치명", "회복",
+  "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "동료콤보", "동료치명",
 ];
 
 const 특수옵션범위 = {
@@ -653,6 +700,15 @@ app.use(express.static(__dirname));
 
 
 /*
+
+아이콘정의
+서버리턴은클라에서도리턴
+서버저장할때로그기록시 전체+해당
+길드마스터한테 가입신청
+램프장착판매단축키
+장비스킨시스템
+날개진화
+조각상 어빌리티
 
 git add . && git commit -m "배포" && git push origin main
 

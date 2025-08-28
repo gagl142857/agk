@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=0.9" />
-    <title>천사키우기(AGK)</title>
+    <title>천사키우기(agk)</title>
     <style>
         html,
         body {
@@ -545,6 +545,14 @@
         우편함.style.marginTop = "8px";
         정보툴팁.append(우편함);
 
+        const agk사전 = document.createElement("div");
+        agk사전.id = "agk사전";
+        agk사전.style.boxSizing = "border-box";
+        agk사전.innerHTML = "agk사전";
+        agk사전.style.cursor = "pointer";
+        agk사전.style.marginTop = "8px";
+        정보툴팁.append(agk사전);
+
         메뉴_정보.addEventListener("mouseover", () => {
             const rect = 메뉴_정보.getBoundingClientRect();
             정보툴팁.style.display = "block";
@@ -749,6 +757,19 @@
         장비비교컨테이너.style.display = "none";
         document.body.append(장비비교컨테이너);
 
+        const 램프설정컨테이너 = document.createElement("div");
+        램프설정컨테이너.id = "램프설정컨테이너";
+        램프설정컨테이너.style.position = "absolute";
+        램프설정컨테이너.style.width = "300px";
+        램프설정컨테이너.style.left = "50%";
+        램프설정컨테이너.style.top = "50%";
+        램프설정컨테이너.style.transform = "translate(-50%, -50%)";
+        램프설정컨테이너.style.zIndex = "9999";
+        램프설정컨테이너.style.background = "white";
+        램프설정컨테이너.style.border = "0.2px solid #747474";
+        램프설정컨테이너.style.borderRadius = "8px";
+        램프설정컨테이너.style.display = "none";
+        document.body.append(램프설정컨테이너);
 
 
         let 서버 = 1;
@@ -1285,6 +1306,12 @@
 
                 document.getElementById("램프").addEventListener("click", async () => {
                     try {
+
+                        if (스탯.드랍 && Object.keys(스탯.드랍).length > 0) {
+                            메시지표시("드랍되어있는 장비를 먼저 판매하세요");
+                            return;
+                        }
+
                         화면잠금();
                         const 응답 = await fetch("/lamp", {
                             method: "POST",
@@ -1534,85 +1561,177 @@
                     }
                 });
 
-                // const 램프설정 = document.createElement("div");
-                // 램프설정.id = "램프설정";
-                // 램프설정.style.display = "flex";
-                // 램프설정.style.width = "16px";
-                // 램프설정.style.height = "16px";
-                // 램프설정.innerHTML = 비장비아이콘변환(설정아이콘);
-                // 램프설정.style.cursor = "pointer";
-                // document.getElementById("메인컨테이너삼행2열").append(램프설정);
+                const 램프설정 = document.createElement("div");
+                램프설정.id = "램프설정";
+                램프설정.style.display = "flex";
+                램프설정.style.width = "16px";
+                램프설정.style.height = "16px";
+                램프설정.style.marginTop = "8px";
+                램프설정.innerHTML = 비장비아이콘변환(설정아이콘);
+                램프설정.style.cursor = "pointer";
+                document.getElementById("메인컨테이너삼행2열").append(램프설정);
 
-                // document.getElementById("램프설정").addEventListener("click", async () => {
+                document.getElementById("램프설정").addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    if (결과.스탯.램프.레벨 < 2) {
+                        return 메시지표시(`램프Lv 2 이상부터 자동드랍 가능합니다`);
+                    }
+                    램프설정컨테이너.style.display = "block";
+                    램프설정컨테이너.innerHTML = "";
 
-                //     if (결과.스탯.램프.레벨 < 2) {
-                //         return 메시지표시(`램프Lv 2 이상부터 자동드랍 가능합니다`);
-                //     }
+                    const 램프설정컨테이너일행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 1);
+                    const 램프설정컨테이너이행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너이행", 3);
+                    const 램프설정컨테이너삼행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너삼행", 3);
 
-                //     const 램프설정컨테이너 = document.createElement("div");
-                //     램프설정컨테이너.id = "램프설정컨테이너";
-                //     램프설정컨테이너.style.position = "absolute";
-                //     램프설정컨테이너.style.width = "300px";
-                //     램프설정컨테이너.style.left = "50%";
-                //     램프설정컨테이너.style.top = "50%";
-                //     램프설정컨테이너.style.transform = "translate(-50%, -50%)";
-                //     램프설정컨테이너.style.zIndex = "9999";
-                //     램프설정컨테이너.style.background = "white";
-                //     램프설정컨테이너.style.border = "0.2px solid #747474";
-                //     램프설정컨테이너.style.borderRadius = "8px";
-                //     램프설정컨테이너.style.display = "none";
-                //     document.body.append(램프설정컨테이너);
+                    const 램프설정설명 = document.createElement("div");
+                    램프설정설명.id = "램프설정설명";
+                    램프설정설명.innerHTML = `최소등급 미만의 아이템들은 자동판매됩니다`;
+                    document.getElementById("램프설정컨테이너일행1열").style.borderBottom = "0.2px solid #747474";
+                    document.getElementById("램프설정컨테이너일행1열").append(램프설정설명);
 
-                //     const 램프설정컨테이너일행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 3);
-                //     const 램프설정컨테이너이행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 2);
-                //     const 램프설정컨테이너삼행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 2);
-                //     const 램프설정컨테이너사행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 2);
-                //     const 램프설정컨테이너오행 = 행열만들기(램프설정컨테이너, "램프설정컨테이너일행", 2);
+                    const 최소등급선택 = document.createElement("select");
+                    ["일반", "매직", "정교", "레어", "탁월", "에픽", "레전드", "이터널", "초월", "골든", "영원"].forEach(등급 => {
+                        const opt = document.createElement("option");
+                        opt.value = 등급;
+                        opt.textContent = 등급;
+                        최소등급선택.append(opt);
+                    });
+                    최소등급선택.style.marginTop = "8px";
+                    document.getElementById("램프설정컨테이너이행1열").append(최소등급선택);
 
-                //     const 등급설정 = document.createElement("div");
-                //     등급설정.id = "등급설정";
-                //     등급설정.style.display = "flex";
-                //     등급설정.innerHTML = `드랍장비최소등급`;
-                //     등급설정.style.cursor = "pointer";
-                //     document.getElementById("램프설정컨테이너일행1열").append(등급설정);
-
-                //     const 등급설정토글 = document.createElement("div");
-                //     등급설정토글.id = "등급설정토글";
-                //     등급설정토글.style.cursor = "pointer";
-                //     등급설정토글.innerText = "▼";
-                //     document.getElementById("램프설정컨테이너일행1열").append(등급설정토글);
+                    const 최소등급선택텍스트 = document.createElement("div");
+                    최소등급선택텍스트.innerHTML = "이상 드랍";
+                    // 최소등급선택텍스트.style.marginTop = "4px";
+                    document.getElementById("램프설정컨테이너이행1열").append(최소등급선택텍스트);
 
 
-                //     const 등급리스트 = document.createElement("div");
-                //     등급리스트.id = "등급리스트";
-                //     등급리스트.style.display = "none";
-                //     등급리스트.style.flexDirection = "column";
-                //     등급리스트.style.border = "1px solid #747474";
-                //     등급리스트.style.marginTop = "4px";
-                //     등급리스트.style.position = "absolute";
-                //     등급리스트.style.background = "white";
-                //     등급리스트.style.zIndex = "999";
 
-                //     const 등급목록 = ["일반", "매직", "정교", "레어", "탁월", "에픽", "레전드", "이터널", "초월", "골든", "영원"];
-                //     for (let 이름 of 등급목록) {
-                //         const 항목 = document.createElement("div");
-                //         항목.style.padding = "4px";
-                //         항목.style.cursor = "pointer";
-                //         항목.innerText = 이름;
-                //         항목.addEventListener("click", () => {
-                //             등급설정.innerText = 이름;
-                //             등급리스트.style.display = "none";
-                //         });
-                //         등급리스트.append(항목);
-                //     }
-                //     document.getElementById("램프설정컨테이너일행1열").append(등급리스트);
+                    const 랜덤옵션목록일 = ["치명", "회피", "회복", "콤보", "반격",];
+                    const 랜덤옵션목록이 = ["스턴", "스킬치명", "동료콤보", "동료치명"];
 
-                //     등급설정토글.addEventListener("click", () => {
-                //         등급리스트.style.display = 등급리스트.style.display === "none" ? "flex" : "none";
-                //     });
+                    for (let 옵션 of 랜덤옵션목록일) {
+                        const 박스 = document.createElement("div");
+                        박스.style.display = "flex";
+                        박스.style.width = "100%";
+                        const 체크 = document.createElement("input");
+                        체크.type = "checkbox";
+                        체크.value = 옵션;
 
-                //     램프설정컨테이너.style.display = "block";
-                // });
+                        const 라벨 = document.createElement("span");
+                        라벨.innerText = 옵션;
+                        라벨.style.marginLeft = "4px";
+
+                        박스.append(체크);
+                        박스.append(라벨);
+
+                        document.getElementById("램프설정컨테이너이행2열").append(박스);
+                    }
+
+                    document.getElementById("램프설정컨테이너이행2열").style.borderLeft = "0.2px solid #747474";
+
+                    for (let 옵션 of 랜덤옵션목록이) {
+                        const 박스 = document.createElement("div");
+                        박스.style.display = "flex";
+                        박스.style.width = "100%";
+
+                        const 체크 = document.createElement("input");
+                        체크.type = "checkbox";
+                        체크.value = 옵션;
+
+                        const 라벨 = document.createElement("span");
+                        라벨.innerText = 옵션;
+                        라벨.style.marginLeft = "4px";
+
+                        박스.append(체크);
+                        박스.append(라벨);
+
+                        document.getElementById("램프설정컨테이너이행3열").append(박스);
+                    }
+                    const 모든체크박스 = document.querySelectorAll("#램프설정컨테이너이행2열 input[type=checkbox], #램프설정컨테이너이행3열 input[type=checkbox]");
+
+                    모든체크박스.forEach(체크 => {
+                        체크.addEventListener("change", () => {
+                            const 선택된 = document.querySelectorAll("#램프설정컨테이너이행2열 input[type=checkbox]:checked, #램프설정컨테이너이행3열 input[type=checkbox]:checked").length;
+                            if (선택된 > 2) {
+                                체크.checked = false;
+                                메시지표시("최대 2개까지만 선택 가능합니다");
+                            }
+                        });
+                    });
+
+                    document.getElementById("램프설정컨테이너이행").style.borderBottom = "0.2px solid #747474";
+
+
+                    const 자동뽑기 = document.createElement("div");
+                    자동뽑기.id = "자동뽑기";
+                    // 자동뽑기.style.marginTop = "8px";
+                    자동뽑기.innerHTML = `자동뽑기`;
+                    자동뽑기.style.cursor = "pointer";
+                    document.getElementById("램프설정컨테이너삼행2열").append(자동뽑기);
+
+
+                    // document.getElementById("자동뽑기").addEventListener("click", async (e) => {
+                    //     e.stopPropagation();
+                    //     try {
+                    //         화면잠금();
+
+                    //         const 최소등급 = document.querySelector("#램프설정컨테이너이행1열 select").value;
+                    //         const 선택된옵션 = Array.from(
+                    //             document.querySelectorAll("#램프설정컨테이너이행2열 input:checked, #램프설정컨테이너이행3열 input:checked")
+                    //         ).map(el => el.value);
+
+                    //         const 응답 = await fetch("/lamp-auto", {
+                    //             method: "POST",
+                    //             headers: { "Content-Type": "application/json" },
+                    //             body: JSON.stringify({
+                    //                 id: 유저데이터.id,
+                    //                 최소등급,
+                    //                 선택된옵션
+                    //             })
+                    //         });
+
+                    //         const 결과 = await 응답.json();
+                    //         if (!응답.ok) throw new Error(결과.오류);
+
+                    //         모든화면숨기기();
+                    //         정보툴팁.style.display = "none";
+                    //         화면설명.innerHTML = `메인화면과 탈퇴하기만 구현되어있습니다 쿄쿄<br>램프 클릭하시면 장비뽑기됩니다아`;
+                    //         메인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
+                    //         메인화면.style.display = "block";
+                    //         타이틀과아이디.innerHTML = `${스탯.계정.유저아이디}`;
+                    //         타이틀과아이디.style.fontWeight = "bold";
+                    //         전투력.innerHTML = `Lv${(스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(스탯.전투력)}`;
+
+                    //         장비비교컨테이너.innerHTML = "";
+                    //         장비비교컨테이너.style.display = "none";
+
+
+                    //         메인컨테이너.innerHTML = "";
+                    //         const 메인컨테이너일행 = 행열만들기(메인컨테이너, "메인컨테이너일행", 3);
+
+                    //     } catch (e) {
+                    //         메시지표시("서버요청실패");
+                    //         console.error(e);
+                    //     } finally {
+                    //         화면해제();
+                    //     }
+                    // });
+
+
+                    const 취소 = document.createElement("div");
+                    취소.id = "취소";
+                    // 취소.style.marginTop = "8px";
+                    취소.innerHTML = `취소`;
+                    취소.style.cursor = "pointer";
+                    document.getElementById("램프설정컨테이너삼행3열").append(취소);
+
+                    document.getElementById("취소").addEventListener("click", () => {
+                        const 컨테이너 = document.getElementById("램프설정컨테이너");
+                        컨테이너.innerHTML = "";
+                        컨테이너.style.display = "none";
+                    });
+
+                });
 
 
                 const 램프레벨 = document.createElement("div");
@@ -1683,8 +1802,70 @@
 
         });
 
+
+        const agk사전화면 = document.createElement("div");
+        agk사전화면.id = "agk사전화면";
+        agk사전화면.style.position = "absolute";
+        agk사전화면.style.left = "0";
+        agk사전화면.style.right = "0";
+        agk사전화면.style.boxSizing = "border-box";
+        agk사전화면.style.display = "none";
+        document.body.append(agk사전화면);
+
+        const agk사전컨테이너 = document.createElement("div");
+        agk사전컨테이너.id = "agk사전컨테이너";
+        agk사전컨테이너.style.width = "400px";
+        agk사전컨테이너.style.margin = "0 auto";
+        agk사전컨테이너.style.border = "0.2px solid #747474";
+        agk사전컨테이너.style.borderRadius = "8px";
+        agk사전컨테이너.style.boxSizing = "border-box";
+        agk사전컨테이너.style.padding = "8px 8px";
+        agk사전화면.append(agk사전컨테이너);
+
+        document.getElementById("agk사전").addEventListener("click", async () => {
+            try {
+                화면잠금();
+                모든화면숨기기();
+                정보툴팁.style.display = "none";
+                화면설명.innerHTML = `agk의 모든 확률과 수식을 표기중인 화면입니다`;
+                agk사전화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
+                agk사전화면.style.display = "block";
+                장비비교컨테이너.innerHTML = "";
+                장비비교컨테이너.style.display = "none";
+
+
+                agk사전컨테이너.innerHTML = "";
+
+                const 문장들 = [
+                    `
+전투력계산식<br>
+= 최종HPx0.05+최종공격력+최종방어력x2+최종공속x50<br>
+
+                    `,
+                ];
+
+                agk사전컨테이너.innerHTML += 문장들.join("");
+
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        });
+
+        //외부클릭이벤트
+        document.addEventListener("click", (e) => {
+            const 컨테이너 = document.getElementById("램프설정컨테이너");
+            if (컨테이너.style.display === "block" && !컨테이너.contains(e.target) && e.target.id !== "램프설정") {
+                컨테이너.style.display = "none";
+            }
+        });
+
         //서버요청기본폼
-        // document.getElementById("램프").addEventListener("click", async () => {
+        // document.getElementById("램프설정").addEventListener("click", async (e) => {
+        //     e.stopPropagation();
         //     try {
         //         화면잠금();
         //         const 응답 = await fetch("/lamp", {
@@ -1699,6 +1880,21 @@
         //         const 스탯 = 결과.스탯;
 
         //         모든화면숨기기();
+
+        //         모든화면숨기기();
+        //    정보툴팁.style.display = "none";
+        // 화면설명.innerHTML = `메인화면과 탈퇴하기만 구현되어있습니다 쿄쿄<br>램프 클릭하시면 장비뽑기됩니다아`;
+        // 메인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
+        // 메인화면.style.display = "block";
+        // 타이틀과아이디.innerHTML = `${스탯.계정.유저아이디}`;
+        // 전투력.innerHTML = `Lv${(스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(스탯.전투력)}`;
+
+        // 장비비교컨테이너.innerHTML = "";
+        // 장비비교컨테이너.style.display = "none";
+
+
+        // 메인컨테이너.innerHTML = "";
+        // const 메인컨테이너일행 = 행열만들기(메인컨테이너, "메인컨테이너일행", 3);
 
         //     } catch (e) {
         //         메시지표시("서버요청실패");
@@ -1721,11 +1917,16 @@
             }
         }
 
+        //모든화면숨기기함수
         function 모든화면숨기기() {
             const 화면ID들 = [
                 "로그인화면",
                 "메인화면",
-                "장비비교컨테이너"
+                "장비비교컨테이너",
+                "램프설정컨테이너",
+                "agk사전화면",
+                "정보툴팁",
+                "월드툴팁",
             ];
             화면ID들.forEach(id => {
                 const el = document.getElementById(id);

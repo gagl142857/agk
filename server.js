@@ -157,7 +157,7 @@ app.post("/register", async (req, res) => {
       최초IP: clientIP,
       접속IP: clientIP,
       기기ID: req.body.기기ID || null,
-      버전: 1,
+      버전: 2,
     };
 
     const { error: dbError } = await supabase

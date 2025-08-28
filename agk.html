@@ -1701,7 +1701,7 @@
 
                 document.getElementById("램프설정").addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    if (결과.스탯.램프.레벨 < 1) {
+                    if (결과.스탯.램프.레벨 < 2) {
                         return 메시지표시(`램프Lv 2 이상부터 자동드랍 가능합니다`);
                     }
                     램프설정컨테이너.style.display = "block";

@@ -52,6 +52,13 @@
 
         //정의모음
 
+        let 기기ID = localStorage.getItem("기기ID");
+
+        if (!기기ID) {
+            기기ID = crypto.randomUUID();
+            localStorage.setItem("기기ID", 기기ID);
+        }
+
         const 등급색상 = {
             일반: { 좌: "#75706A", 우: "#999387" },
             매직: { 좌: "#398760", 우: "#6EA57E" },
@@ -788,7 +795,7 @@
                 const 응답 = await fetch("/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 아이디, 비밀번호, 서버 })
+                    body: JSON.stringify({ 아이디, 비밀번호, 서버, 기기ID })
                 });
 
                 const 결과 = await 응답.json();
@@ -833,13 +840,16 @@
                     유저데이터 = null;
                 }
 
-                화면설명.innerHTML = `아이디는 영문만 가능합니다<br>비밀번호는 6자 이상만 가능합니다<br>비밀번호 분실 시 복구가 불가하니 반드시 메모해두세요`;
-                로그인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
+                localStorage.removeItem("기기ID"); // UUID 삭제
+                location.reload(); // 로그인 화면으로 새로고침
+                기기ID = null;
+                // 화면설명.innerHTML = `아이디는 영문만 가능합니다<br>비밀번호는 6자 이상만 가능합니다<br>비밀번호 분실 시 복구가 불가하니 반드시 메모해두세요`;
+                // 로그인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
 
-                모든화면숨기기();
-                로그인화면.style.display = "block";
-                우측그룹.style.display = "none";
-                전투력.style.display = "none";
+                // 모든화면숨기기();
+                // 로그인화면.style.display = "block";
+                // 우측그룹.style.display = "none";
+                // 전투력.style.display = "none";
             } catch (err) {
                 console.error(err);
                 메시지표시("탈퇴 오류 발생");
@@ -877,7 +887,7 @@
                 }
 
                 메시지표시(`로그인 성공`);
-                유저데이터 = 결과.유저;
+                유저데이터 = 결과;
                 우측그룹.style.display = "block";
                 전투력.style.display = "block";
 
@@ -885,6 +895,41 @@
             } catch (err) {
                 console.error(err);
                 메시지표시("로그인 오류 발생");
+            } finally {
+                화면해제();
+            }
+        });
+
+        window.addEventListener("load", async () => {
+            try {
+                if (!기기ID) {
+                    return;
+                }
+
+
+                화면잠금();
+                const 응답 = await fetch("/auto-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 기기ID })
+                });
+
+                const 결과 = await 응답.json();
+
+                if (응답.ok) {
+                    // 자동로그인 성공 → 유저데이터 세팅
+                    메시지표시(`자동로그인 되었습니다!`);
+                    유저데이터 = 결과;
+                    우측그룹.style.display = "block";
+                    전투력.style.display = "block";
+
+                    메뉴_메인.click();
+                } else {
+                    // 자동로그인 실패 → 로그인창 유지
+                    메시지표시(`자동로그인 실패!`);
+                }
+            } catch (err) {
+                console.error("자동로그인 에러:", err);
             } finally {
                 화면해제();
             }

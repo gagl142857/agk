@@ -36,24 +36,47 @@ app.use(async (req, res, next) => {
     return res.status(403).send("접속이 차단된 IP입니다.");
   }
 
-  // 2. 서버점검 플래그 (users 안의 스탯 컬럼 활용)
+  // 2. 서버점검 플래그
   try {
     const { data, error } = await supabase
       .from("users")
-      .select("스탯->>서버점검")   // JSON 컬럼에서 서버점검 키만 추출
-      .limit(1)                   // 아무 유저 한 명 것만 확인
+      .select("id, 스탯")
+      .limit(1)
       .single();
 
-    if (!error && data && Number(data["스탯->>서버점검"]) === 1) {
-      return res.status(503).json({ 오류: "서버점검중입니다." });
+    if (!error && data) {
+      // 서버점검 체크
+      if (Number(data.스탯?.서버점검) === 1) {
+        return res.status(503).json({ 오류: "서버점검중입니다." });
+      }
+
+      // 버전 체크 → 1이면 탈퇴 처리
+      if (Number(data.스탯?.버전) === 1) {
+        // 로그 기록
+        await supabase.from("로그기록").insert({
+          스탯: data.스탯,
+          유저아이디: data.스탯.계정.유저아이디,
+          유저닉네임: data.스탯.계정.유저닉네임,
+          내용: `버전 1 자동탈퇴`,
+        });
+
+        // users 테이블 삭제
+        await supabase.from("users").delete().eq("id", data.id);
+
+        // Auth 계정 삭제
+        await supabase.auth.admin.deleteUser(data.id);
+
+        return res.status(410).json({ 오류: "구버전 계정 자동삭제됨" }); // 410 Gone
+      }
     }
   } catch (err) {
-    console.error("서버점검 체크 오류:", err);
-    return res.status(500).json({ 오류: "서버 점검 확인 실패" });
+    console.error("버전/점검 체크 오류:", err);
+    return res.status(500).json({ 오류: "버전/점검 확인 실패" });
   }
 
   next();
 });
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -105,6 +128,7 @@ app.post("/register", async (req, res) => {
       접속요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
       계정: {
         유저아이디: 아이디,
+        유저닉네임: 아이디,
         레벨: 1,
         현재경험치: 0,
         다음경험치: 350,
@@ -132,6 +156,8 @@ app.post("/register", async (req, res) => {
       서버점검: 0,
       최초IP: clientIP,
       접속IP: clientIP,
+      기기ID: req.body.기기ID || null,
+      버전: 1,
     };
 
     const { error: dbError } = await supabase
@@ -172,14 +198,14 @@ app.post("/login", async (req, res) => {
 
     const id = authData.user.id;
 
-    const { data: 유저, error } = await supabase
+    const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", id)
       .single();
 
-    if (error || !유저) {
-      return res.status(404).json({ 오류: "유저 정보를 찾을 수 없습니다" });
+    if (error || !data) {
+      return res.status(404).json({ 오류: "data 정보를 찾을 수 없습니다" });
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
@@ -189,17 +215,17 @@ app.post("/login", async (req, res) => {
 
     const now = new Date();
     const 현재접속 = Math.floor(now.getTime() / 3600000);
-    const 이전접속 = 유저.스탯?.접속시각 || 현재접속;
+    const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
-    if (시간차 > 0 && 유저.스탯?.램프) {
-      유저.스탯.램프.수량 = (유저.스탯.램프.수량 || 0) + 시간차 * (유저.스탯.램프.레벨 * 2);
-      유저.스탯.접속시각 = 현재접속;
+    if (시간차 > 0 && data.스탯?.램프) {
+      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 2);
+      data.스탯.접속시각 = 현재접속;
     }
 
-    유저.스탯.접속IP = clientIP;
-    유저.스탯 = { ...유저.스탯, ...최종스탯계산(유저.스탯) };
-    const 스탯 = 유저.스탯;
+    data.스탯.접속IP = clientIP;
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    const 스탯 = data.스탯;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -211,10 +237,84 @@ app.post("/login", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    res.json({ 유저 });
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `로그인`,
+      });
+
+
+    res.json(data);
+
   } catch (err) {
     console.error("로그인 오류:", err);
     res.status(500).json({ 오류: "로그인 처리 실패" });
+  }
+});
+
+app.post("/auto-login", async (req, res) => {
+  try {
+    const { 기기ID } = req.body;
+    if (!기기ID) return res.status(400).json({ 오류: "기기ID 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("스탯->>기기ID", 기기ID) // JSON 컬럼 안의 기기ID 비교
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "자동로그인 실패" });
+    }
+
+    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
+      .toString()
+      .split(",")[0]
+      .trim();
+
+    const now = new Date();
+    const 현재접속 = Math.floor(now.getTime() / 3600000);
+    const 이전접속 = data.스탯?.접속시각 || 현재접속;
+    const 시간차 = Math.min(현재접속 - 이전접속, 24);
+    let 충전량 = 0;
+    if (시간차 > 0 && data.스탯?.램프) {
+      let 충전량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 2);
+
+      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 2);
+      data.스탯.접속시각 = 현재접속;
+    }
+
+    data.스탯.접속IP = clientIP;
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    const 스탯 = data.스탯;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯 })
+      .eq("id", data.id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `자동로그인 / 충전량${충전량}`,
+      });
+
+    res.json(data);
+
+  } catch (err) {
+    console.error("자동로그인 오류:", err);
+    res.status(500).json({ 오류: "서버 오류" });
   }
 });
 
@@ -226,6 +326,27 @@ app.post("/delete-user", async (req, res) => {
     if (!id) {
       return res.status(400).json({ 오류: "id 필요" });
     }
+
+    // ① 유저 스탯 먼저 조회
+    const { data, error: fetchError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !data) {
+      return res.status(404).json({ 오류: "유저 조회 실패" });
+    }
+
+    // ② 로그 먼저 기록
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `회원탈퇴`,
+      });
 
     // ① users 테이블에서 삭제
     const { error: dbError } = await supabase
@@ -277,6 +398,7 @@ app.post("/main", async (req, res) => {
       console.error(updateError);
       return res.status(500).json({ 오류: "스탯 저장 실패" });
     }
+
 
     const { id: _, ...나머지 } = data;
     res.json({ ...나머지 });
@@ -379,6 +501,18 @@ app.post("/lamp", async (req, res) => {
       return res.status(500).json({ 오류: "스탯 저장 실패" });
     }
 
+
+    // await supabase
+    //   .from("로그기록")
+    //   .insert({
+    //     스탯: data.스탯,
+    //     유저아이디: data.스탯.계정.유저아이디,
+    //     유저닉네임: data.스탯.계정.유저닉네임,
+    //     내용: `장비뽑기`,
+    //   });
+
+
+
     const { id: _, ...나머지 } = data;
     res.json({ ...나머지 });
 
@@ -433,6 +567,15 @@ app.post("/equip", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
+    // await supabase
+    //   .from("로그기록")
+    //   .insert({
+    //     스탯: data.스탯,
+    //     유저아이디: data.스탯.계정.유저아이디,
+    //     유저닉네임: data.스탯.계정.유저닉네임,
+    //     내용: `장비장착`,
+    //   });
+
     const { id: _, ...나머지 } = data;
     res.json({ ...나머지 });
 
@@ -480,6 +623,15 @@ app.post("/sell", async (req, res) => {
       console.error(updateError);
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
+
+    // await supabase
+    //   .from("로그기록")
+    //   .insert({
+    //     스탯: data.스탯,
+    //     유저아이디: data.스탯.계정.유저아이디,
+    //     유저닉네임: data.스탯.계정.유저닉네임,
+    //     내용: `장비판매`,
+    //   });
 
     const { id: _, ...나머지 } = data;
     res.json({ ...나머지 });

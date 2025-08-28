@@ -23,6 +23,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+//차단아이피관리
 const 차단된IP목록 = ["",];
 
 app.use(async (req, res, next) => {
@@ -33,7 +35,30 @@ app.use(async (req, res, next) => {
 
   // 1. 아이피 차단
   if (차단된IP목록.includes(clientIP)) {
-    return res.status(403).send("접속이 차단된 IP입니다.");
+    return res.status(403).send(`
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>접속 차단</title>
+      <style>
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          font-family: sans-serif;
+          font-size: 24px;
+          background: #f8f8f8;
+          color: #747474;
+        }
+      </style>
+    </head>
+    <body>
+      접속이 차단된 IP입니다
+    </body>
+  </html>
+`);
   }
 
   // 로그인/회원가입 전에 id가 없을 수 있음
@@ -49,7 +74,30 @@ app.use(async (req, res, next) => {
 
       if (!error && data) {
         if (Number(data.스탯?.서버점검) === 1) {
-          return res.status(503).json({ 오류: "서버점검중입니다." });
+          return res.status(503).send(`
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>접속 차단</title>
+      <style>
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          font-family: sans-serif;
+          font-size: 24px;
+          background: #f8f8f8;
+          color: #747474;
+        }
+      </style>
+    </head>
+    <body>
+      점검중>.<
+    </body>
+  </html>
+`);
         }
 
         if (Number(data.스탯?.버전) === 1) {
@@ -420,6 +468,10 @@ app.post("/lamp", async (req, res) => {
 
     if (error) return res.status(500).json({ 오류: "조회 실패" });
 
+    if (data.스탯?.드랍 && Object.keys(data.스탯.드랍).length > 0) {
+      const { id: _, ...나머지 } = data;
+      return res.json({ ...나머지 });
+    }
 
     if (!data.스탯?.램프 || data.스탯.램프.수량 < 1) {
       return res.status(400).json({ 오류: "램프 부족" });
@@ -520,6 +572,7 @@ app.post("/lamp", async (req, res) => {
   }
 });
 
+
 app.post("/equip", async (req, res) => {
   try {
     const { id } = req.body;
@@ -605,8 +658,8 @@ app.post("/sell", async (req, res) => {
 
     const idx = 등급순서.indexOf(data.스탯.드랍.등급);
 
-    data.스탯.계정.현재경험치 = (data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx));
-    data.스탯.램프.현재골드 = (data.스탯.램프.현재골드 || 0) + (50 + (10 * idx));
+    data.스탯.계정.현재경험치 = Math.floor((data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx)) * (0.8 + Math.random() * 0.3));
+    data.스탯.램프.현재골드 = Math.floor((data.스탯.램프.현재골드 || 0) + (50 + (10 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.드랍 = {};
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -853,7 +906,6 @@ app.use(express.static(__dirname));
 
 아이콘정의
 서버리턴은클라에서도리턴
-서버저장할때로그기록시 전체+해당
 길드마스터한테 가입신청
 램프장착판매단축키
 장비스킨시스템

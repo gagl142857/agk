@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=0.9" />
-    <title>천사키우기(agk)</title>
+    <title>agk</title>
     <style>
         html,
         body {
@@ -58,6 +58,10 @@
             기기ID = crypto.randomUUID();
             localStorage.setItem("기기ID", 기기ID);
         }
+
+        const 특수옵션 = [
+            "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "동료콤보", "동료치명",
+        ];
 
         const 등급색상 = {
             일반: { 좌: "#75706A", 우: "#999387" },
@@ -408,7 +412,7 @@
 
         const 타이틀과아이디 = document.createElement("div");
         타이틀과아이디.id = "타이틀과아이디";
-        타이틀과아이디.textContent = "천사키우기(agk)";
+        타이틀과아이디.textContent = "엔젤키우기(agk)";
         타이틀과아이디.style.cursor = "pointer";
         타이틀과아이디.style.marginRight = "8px";
         좌측그룹.append(타이틀과아이디);
@@ -528,13 +532,13 @@
         회원탈퇴.style.cursor = "pointer";
         정보툴팁.append(회원탈퇴);
 
-        const 로그아웃 = document.createElement("div");
-        로그아웃.id = "로그아웃";
-        로그아웃.style.boxSizing = "border-box";
-        로그아웃.innerHTML = "로그아웃";
-        로그아웃.style.cursor = "pointer";
-        로그아웃.style.marginTop = "8px";
-        정보툴팁.append(로그아웃);
+        // const 로그아웃 = document.createElement("div");
+        // 로그아웃.id = "로그아웃";
+        // 로그아웃.style.boxSizing = "border-box";
+        // 로그아웃.innerHTML = "로그아웃";
+        // 로그아웃.style.cursor = "pointer";
+        // 로그아웃.style.marginTop = "8px";
+        // 정보툴팁.append(로그아웃);
 
         const 전당 = document.createElement("div");
         전당.id = "전당";
@@ -843,13 +847,6 @@
                 localStorage.removeItem("기기ID"); // UUID 삭제
                 location.reload(); // 로그인 화면으로 새로고침
                 기기ID = null;
-                // 화면설명.innerHTML = `아이디는 영문만 가능합니다<br>비밀번호는 6자 이상만 가능합니다<br>비밀번호 분실 시 복구가 불가하니 반드시 메모해두세요`;
-                // 로그인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
-
-                // 모든화면숨기기();
-                // 로그인화면.style.display = "block";
-                // 우측그룹.style.display = "none";
-                // 전투력.style.display = "none";
             } catch (err) {
                 console.error(err);
                 메시지표시("탈퇴 오류 발생");
@@ -891,7 +888,7 @@
                 우측그룹.style.display = "block";
                 전투력.style.display = "block";
 
-                메뉴_메인.click();
+                메인화면보여주기();
             } catch (err) {
                 console.error(err);
                 메시지표시("로그인 오류 발생");
@@ -923,7 +920,8 @@
                     우측그룹.style.display = "block";
                     전투력.style.display = "block";
 
-                    메뉴_메인.click();
+
+                    메인화면보여주기();
                 } else {
                     // 자동로그인 실패 → 로그인창 유지
                     메시지표시(`자동로그인 실패!`);
@@ -959,18 +957,32 @@
             //단축키설정
             switch (e.key) {
                 case "q":
-                    if (로그인화면.style.display !== "none") {
-                        document.getElementById("회원가입")?.click();
-                    }
-                    break;
-                case "w":
-                    if (로그인화면.style.display !== "none") {
-                        document.getElementById("로그인")?.click();
-                    }
-                    break;
-                case "e":
                     if (메인화면.style.display !== "none") {
                         document.getElementById("회원탈퇴")?.click();
+                    }
+                    break;
+                case "a":
+                    if (
+                        메인화면.style.display !== "none" &&
+                        장비비교컨테이너.style.display === "none"
+                    ) {
+                        램프문지르기();
+                    }
+                    break;
+                case "s":
+                    if (
+                        메인화면.style.display !== "none" &&
+                        장비비교컨테이너.style.display === "block"
+                    ) {
+                        document.getElementById("장착하기")?.click();
+                    }
+                    break;
+                case "d":
+                    if (
+                        메인화면.style.display !== "none" &&
+                        장비비교컨테이너.style.display === "block"
+                    ) {
+                        document.getElementById("판매하기")?.click();
                     }
                     break;
             }
@@ -994,8 +1006,17 @@
         메인컨테이너.style.boxSizing = "border-box";
         메인화면.append(메인컨테이너);
 
+        let 자동뽑기플래그 = false;
+        let 선택최소등급 = "일반";
+        let 선택옵션목록 = [];
+
         //메인화면보여주기
         메뉴_메인.addEventListener("click", async () => {
+            메인화면보여주기();
+
+        });
+
+        async function 메인화면보여주기() {
             try {
                 화면잠금();
                 const 응답 = await fetch("/main", {
@@ -1026,9 +1047,15 @@
                 const 메인컨테이너삼행 = 행열만들기(메인컨테이너, "메인컨테이너삼행", 3);
                 const 메인컨테이너사행 = 행열만들기(메인컨테이너, "메인컨테이너사행", 2);
 
+                //if(결과.스탯.드랍&&결과.스탯.드랍.이름)
                 const 드랍 = 스탯.드랍;
 
+                function 장비비교하기() {
+
+
+                }
                 if (드랍 && 드랍.이름) {
+
                     장비비교컨테이너.style.display = "block";
                     장비비교컨테이너.innerHTML = "";
 
@@ -1106,7 +1133,6 @@
                         장착공속.innerHTML = `<span>공속</span><span>${결과.스탯[장착이름].공속}</span>`;
                         document.getElementById("장비비교컨테이너장착장비2열").append(장착공속);
 
-                        const 특수옵션 = ["치명", "콤보", "반격", "스턴", "회피", "스킬치명", "회복"];
 
                         for (const [키, 값] of Object.entries(결과.스탯[장착이름])) {
                             if (특수옵션.includes(키)) {
@@ -1152,6 +1178,24 @@
                     // 드랍레벨.style.marginTop = "8px";
                     document.getElementById("장비비교컨테이너드랍장비1열").append(드랍레벨);
 
+                    if (결과.전투력차이 !== undefined) {
+                        const 전투력차이 = document.createElement("div");
+                        전투력차이.style.display = "flex";
+
+                        if (결과.전투력차이 > 0) {
+                            전투력차이.innerHTML = `▲ ${결과.전투력차이}`;
+                            전투력차이.style.color = "blue";
+                        } else if (결과.전투력차이 < 0) {
+                            전투력차이.innerHTML = `▼ ${결과.전투력차이}`;
+                            전투력차이.style.color = "red";
+                        } else {
+                            전투력차이.innerHTML = `${결과.전투력차이}`;
+                            전투력차이.style.color = "#747474";
+                        }
+
+                        document.getElementById("장비비교컨테이너드랍장비1열").append(전투력차이);
+                    }
+
                     const 드랍HP = document.createElement("div");
                     드랍HP.style.display = "flex";
                     드랍HP.style.justifyContent = "space-between";
@@ -1184,7 +1228,6 @@
                     드랍공속.innerHTML = `<span>공속</span><span>${결과.스탯.드랍.공속}</span>`;
                     document.getElementById("장비비교컨테이너드랍장비2열").append(드랍공속);
 
-                    const 특수옵션 = ["치명", "콤보", "반격", "스턴", "회피", "스킬치명", "회복"];
 
                     for (const [키, 값] of Object.entries(결과.스탯.드랍)) {
                         if (특수옵션.includes(키)) {
@@ -1217,7 +1260,7 @@
                             if (!응답.ok) throw new Error(결과.오류);
 
 
-                            메뉴_메인.click();
+                            메인화면보여주기();
                         } catch (e) {
                             메시지표시("서버요청실패");
                             console.error(e);
@@ -1246,7 +1289,7 @@
                             if (!응답.ok) throw new Error(결과.오류);
 
 
-                            메뉴_메인.click();
+                            메인화면보여주기();
                         } catch (e) {
                             메시지표시("서버요청실패");
                             console.error(e);
@@ -1254,9 +1297,6 @@
                             화면해제();
                         }
                     });
-
-
-
                 }
 
                 const 장비리스트 = [
@@ -1348,15 +1388,8 @@
                 램프.style.cursor = "pointer";
                 document.getElementById("메인컨테이너삼행2열").append(램프);
 
-
-                document.getElementById("램프").addEventListener("click", async () => {
+                async function 램프문지르기() {
                     try {
-
-                        if (스탯.드랍 && Object.keys(스탯.드랍).length > 0) {
-                            메시지표시("드랍되어있는 장비를 먼저 판매하세요");
-                            return;
-                        }
-
                         화면잠금();
                         const 응답 = await fetch("/lamp", {
                             method: "POST",
@@ -1367,236 +1400,281 @@
                         const 결과 = await 응답.json();
                         if (!응답.ok) throw new Error(결과.오류);
 
-                        if (결과.스탯.드랍 && 결과.스탯.드랍.이름) {
-                            장비비교컨테이너.style.display = "block";
-                            장비비교컨테이너.innerHTML = "";
+                        const 드랍 = 결과.스탯.드랍;
 
-                            const 장비비교컨테이너장착장비 = 행열만들기(장비비교컨테이너, "장비비교컨테이너장착장비", 3);
-                            장비비교컨테이너장착장비.style.borderBottom = `0.2px solid #747474`;
-                            const 장비비교컨테이너드랍장비 = 행열만들기(장비비교컨테이너, "장비비교컨테이너드랍장비", 3);
-                            장비비교컨테이너드랍장비.style.borderBottom = `0.2px solid #747474`;
-                            const 장비컨테이너장착판매 = 행열만들기(장비비교컨테이너, "장비컨테이너장착판매", 3);
+                        const 등급순서 = ["일반", "매직", "정교", "레어", "탁월", "에픽", "레전드", "이터널", "초월", "골든", "영원"];
 
-                            const 장착이름 = 결과.스탯.드랍.이름;
+                        const 드랍조건미달 =
+                            등급순서.indexOf(드랍.등급) < 등급순서.indexOf(선택최소등급) ||
+                            (선택옵션목록.length > 0 && !선택옵션목록.every(opt => 드랍[opt]));
 
-                            // 장착장비 찾기
-                            const 장착데이터 = 결과.스탯[장착이름] || null;
+                        if (드랍조건미달) {
+                            try {
+                                화면잠금();
+                                const 응답2 = await fetch("/sell", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ id: 유저데이터.id })
+                                });
+                                const 결과2 = await 응답2.json();
+                                if (!응답2.ok) throw new Error(결과2.오류);
 
-                            if (장착데이터) {
-                                const 장착장비박스 = document.createElement("div");
-                                장착장비박스.style.display = "flex";
-                                장착장비박스.innerHTML = `장착장비`;
-                                document.getElementById("장비비교컨테이너장착장비1열").append(장착장비박스);
+                                메인화면보여주기();
+                            } catch (e) {
+                                메시지표시("자동판매 실패");
+                                console.error(e);
+                            } finally {
+                                화면해제();
+                            }
+                        } else {
+                            자동뽑기플래그 = false;
+                            if (결과.스탯.드랍 && 결과.스탯.드랍.이름) {
 
-                                const 장착장비아이콘변환박스 = document.createElement("div");
-                                장착장비아이콘변환박스.style.display = "flex";
-                                장착장비아이콘변환박스.innerHTML = 장비아이콘[장착이름][결과.스탯[장착이름].등급] ? 장비아이콘[장착이름][결과.스탯[장착이름].등급] : 장비아이콘[장착이름]["일반"];
-                                장착장비아이콘변환박스.style.width = "32px";
-                                장착장비아이콘변환박스.style.height = "32px";
-                                장착장비아이콘변환박스.style.padding = "8px";
-                                장착장비아이콘변환박스.style.borderRadius = "8px";
-                                장착장비아이콘변환박스.style.border = `0.2px solid #747474`;
-                                장착장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[결과.스탯[장착이름].등급].좌} 40%, ${등급색상[결과.스탯[장착이름].등급].우} 100%)`;
-                                // 장착장비아이콘변환박스.style.marginTop = "8px";
-                                document.getElementById("장비비교컨테이너장착장비1열").append(장착장비아이콘변환박스);
+                                장비비교컨테이너.style.display = "block";
+                                장비비교컨테이너.innerHTML = "";
 
-                                const 장착등급 = document.createElement("div");
-                                장착등급.style.display = "flex";
-                                장착등급.innerHTML = `${결과.스탯[장착이름].등급}`;
-                                // 장착등급.style.marginTop = "8px";
-                                document.getElementById("장비비교컨테이너장착장비1열").append(장착등급);
+                                const 장비비교컨테이너장착장비 = 행열만들기(장비비교컨테이너, "장비비교컨테이너장착장비", 3);
+                                장비비교컨테이너장착장비.style.borderBottom = `0.2px solid #747474`;
+                                const 장비비교컨테이너드랍장비 = 행열만들기(장비비교컨테이너, "장비비교컨테이너드랍장비", 3);
+                                장비비교컨테이너드랍장비.style.borderBottom = `0.2px solid #747474`;
+                                const 장비컨테이너장착판매 = 행열만들기(장비비교컨테이너, "장비컨테이너장착판매", 3);
 
-                                const 장착레벨 = document.createElement("div");
-                                장착레벨.style.display = "flex";
-                                장착레벨.innerHTML = `Lv ${결과.스탯[장착이름].레벨}`;
-                                // 장착레벨.style.marginTop = "8px";
-                                document.getElementById("장비비교컨테이너장착장비1열").append(장착레벨);
+                                const 장착이름 = 결과.스탯.드랍.이름;
+
+                                // 장착장비 찾기
+                                const 장착데이터 = 결과.스탯[장착이름] || null;
+
+                                if (장착데이터) {
+                                    const 장착장비박스 = document.createElement("div");
+                                    장착장비박스.style.display = "flex";
+                                    장착장비박스.innerHTML = `장착장비`;
+                                    document.getElementById("장비비교컨테이너장착장비1열").append(장착장비박스);
+
+                                    const 장착장비아이콘변환박스 = document.createElement("div");
+                                    장착장비아이콘변환박스.style.display = "flex";
+                                    장착장비아이콘변환박스.innerHTML = 장비아이콘[장착이름][결과.스탯[장착이름].등급] ? 장비아이콘[장착이름][결과.스탯[장착이름].등급] : 장비아이콘[장착이름]["일반"];
+                                    장착장비아이콘변환박스.style.width = "32px";
+                                    장착장비아이콘변환박스.style.height = "32px";
+                                    장착장비아이콘변환박스.style.padding = "8px";
+                                    장착장비아이콘변환박스.style.borderRadius = "8px";
+                                    장착장비아이콘변환박스.style.border = `0.2px solid #747474`;
+                                    장착장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[결과.스탯[장착이름].등급].좌} 40%, ${등급색상[결과.스탯[장착이름].등급].우} 100%)`;
+                                    // 장착장비아이콘변환박스.style.marginTop = "8px";
+                                    document.getElementById("장비비교컨테이너장착장비1열").append(장착장비아이콘변환박스);
+
+                                    const 장착등급 = document.createElement("div");
+                                    장착등급.style.display = "flex";
+                                    장착등급.innerHTML = `${결과.스탯[장착이름].등급}`;
+                                    // 장착등급.style.marginTop = "8px";
+                                    document.getElementById("장비비교컨테이너장착장비1열").append(장착등급);
+
+                                    const 장착레벨 = document.createElement("div");
+                                    장착레벨.style.display = "flex";
+                                    장착레벨.innerHTML = `Lv ${결과.스탯[장착이름].레벨}`;
+                                    // 장착레벨.style.marginTop = "8px";
+                                    document.getElementById("장비비교컨테이너장착장비1열").append(장착레벨);
 
 
-                                const 장착HP = document.createElement("div");
-                                장착HP.style.display = "flex";
-                                장착HP.style.justifyContent = "space-between";
-                                장착HP.style.width = "100%";
-                                장착HP.style.borderBottom = `0.2px solid #747474`;
-                                장착HP.innerHTML = `<span>HP</span><span>${결과.스탯[장착이름].HP}</span>`;
-                                document.getElementById("장비비교컨테이너장착장비2열").append(장착HP);
+                                    const 장착HP = document.createElement("div");
+                                    장착HP.style.display = "flex";
+                                    장착HP.style.justifyContent = "space-between";
+                                    장착HP.style.width = "100%";
+                                    장착HP.style.borderBottom = `0.2px solid #747474`;
+                                    장착HP.innerHTML = `<span>HP</span><span>${결과.스탯[장착이름].HP}</span>`;
+                                    document.getElementById("장비비교컨테이너장착장비2열").append(장착HP);
 
-                                const 장착공격력 = document.createElement("div");
-                                장착공격력.style.display = "flex";
-                                장착공격력.style.justifyContent = "space-between";
-                                장착공격력.style.width = "100%";
-                                장착공격력.style.borderBottom = `0.2px solid #747474`;
-                                장착공격력.innerHTML = `<span>공격력</span><span>${결과.스탯[장착이름].공격력}</span>`;
-                                document.getElementById("장비비교컨테이너장착장비2열").append(장착공격력);
+                                    const 장착공격력 = document.createElement("div");
+                                    장착공격력.style.display = "flex";
+                                    장착공격력.style.justifyContent = "space-between";
+                                    장착공격력.style.width = "100%";
+                                    장착공격력.style.borderBottom = `0.2px solid #747474`;
+                                    장착공격력.innerHTML = `<span>공격력</span><span>${결과.스탯[장착이름].공격력}</span>`;
+                                    document.getElementById("장비비교컨테이너장착장비2열").append(장착공격력);
 
-                                const 장착방어력 = document.createElement("div");
-                                장착방어력.style.display = "flex";
-                                장착방어력.style.justifyContent = "space-between";
-                                장착방어력.style.width = "100%";
-                                장착방어력.style.borderBottom = `0.2px solid #747474`;
-                                장착방어력.innerHTML = `<span>방어력</span><span>${결과.스탯[장착이름].방어력}</span>`;
-                                document.getElementById("장비비교컨테이너장착장비2열").append(장착방어력);
+                                    const 장착방어력 = document.createElement("div");
+                                    장착방어력.style.display = "flex";
+                                    장착방어력.style.justifyContent = "space-between";
+                                    장착방어력.style.width = "100%";
+                                    장착방어력.style.borderBottom = `0.2px solid #747474`;
+                                    장착방어력.innerHTML = `<span>방어력</span><span>${결과.스탯[장착이름].방어력}</span>`;
+                                    document.getElementById("장비비교컨테이너장착장비2열").append(장착방어력);
 
-                                const 장착공속 = document.createElement("div");
-                                장착공속.style.display = "flex";
-                                장착공속.style.justifyContent = "space-between";
-                                장착공속.style.width = "100%";
-                                장착공속.style.borderBottom = `0.2px solid #747474`;
-                                장착공속.innerHTML = `<span>공속</span><span>${결과.스탯[장착이름].공속}</span>`;
-                                document.getElementById("장비비교컨테이너장착장비2열").append(장착공속);
+                                    const 장착공속 = document.createElement("div");
+                                    장착공속.style.display = "flex";
+                                    장착공속.style.justifyContent = "space-between";
+                                    장착공속.style.width = "100%";
+                                    장착공속.style.borderBottom = `0.2px solid #747474`;
+                                    장착공속.innerHTML = `<span>공속</span><span>${결과.스탯[장착이름].공속}</span>`;
+                                    document.getElementById("장비비교컨테이너장착장비2열").append(장착공속);
 
-                                const 특수옵션 = ["치명", "콤보", "반격", "스턴", "회피", "스킬치명", "회복"];
 
-                                for (const [키, 값] of Object.entries(결과.스탯[장착이름])) {
+                                    for (const [키, 값] of Object.entries(결과.스탯[장착이름])) {
+                                        if (특수옵션.includes(키)) {
+                                            const 장착옵션 = document.createElement("div");
+                                            장착옵션.style.display = "flex";
+                                            장착옵션.style.justifyContent = "space-between";
+                                            장착옵션.style.width = "100%";
+                                            장착옵션.style.borderBottom = `0.2px solid #747474`;
+                                            장착옵션.innerHTML = `<span>${키}</span><span>${값}</span>`;
+                                            document.getElementById("장비비교컨테이너장착장비3열").append(장착옵션);
+                                        }
+                                    }
+
+
+                                }
+
+                                const 드랍장비박스 = document.createElement("div");
+                                드랍장비박스.style.display = "flex";
+                                드랍장비박스.innerHTML = `드랍장비`;
+                                document.getElementById("장비비교컨테이너드랍장비1열").append(드랍장비박스);
+
+                                const 드랍장비아이콘변환박스 = document.createElement("div");
+                                드랍장비아이콘변환박스.style.display = "flex";
+                                드랍장비아이콘변환박스.innerHTML = 장비아이콘[결과.스탯.드랍.이름][결과.스탯.드랍.등급] ? 장비아이콘[결과.스탯.드랍.이름][결과.스탯.드랍.등급] : 장비아이콘[결과.스탯.드랍.이름]["일반"];
+                                드랍장비아이콘변환박스.style.width = "32px";
+                                드랍장비아이콘변환박스.style.height = "32px";
+                                드랍장비아이콘변환박스.style.padding = "8px";
+                                드랍장비아이콘변환박스.style.borderRadius = "8px";
+                                드랍장비아이콘변환박스.style.border = `0.2px solid #747474`;
+                                드랍장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[결과.스탯.드랍.등급].좌} 40%, ${등급색상[결과.스탯.드랍.등급].우} 100%)`;
+                                // 드랍장비아이콘변환박스.style.marginTop = "8px";
+                                document.getElementById("장비비교컨테이너드랍장비1열").append(드랍장비아이콘변환박스);
+
+                                const 드랍등급 = document.createElement("div");
+                                드랍등급.style.display = "flex";
+                                드랍등급.innerHTML = `${결과.스탯.드랍.등급}`;
+                                // 드랍등급.style.marginTop = "8px";
+                                document.getElementById("장비비교컨테이너드랍장비1열").append(드랍등급);
+
+                                const 드랍레벨 = document.createElement("div");
+                                드랍레벨.style.display = "flex";
+                                드랍레벨.innerHTML = `Lv ${결과.스탯.드랍.레벨}`;
+                                // 드랍레벨.style.marginTop = "8px";
+                                document.getElementById("장비비교컨테이너드랍장비1열").append(드랍레벨);
+
+                                if (결과.전투력차이 !== undefined) {
+                                    const 전투력차이 = document.createElement("div");
+                                    전투력차이.style.display = "flex";
+
+                                    if (결과.전투력차이 > 0) {
+                                        전투력차이.innerHTML = `▲ ${결과.전투력차이}`;
+                                        전투력차이.style.color = "blue";
+                                    } else if (결과.전투력차이 < 0) {
+                                        전투력차이.innerHTML = `▼ ${결과.전투력차이}`;
+                                        전투력차이.style.color = "red";
+                                    } else {
+                                        전투력차이.innerHTML = `${결과.전투력차이}`;
+                                        전투력차이.style.color = "#747474";
+                                    }
+
+                                    document.getElementById("장비비교컨테이너드랍장비1열").append(전투력차이);
+                                }
+
+
+                                const 드랍HP = document.createElement("div");
+                                드랍HP.style.display = "flex";
+                                드랍HP.style.justifyContent = "space-between";
+                                드랍HP.style.width = "100%";
+                                드랍HP.style.borderBottom = `0.2px solid #747474`;
+                                드랍HP.innerHTML = `<span>HP</span><span>${결과.스탯.드랍.HP}</span>`;
+                                document.getElementById("장비비교컨테이너드랍장비2열").append(드랍HP);
+
+                                const 드랍공격력 = document.createElement("div");
+                                드랍공격력.style.display = "flex";
+                                드랍공격력.style.justifyContent = "space-between";
+                                드랍공격력.style.width = "100%";
+                                드랍공격력.style.borderBottom = `0.2px solid #747474`;
+                                드랍공격력.innerHTML = `<span>공격력</span><span>${결과.스탯.드랍.공격력}</span>`;
+                                document.getElementById("장비비교컨테이너드랍장비2열").append(드랍공격력);
+
+                                const 드랍방어력 = document.createElement("div");
+                                드랍방어력.style.display = "flex";
+                                드랍방어력.style.justifyContent = "space-between";
+                                드랍방어력.style.width = "100%";
+                                드랍방어력.style.borderBottom = `0.2px solid #747474`;
+                                드랍방어력.innerHTML = `<span>방어력</span><span>${결과.스탯.드랍.방어력}</span>`;
+                                document.getElementById("장비비교컨테이너드랍장비2열").append(드랍방어력);
+
+                                const 드랍공속 = document.createElement("div");
+                                드랍공속.style.display = "flex";
+                                드랍공속.style.justifyContent = "space-between";
+                                드랍공속.style.width = "100%";
+                                드랍공속.style.borderBottom = `0.2px solid #747474`;
+                                드랍공속.innerHTML = `<span>공속</span><span>${결과.스탯.드랍.공속}</span>`;
+                                document.getElementById("장비비교컨테이너드랍장비2열").append(드랍공속);
+
+
+                                for (const [키, 값] of Object.entries(결과.스탯.드랍)) {
                                     if (특수옵션.includes(키)) {
-                                        const 장착옵션 = document.createElement("div");
-                                        장착옵션.style.display = "flex";
-                                        장착옵션.style.justifyContent = "space-between";
-                                        장착옵션.style.width = "100%";
-                                        장착옵션.style.borderBottom = `0.2px solid #747474`;
-                                        장착옵션.innerHTML = `<span>${키}</span><span>${값}</span>`;
-                                        document.getElementById("장비비교컨테이너장착장비3열").append(장착옵션);
+                                        const 드랍옵션 = document.createElement("div");
+                                        드랍옵션.style.display = "flex";
+                                        드랍옵션.style.justifyContent = "space-between";
+                                        드랍옵션.style.width = "100%";
+                                        드랍옵션.style.borderBottom = `0.2px solid #747474`;
+                                        드랍옵션.innerHTML = `<span>${키}</span><span>${값}</span>`;
+                                        document.getElementById("장비비교컨테이너드랍장비3열").append(드랍옵션);
                                     }
                                 }
 
+                                const 장착하기 = document.createElement("div");
+                                장착하기.id = "장착하기";
+                                장착하기.innerHTML = `장착`;
+                                장착하기.style.cursor = "pointer";
+                                document.getElementById("장비컨테이너장착판매2열").append(장착하기);
 
+                                document.getElementById("장착하기").addEventListener("click", async () => {
+                                    try {
+                                        화면잠금();
+                                        const 응답 = await fetch("/equip", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ id: 유저데이터.id })
+                                        });
+
+                                        const 결과 = await 응답.json();
+                                        if (!응답.ok) throw new Error(결과.오류);
+
+
+                                        메인화면보여주기();
+                                    } catch (e) {
+                                        메시지표시("서버요청실패");
+                                        console.error(e);
+                                    } finally {
+                                        화면해제();
+                                    }
+                                });
+
+
+                                const 판매하기 = document.createElement("div");
+                                판매하기.id = "판매하기";
+                                판매하기.innerHTML = `판매`;
+                                판매하기.style.cursor = "pointer";
+                                document.getElementById("장비컨테이너장착판매3열").append(판매하기);
+
+                                document.getElementById("판매하기").addEventListener("click", async () => {
+                                    try {
+                                        화면잠금();
+                                        const 응답 = await fetch("/sell", {
+                                            method: "POST",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ id: 유저데이터.id })
+                                        });
+
+                                        const 결과 = await 응답.json();
+                                        if (!응답.ok) throw new Error(결과.오류);
+
+
+                                        메인화면보여주기();
+                                    } catch (e) {
+                                        메시지표시("서버요청실패");
+                                        console.error(e);
+                                    } finally {
+                                        화면해제();
+                                    }
+                                });
                             }
-
-                            const 드랍장비박스 = document.createElement("div");
-                            드랍장비박스.style.display = "flex";
-                            드랍장비박스.innerHTML = `드랍장비`;
-                            document.getElementById("장비비교컨테이너드랍장비1열").append(드랍장비박스);
-
-                            const 드랍장비아이콘변환박스 = document.createElement("div");
-                            드랍장비아이콘변환박스.style.display = "flex";
-                            드랍장비아이콘변환박스.innerHTML = 장비아이콘[결과.스탯.드랍.이름][결과.스탯.드랍.등급] ? 장비아이콘[결과.스탯.드랍.이름][결과.스탯.드랍.등급] : 장비아이콘[결과.스탯.드랍.이름]["일반"];
-                            드랍장비아이콘변환박스.style.width = "32px";
-                            드랍장비아이콘변환박스.style.height = "32px";
-                            드랍장비아이콘변환박스.style.padding = "8px";
-                            드랍장비아이콘변환박스.style.borderRadius = "8px";
-                            드랍장비아이콘변환박스.style.border = `0.2px solid #747474`;
-                            드랍장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[결과.스탯.드랍.등급].좌} 40%, ${등급색상[결과.스탯.드랍.등급].우} 100%)`;
-                            // 드랍장비아이콘변환박스.style.marginTop = "8px";
-                            document.getElementById("장비비교컨테이너드랍장비1열").append(드랍장비아이콘변환박스);
-
-                            const 드랍등급 = document.createElement("div");
-                            드랍등급.style.display = "flex";
-                            드랍등급.innerHTML = `${결과.스탯.드랍.등급}`;
-                            // 드랍등급.style.marginTop = "8px";
-                            document.getElementById("장비비교컨테이너드랍장비1열").append(드랍등급);
-
-                            const 드랍레벨 = document.createElement("div");
-                            드랍레벨.style.display = "flex";
-                            드랍레벨.innerHTML = `Lv ${결과.스탯.드랍.레벨}`;
-                            // 드랍레벨.style.marginTop = "8px";
-                            document.getElementById("장비비교컨테이너드랍장비1열").append(드랍레벨);
-
-                            const 드랍HP = document.createElement("div");
-                            드랍HP.style.display = "flex";
-                            드랍HP.style.justifyContent = "space-between";
-                            드랍HP.style.width = "100%";
-                            드랍HP.style.borderBottom = `0.2px solid #747474`;
-                            드랍HP.innerHTML = `<span>HP</span><span>${결과.스탯.드랍.HP}</span>`;
-                            document.getElementById("장비비교컨테이너드랍장비2열").append(드랍HP);
-
-                            const 드랍공격력 = document.createElement("div");
-                            드랍공격력.style.display = "flex";
-                            드랍공격력.style.justifyContent = "space-between";
-                            드랍공격력.style.width = "100%";
-                            드랍공격력.style.borderBottom = `0.2px solid #747474`;
-                            드랍공격력.innerHTML = `<span>공격력</span><span>${결과.스탯.드랍.공격력}</span>`;
-                            document.getElementById("장비비교컨테이너드랍장비2열").append(드랍공격력);
-
-                            const 드랍방어력 = document.createElement("div");
-                            드랍방어력.style.display = "flex";
-                            드랍방어력.style.justifyContent = "space-between";
-                            드랍방어력.style.width = "100%";
-                            드랍방어력.style.borderBottom = `0.2px solid #747474`;
-                            드랍방어력.innerHTML = `<span>방어력</span><span>${결과.스탯.드랍.방어력}</span>`;
-                            document.getElementById("장비비교컨테이너드랍장비2열").append(드랍방어력);
-
-                            const 드랍공속 = document.createElement("div");
-                            드랍공속.style.display = "flex";
-                            드랍공속.style.justifyContent = "space-between";
-                            드랍공속.style.width = "100%";
-                            드랍공속.style.borderBottom = `0.2px solid #747474`;
-                            드랍공속.innerHTML = `<span>공속</span><span>${결과.스탯.드랍.공속}</span>`;
-                            document.getElementById("장비비교컨테이너드랍장비2열").append(드랍공속);
-
-                            const 특수옵션 = ["치명", "콤보", "반격", "스턴", "회피", "스킬치명", "회복"];
-
-                            for (const [키, 값] of Object.entries(결과.스탯.드랍)) {
-                                if (특수옵션.includes(키)) {
-                                    const 드랍옵션 = document.createElement("div");
-                                    드랍옵션.style.display = "flex";
-                                    드랍옵션.style.justifyContent = "space-between";
-                                    드랍옵션.style.width = "100%";
-                                    드랍옵션.style.borderBottom = `0.2px solid #747474`;
-                                    드랍옵션.innerHTML = `<span>${키}</span><span>${값}</span>`;
-                                    document.getElementById("장비비교컨테이너드랍장비3열").append(드랍옵션);
-                                }
-                            }
-
-                            const 장착하기 = document.createElement("div");
-                            장착하기.id = "장착하기";
-                            장착하기.innerHTML = `장착`;
-                            장착하기.style.cursor = "pointer";
-                            document.getElementById("장비컨테이너장착판매2열").append(장착하기);
-
-                            document.getElementById("장착하기").addEventListener("click", async () => {
-                                try {
-                                    화면잠금();
-                                    const 응답 = await fetch("/equip", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ id: 유저데이터.id })
-                                    });
-
-                                    const 결과 = await 응답.json();
-                                    if (!응답.ok) throw new Error(결과.오류);
-
-
-                                    메뉴_메인.click();
-                                } catch (e) {
-                                    메시지표시("서버요청실패");
-                                    console.error(e);
-                                } finally {
-                                    화면해제();
-                                }
-                            });
-
-
-                            const 판매하기 = document.createElement("div");
-                            판매하기.id = "판매하기";
-                            판매하기.innerHTML = `판매`;
-                            판매하기.style.cursor = "pointer";
-                            document.getElementById("장비컨테이너장착판매3열").append(판매하기);
-
-                            document.getElementById("판매하기").addEventListener("click", async () => {
-                                try {
-                                    화면잠금();
-                                    const 응답 = await fetch("/sell", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ id: 유저데이터.id })
-                                    });
-
-                                    const 결과 = await 응답.json();
-                                    if (!응답.ok) throw new Error(결과.오류);
-
-
-                                    메뉴_메인.click();
-                                } catch (e) {
-                                    메시지표시("서버요청실패");
-                                    console.error(e);
-                                } finally {
-                                    화면해제();
-                                }
-                            });
-
 
                         }
-
 
                     } catch (e) {
                         메시지표시("서버요청실패");
@@ -1604,6 +1682,11 @@
                     } finally {
                         화면해제();
                     }
+
+                }
+
+                document.getElementById("램프").addEventListener("click", async () => {
+                    램프문지르기();
                 });
 
                 const 램프설정 = document.createElement("div");
@@ -1618,7 +1701,7 @@
 
                 document.getElementById("램프설정").addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    if (결과.스탯.램프.레벨 < 2) {
+                    if (결과.스탯.램프.레벨 < 1) {
                         return 메시지표시(`램프Lv 2 이상부터 자동드랍 가능합니다`);
                     }
                     램프설정컨테이너.style.display = "block";
@@ -1715,52 +1798,29 @@
                     document.getElementById("램프설정컨테이너삼행2열").append(자동뽑기);
 
 
-                    // document.getElementById("자동뽑기").addEventListener("click", async (e) => {
-                    //     e.stopPropagation();
-                    //     try {
-                    //         화면잠금();
-
-                    //         const 최소등급 = document.querySelector("#램프설정컨테이너이행1열 select").value;
-                    //         const 선택된옵션 = Array.from(
-                    //             document.querySelectorAll("#램프설정컨테이너이행2열 input:checked, #램프설정컨테이너이행3열 input:checked")
-                    //         ).map(el => el.value);
-
-                    //         const 응답 = await fetch("/lamp-auto", {
-                    //             method: "POST",
-                    //             headers: { "Content-Type": "application/json" },
-                    //             body: JSON.stringify({
-                    //                 id: 유저데이터.id,
-                    //                 최소등급,
-                    //                 선택된옵션
-                    //             })
-                    //         });
-
-                    //         const 결과 = await 응답.json();
-                    //         if (!응답.ok) throw new Error(결과.오류);
-
-                    //         모든화면숨기기();
-                    //         정보툴팁.style.display = "none";
-                    //         화면설명.innerHTML = `메인화면과 탈퇴하기만 구현되어있습니다 쿄쿄<br>램프 클릭하시면 장비뽑기됩니다아`;
-                    //         메인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
-                    //         메인화면.style.display = "block";
-                    //         타이틀과아이디.innerHTML = `${스탯.계정.유저아이디}`;
-                    //         타이틀과아이디.style.fontWeight = "bold";
-                    //         전투력.innerHTML = `Lv${(스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(스탯.전투력)}`;
-
-                    //         장비비교컨테이너.innerHTML = "";
-                    //         장비비교컨테이너.style.display = "none";
+                    document.getElementById("자동뽑기").addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            화면잠금();
 
 
-                    //         메인컨테이너.innerHTML = "";
-                    //         const 메인컨테이너일행 = 행열만들기(메인컨테이너, "메인컨테이너일행", 3);
+                            자동뽑기플래그 = true;
+                            선택최소등급 = 최소등급선택.value;
+                            선택옵션목록 = Array.from(모든체크박스)
+                                .filter(c => c.checked)
+                                .map(c => c.value);
 
-                    //     } catch (e) {
-                    //         메시지표시("서버요청실패");
-                    //         console.error(e);
-                    //     } finally {
-                    //         화면해제();
-                    //     }
-                    // });
+                            램프설정컨테이너.style.display = "none";
+
+
+                            램프문지르기();
+                        } catch (e) {
+                            메시지표시("");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
 
 
                     const 취소 = document.createElement("div");
@@ -1836,7 +1896,12 @@
                     document.getElementById("메인컨테이너사행2열").append(div);
                 }
 
-                메시지표시(`전투력 ${전투력표시값(결과.스탯.전투력)}`);
+
+                if (자동뽑기플래그) {
+                    램프문지르기();
+                } else {
+                    메시지표시(`전투력 ${전투력표시값(결과.스탯.전투력)}`);
+                }
 
             } catch (e) {
                 메시지표시("스탯 조회 실패");
@@ -1844,9 +1909,7 @@
             } finally {
                 화면해제();
             }
-
-        });
-
+        }
 
         const agk사전화면 = document.createElement("div");
         agk사전화면.id = "agk사전화면";
@@ -1903,9 +1966,15 @@
         //외부클릭이벤트
         document.addEventListener("click", (e) => {
             const 컨테이너 = document.getElementById("램프설정컨테이너");
-            if (컨테이너.style.display === "block" && !컨테이너.contains(e.target) && e.target.id !== "램프설정") {
-                컨테이너.style.display = "none";
+
+            if (컨테이너.style.display === "block") {
+                if (!컨테이너.contains(e.target)) {
+                    컨테이너.style.display = "none";
+                }
             }
+
+            자동뽑기플래그 = false;
+
         });
 
         //서버요청기본폼

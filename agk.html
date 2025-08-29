@@ -753,35 +753,6 @@
             로그인.style.opacity = "1";
         });
 
-        const 장비비교컨테이너 = document.createElement("div");
-        장비비교컨테이너.id = "장비비교컨테이너";
-        장비비교컨테이너.style.position = "absolute";
-        장비비교컨테이너.style.width = "300px";
-        // 장비비교컨테이너.style.height = "300px";
-        장비비교컨테이너.style.left = "50%";
-        장비비교컨테이너.style.top = "50%";
-        장비비교컨테이너.style.transform = "translate(-50%, -50%)";
-        장비비교컨테이너.style.zIndex = "9999";
-        장비비교컨테이너.style.background = "white";
-        장비비교컨테이너.style.border = "0.2px solid #747474";
-        장비비교컨테이너.style.borderRadius = "8px";
-        장비비교컨테이너.style.display = "none";
-        document.body.append(장비비교컨테이너);
-
-        const 램프설정컨테이너 = document.createElement("div");
-        램프설정컨테이너.id = "램프설정컨테이너";
-        램프설정컨테이너.style.position = "absolute";
-        램프설정컨테이너.style.width = "300px";
-        램프설정컨테이너.style.left = "50%";
-        램프설정컨테이너.style.top = "50%";
-        램프설정컨테이너.style.transform = "translate(-50%, -50%)";
-        램프설정컨테이너.style.zIndex = "9999";
-        램프설정컨테이너.style.background = "white";
-        램프설정컨테이너.style.border = "0.2px solid #747474";
-        램프설정컨테이너.style.borderRadius = "8px";
-        램프설정컨테이너.style.display = "none";
-        document.body.append(램프설정컨테이너);
-
 
         let 서버 = 1;
         //회원가입하기
@@ -1006,11 +977,39 @@
         메인컨테이너.style.boxSizing = "border-box";
         메인화면.append(메인컨테이너);
 
+        const 장비비교컨테이너 = document.createElement("div");
+        장비비교컨테이너.id = "장비비교컨테이너";
+        장비비교컨테이너.style.position = "absolute";
+        장비비교컨테이너.style.width = "300px";
+        // 장비비교컨테이너.style.height = "300px";
+        장비비교컨테이너.style.left = "50%";
+        장비비교컨테이너.style.top = "50%";
+        장비비교컨테이너.style.transform = "translate(-50%, -50%)";
+        장비비교컨테이너.style.zIndex = "9999";
+        장비비교컨테이너.style.background = "white";
+        장비비교컨테이너.style.border = "0.2px solid #747474";
+        장비비교컨테이너.style.borderRadius = "8px";
+        장비비교컨테이너.style.display = "none";
+        document.body.append(장비비교컨테이너);
+
+        const 램프설정컨테이너 = document.createElement("div");
+        램프설정컨테이너.id = "램프설정컨테이너";
+        램프설정컨테이너.style.position = "absolute";
+        램프설정컨테이너.style.width = "300px";
+        램프설정컨테이너.style.left = "50%";
+        램프설정컨테이너.style.top = "50%";
+        램프설정컨테이너.style.transform = "translate(-50%, -50%)";
+        램프설정컨테이너.style.zIndex = "9999";
+        램프설정컨테이너.style.background = "white";
+        램프설정컨테이너.style.border = "0.2px solid #747474";
+        램프설정컨테이너.style.borderRadius = "8px";
+        램프설정컨테이너.style.display = "none";
+        document.body.append(램프설정컨테이너);
+
         let 자동뽑기플래그 = false;
         let 선택최소등급 = "일반";
         let 선택옵션목록 = [];
 
-        //메인화면보여주기
         메뉴_메인.addEventListener("click", async () => {
             메인화면보여주기();
 
@@ -1028,33 +1027,41 @@
                 const 결과 = await 응답.json();
                 if (!응답.ok) throw new Error(결과.오류);
 
-                const 스탯 = 결과.스탯;
-
                 모든화면숨기기();
                 화면설명.innerHTML = `메인화면과 탈퇴하기만 구현되어있습니다 쿄쿄<br>램프 클릭하시면 장비뽑기됩니다아`;
                 메인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
                 메인화면.style.display = "block";
-                타이틀과아이디.innerHTML = `${스탯.계정.유저아이디}`;
-                전투력.innerHTML = `Lv${(스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(스탯.전투력)}`;
+                타이틀과아이디.innerHTML = `${결과.스탯.계정.유저아이디}`;
+                전투력.innerHTML = `Lv${(결과.스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(결과.스탯.전투력)}`;
 
                 장비비교컨테이너.innerHTML = "";
                 장비비교컨테이너.style.display = "none";
 
-
                 메인컨테이너.innerHTML = "";
-                const 메인컨테이너일행 = 행열만들기(메인컨테이너, "메인컨테이너일행", 3);
+                const 메인컨테이너일행 = 행열만들기(메인컨테이너, "메인컨테이너일행", 8);
+                메인컨테이너일행.style.borderBottom = "0.2px solid #747474";
+
+                // const 파밍 = document.createElement("div");
+                // 파밍.style.display = "block";
+                // 파밍.id = `파밍`;
+                // 파밍.innerHTML = `파밍`;
+                // 파밍.style.cursor = "pointer";
+                // 파밍.style.marginLeft = "8px";
+                // document.getElementById("메인컨테이너일행1열").append(파밍);
+
+                const 스탯 = document.createElement("div");
+                스탯.style.display = "block";
+                스탯.id = `스탯`;
+                스탯.innerHTML = `스탯`;
+                스탯.style.cursor = "pointer";
+                document.getElementById("메인컨테이너일행2열").append(스탯);
+
+
                 const 메인컨테이너이행 = 행열만들기(메인컨테이너, "메인컨테이너이행", 6);
                 const 메인컨테이너삼행 = 행열만들기(메인컨테이너, "메인컨테이너삼행", 3);
                 const 메인컨테이너사행 = 행열만들기(메인컨테이너, "메인컨테이너사행", 2);
 
-                //if(결과.스탯.드랍&&결과.스탯.드랍.이름)
-                const 드랍 = 스탯.드랍;
-
-                function 장비비교하기() {
-
-
-                }
-                if (드랍 && 드랍.이름) {
+                if (결과.스탯.드랍 && 결과.스탯.드랍.이름) {
 
                     장비비교컨테이너.style.display = "block";
                     장비비교컨테이너.innerHTML = "";
@@ -1342,8 +1349,8 @@
                 레벨.style.display = "flex";
                 // 레벨.style.justifyContent = "space-between";
                 레벨.style.width = "100%";
-                // 레벨.innerHTML = `<span>HP</span><span>${스탯.HP}</span>`;
-                레벨.innerHTML = `계정lv ${스탯.계정.레벨}`;
+                // 레벨.innerHTML = `<span>HP</span><span>${결과.스탯.HP}</span>`;
+                레벨.innerHTML = `계정lv ${결과.스탯.계정.레벨}`;
                 // 레벨.style.borderBottom = `0.2px solid #747474`;
                 document.getElementById("메인컨테이너삼행1열").append(레벨);
 
@@ -1352,8 +1359,8 @@
                 전투력표시.style.alignItems = "center";
                 // 전투력표시.style.justifyContent = "space-between";
                 전투력표시.style.width = "100%";
-                // 전투력표시.innerHTML = `<span>HP</span><span>${스탯.HP}</span>`;
-                전투력표시.innerHTML = `전투력 ${전투력표시값(스탯.전투력)}`;
+                // 전투력표시.innerHTML = `<span>HP</span><span>${결과.스탯.HP}</span>`;
+                전투력표시.innerHTML = `전투력 ${전투력표시값(결과.스탯.전투력)}`;
                 // 전투력.style.borderBottom = `0.2px solid #747474`;
                 document.getElementById("메인컨테이너삼행1열").append(전투력표시);
 
@@ -1361,8 +1368,8 @@
                 현재골드.style.display = "flex";
                 // 현재골드.style.justifyContent = "space-between";
                 현재골드.style.width = "100%";
-                // 현재골드.innerHTML = `<span>HP</span><span>${스탯.HP}</span>`;
-                현재골드.innerHTML = `현재경험치 ${스탯.계정.현재경험치}`;
+                // 현재골드.innerHTML = `<span>HP</span><span>${결과.스탯.HP}</span>`;
+                현재골드.innerHTML = `현재경험치 ${결과.스탯.계정.현재경험치}`;
                 // 현재골드.style.borderBottom = `0.2px solid #747474`;
                 document.getElementById("메인컨테이너삼행1열").append(현재골드);
 
@@ -1370,8 +1377,8 @@
                 다음골드.style.display = "flex";
                 // 다음골드.style.justifyContent = "space-between";
                 다음골드.style.width = "100%";
-                // 다음골드.innerHTML = `<span>HP</span><span>${스탯.HP}</span>`;
-                다음골드.innerHTML = `다음경험치 ${스탯.계정.다음경험치}`;
+                // 다음골드.innerHTML = `<span>HP</span><span>${결과.스탯.HP}</span>`;
+                다음골드.innerHTML = `다음경험치 ${결과.스탯.계정.다음경험치}`;
                 // 다음골드.style.borderBottom = `0.2px solid #747474`;
                 document.getElementById("메인컨테이너삼행1열").append(다음골드);
 
@@ -1682,7 +1689,6 @@
                     } finally {
                         화면해제();
                     }
-
                 }
 
                 document.getElementById("램프").addEventListener("click", async () => {
@@ -1843,7 +1849,7 @@
                 램프레벨.id = "램프레벨";
                 램프레벨.style.width = "100%";
                 램프레벨.style.display = "flex";
-                램프레벨.innerHTML = `램프Lv ${스탯.램프.레벨}`;
+                램프레벨.innerHTML = `램프Lv ${결과.스탯.램프.레벨}`;
                 램프레벨.style.cursor = "pointer";
                 document.getElementById("메인컨테이너삼행3열").append(램프레벨);
 
@@ -1851,7 +1857,7 @@
                 램프현재골드.id = "램프현재골드";
                 램프현재골드.style.width = "100%";
                 램프현재골드.style.display = "flex";
-                램프현재골드.innerHTML = `현재Gold ${스탯.램프.현재골드}`;
+                램프현재골드.innerHTML = `현재Gold ${결과.스탯.램프.현재골드}`;
                 램프현재골드.style.cursor = "pointer";
                 document.getElementById("메인컨테이너삼행3열").append(램프현재골드);
 
@@ -1859,7 +1865,7 @@
                 램프다음골드.id = "램프다음골드";
                 램프다음골드.style.width = "100%";
                 램프다음골드.style.display = "flex";
-                램프다음골드.innerHTML = `다음Gold ${스탯.램프.다음골드}`;
+                램프다음골드.innerHTML = `다음Gold ${결과.스탯.램프.다음골드}`;
                 램프다음골드.style.cursor = "pointer";
                 document.getElementById("메인컨테이너삼행3열").append(램프다음골드);
 
@@ -1867,34 +1873,46 @@
                 램프수량.id = "램프수량";
                 램프수량.style.width = "100%";
                 램프수량.style.display = "flex";
-                램프수량.innerHTML = `수량 ${스탯.램프.수량}`;
+                램프수량.innerHTML = `수량 ${결과.스탯.램프.수량}`;
                 램프수량.style.cursor = "pointer";
                 document.getElementById("메인컨테이너삼행3열").append(램프수량);
 
 
 
+                //여기
+                document.getElementById("스탯").addEventListener("click", async (e) => {
+                    e.stopPropagation();
 
-                const 스탯리스트1열 = ["HP", "공격력", "방어력", "공속", "치명", "치명무시", "치명피해", "치명저항", "콤보", "콤보무시", "반격", "반격무시", "스턴", "스턴무시", "회피", "회피무시", "회복", "회복무시", "에어본", "일반공격계수", "일반공격피해감소", "콤보계수", "콤보피해감소", "반격계수", "반격피해감소", "스킬치명", "스킬치명피해", "스킬피해", "스킬피해감소"];
-                for (const 항목 of 스탯리스트1열) {
-                    const div = document.createElement("div");
-                    div.style.display = "flex";
-                    div.style.justifyContent = "space-between";
-                    div.style.width = "100%";
-                    div.style.borderBottom = `0.2px solid #747474`;
-                    div.innerHTML = `<span>${항목}</span><span>${스탯[항목]}${항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속") ? "" : "%"}</span>`;
-                    document.getElementById("메인컨테이너사행1열").append(div);
-                }
+                    if (document.getElementById("메인컨테이너사행1열").innerHTML || document.getElementById("메인컨테이너사행2열").innerHTML) {
+                        document.getElementById("메인컨테이너사행1열").innerHTML = "";
+                        document.getElementById("메인컨테이너사행2열").innerHTML = "";
+                        return;
+                    }
 
-                const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유율", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
-                for (const 항목 of 스탯리스트2열) {
-                    const div = document.createElement("div");
-                    div.style.display = "flex";
-                    div.style.justifyContent = "space-between";
-                    div.style.width = "100%";
-                    div.style.borderBottom = `0.2px solid #747474`;
-                    div.innerHTML = `<span>${항목}</span><span>${스탯[항목]}${항목.includes("관통") || 항목.includes("막기") || 항목.includes("동료찬사") || 항목.includes("동료저항") || 항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
-                    document.getElementById("메인컨테이너사행2열").append(div);
-                }
+                    const 스탯리스트1열 = ["HP", "공격력", "방어력", "공속", "치명", "치명무시", "치명피해", "치명저항", "콤보", "콤보무시", "반격", "반격무시", "스턴", "스턴무시", "회피", "회피무시", "회복", "회복무시", "에어본", "일반공격계수", "일반공격피해감소", "콤보계수", "콤보피해감소", "반격계수", "반격피해감소", "스킬치명", "스킬치명피해", "스킬피해", "스킬피해감소"];
+                    for (const 항목 of 스탯리스트1열) {
+                        const div = document.createElement("div");
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.width = "100%";
+                        div.style.borderBottom = `0.2px solid #747474`;
+                        div.innerHTML = `<span>${항목}</span><span>${결과.스탯[항목]}${항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속") ? "" : "%"}</span>`;
+                        document.getElementById("메인컨테이너사행1열").append(div);
+                    }
+
+                    const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유율", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
+                    for (const 항목 of 스탯리스트2열) {
+                        const div = document.createElement("div");
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.width = "100%";
+                        div.style.borderBottom = `0.2px solid #747474`;
+                        div.innerHTML = `<span>${항목}</span><span>${결과.스탯[항목]}${항목.includes("관통") || 항목.includes("막기") || 항목.includes("동료찬사") || 항목.includes("동료저항") || 항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
+                        document.getElementById("메인컨테이너사행2열").append(div);
+                    }
+
+                });
+
 
 
                 if (자동뽑기플래그) {
@@ -1902,6 +1920,13 @@
                 } else {
                     메시지표시(`전투력 ${전투력표시값(결과.스탯.전투력)}`);
                 }
+
+                if (결과.스탯.램프.충전량 > 0) {
+                    const 확인 = await 팝업(`방치보상 램프 +${결과.스탯.램프.충전량}개`, false);
+                    if (!확인) return;
+
+                }
+
 
             } catch (e) {
                 메시지표시("스탯 조회 실패");
@@ -1991,7 +2016,6 @@
         //         const 결과 = await 응답.json();
         //         if (!응답.ok) throw new Error(결과.오류);
 
-        //         const 스탯 = 결과.스탯;
 
         //         모든화면숨기기();
 
@@ -2000,8 +2024,8 @@
         // 화면설명.innerHTML = `메인화면과 탈퇴하기만 구현되어있습니다 쿄쿄<br>램프 클릭하시면 장비뽑기됩니다아`;
         // 메인화면.style.top = (화면설명.offsetTop + 화면설명.offsetHeight + 8) + "px";
         // 메인화면.style.display = "block";
-        // 타이틀과아이디.innerHTML = `${스탯.계정.유저아이디}`;
-        // 전투력.innerHTML = `Lv${(스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(스탯.전투력)}`;
+        // 타이틀과아이디.innerHTML = `${결과.스탯.계정.유저아이디}`;
+        // 전투력.innerHTML = `Lv${(결과.스탯.계정.레벨)} ${전투력아이콘정리(전투력아이콘)}${전투력표시값(결과.스탯.전투력)}`;
 
         // 장비비교컨테이너.innerHTML = "";
         // 장비비교컨테이너.style.display = "none";
@@ -2050,7 +2074,7 @@
 
         function 화면잠금() {
             document.body.style.pointerEvents = "none";
-            document.body.style.opacity = "0.5";
+            document.body.style.opacity = "0.9";
             const 버튼들 = document.querySelectorAll("button");
             버튼들.forEach(btn => btn.disabled = true);
         }
@@ -2146,9 +2170,6 @@
 
         // const 확인 = await 팝업("아이디는 영문<br>비밀번호는 6자 이상 입력해주세요", false);
         // return;
-
-        // const 확인 = await 사용자확인("돌이킬 수 없는 실수를 하시겠습니까?");
-        // if (!확인) return;
 
         //메시지표시함수
         function 메시지표시(내용) {

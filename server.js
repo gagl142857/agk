@@ -207,7 +207,7 @@ app.post("/register", async (req, res) => {
       우편함: [
         {
           이름: "램프",
-          수량: 20,
+          수량: 200,
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
         },

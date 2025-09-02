@@ -381,6 +381,7 @@
 
 
         const 로그인화면 = document.createElement("div");
+        로그인화면.id = "로그인화면";
         로그인화면.style.position = "absolute";
         로그인화면.style.boxSizing = "border-box";
         로그인화면.style.top = "64px";
@@ -579,9 +580,9 @@
                     const div = document.createElement("div");
                     div.style.display = "flex";
                     div.innerHTML = 장비아이콘변환(
-                        장비아이콘[이름]?.[유저데이터.스탯[이름]?.등급]
-                        || 장비아이콘[이름]?.["일반"]
-                        || ""
+                        유저데이터.스탯[이름]
+                            ? (장비아이콘[이름]?.[유저데이터.스탯[이름].등급] || 장비아이콘[이름]?.["일반"])
+                            : ""
                     );
                     div.style.color = "white";
                     div.style.width = "32px";
@@ -1811,21 +1812,40 @@
         document.addEventListener("keydown", async function (e) {
             if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
-            //단축키설정
-            switch (e.key) {
-                case "q":
-                    document.querySelector("#탈퇴하기")?.click();
-                    break;
-                case "o":
-                    document.querySelector("#우편함")?.click();
-                    break;
-                case "m":
-                    document.querySelector("#메인")?.click();
-                    break;
-                case "g":
-                    document.querySelector("#길드")?.click();
-                    break;
+            if (document.querySelector("#팝업") && document.querySelector("#팝업").style.display !== "none") {
+                if (e.key === "Enter" || e.code === "Space") {
+                    e.preventDefault();
+                    const 확인버튼 = document.querySelector("#팝업확인");
+                    if (확인버튼) 확인버튼.click();
+                }
             }
+
+
+            if (document.querySelector("#로그인화면")?.style.display === "none") {
+                //단축키설정
+                switch (e.key) {
+                    case "q":
+                        document.querySelector("#회원탈퇴")?.click();
+                        break;
+                    case "w":
+                        document.querySelector("#로그아웃")?.click();
+                        break;
+                    case "o":
+                        document.querySelector("#우편함")?.click();
+                        break;
+                    case "m":
+                        document.querySelector("#메인")?.click();
+                        break;
+                    case "g":
+                        document.querySelector("#길드")?.click();
+                        break;
+                }
+
+            }
+
+
+
+
         });
 
 
@@ -1897,6 +1917,7 @@
                 }
 
                 const 팝업확인 = document.createElement("div");
+                팝업확인.id = "팝업확인";
                 팝업확인.innerText = "확인";
                 팝업확인.style.cursor = "pointer";
                 팝업확인.style.border = "0.2px solid #747474";

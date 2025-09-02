@@ -198,12 +198,22 @@ app.post("/register", async (req, res) => {
         다음골드: 6000,
         수량: 200,
       },
-      서버: 1,
+      서버: 서버,
       서버점검: 0,
       최초IP: clientIP,
       접속IP: clientIP,
       기기ID: req.body.기기ID || null,
       버전: 2,
+      우편함: [
+        {
+          이름: "램프",
+          수량: 20,
+          시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+          메모: "신규유저 보상",
+        },
+
+      ],
+      주인장인가: 아이디 === "codl" ? 1 : 0,
     };
 
     const { error: dbError } = await supabase
@@ -228,7 +238,7 @@ app.post("/register", async (req, res) => {
 // 로그인하기
 app.post("/login", async (req, res) => {
   try {
-    const { 아이디, 비밀번호 } = req.body;
+    const { 아이디, 비밀번호, 기기ID } = req.body;
     if (!아이디 || !비밀번호) {
       return res.status(400).json({ 오류: "아이디와 비밀번호가 필요합니다" });
     }
@@ -264,75 +274,13 @@ app.post("/login", async (req, res) => {
     const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
     if (시간차 > 0) {
-      data.스탯.램프.충전량 = 시간차 * (data.스탯.램프.레벨 * 2);
-      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 2);
+      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
       data.스탯.접속시각 = 현재접속;
-    } else {
-      data.스탯.램프.충전량 = 0;
     }
 
-    data.스탯.접속IP = clientIP;
-    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    const 스탯 = data.스탯;
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    await supabase
-      .from("로그기록")
-      .insert({
-        스탯: data.스탯,
-        유저아이디: data.스탯.계정.유저아이디,
-        유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `로그인 / ${data.스탯.램프.수량 - data.스탯.램프.충전량}+${data.스탯.램프.충전량}=${data.스탯.램프.수량}`,
-      });
-
-
-    res.json(data);
-
-  } catch (err) {
-    console.error("로그인 오류:", err);
-    res.status(500).json({ 오류: "로그인 처리 실패" });
-  }
-});
-
-app.post("/auto-login", async (req, res) => {
-  try {
-    const { 기기ID } = req.body;
-    if (!기기ID) return res.status(400).json({ 오류: "기기ID 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("스탯->>기기ID", 기기ID) // JSON 컬럼 안의 기기ID 비교
-      .single();
-
-    if (error || !data) {
-      return res.status(404).json({ 오류: "자동로그인 실패" });
-    }
-
-    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
-      .toString()
-      .split(",")[0]
-      .trim();
-
-    const now = new Date();
-    const 현재접속 = Math.floor(now.getTime() / 3600000);
-    const 이전접속 = data.스탯?.접속시각 || 현재접속;
-    const 시간차 = Math.min(현재접속 - 이전접속, 24);
-    if (시간차 > 0) {
-      data.스탯.램프.충전량 = 시간차 * (data.스탯.램프.레벨 * 2);
-      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 2);
-      data.스탯.접속시각 = 현재접속;
-    } else {
-      data.스탯.램프.충전량 = 0;
+    // 로그인 직후 스탯 업데이트 전에 추가
+    if (!data.스탯.기기ID && 기기ID) {
+      data.스탯.기기ID = 기기ID;
     }
 
     data.스탯.접속IP = clientIP;
@@ -355,7 +303,73 @@ app.post("/auto-login", async (req, res) => {
         스탯: data.스탯,
         유저아이디: data.스탯.계정.유저아이디,
         유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `자동로그인 / ${data.스탯.램프.수량 - data.스탯.램프.충전량}+${data.스탯.램프.충전량}=${data.스탯.램프.수량}`,
+        내용: `로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`,
+      });
+
+    res.json(data);
+
+
+  } catch (err) {
+    console.error("로그인 오류:", err);
+    res.status(500).json({ 오류: "로그인 처리 실패" });
+  }
+});
+
+app.post("/auto-login", async (req, res) => {
+  try {
+    const { 기기ID } = req.body;
+    if (!기기ID) return res.status(400).json({ 오류: "기기ID 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("스탯->>기기ID", 기기ID) // JSON 컬럼 안의 기기ID 비교
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "agk에 찾아와주셔서 감사합니다" });
+    }
+
+    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
+      .toString()
+      .split(",")[0]
+      .trim();
+
+    const now = new Date();
+    const 현재접속 = Math.floor(now.getTime() / 3600000);
+    const 이전접속 = data.스탯?.접속시각 || 현재접속;
+    const 시간차 = Math.min(현재접속 - 이전접속, 24);
+    if (시간차 > 0) {
+      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
+      data.스탯.접속시각 = 현재접속;
+    }
+
+    // 로그인 직후 스탯 업데이트 전에 추가
+    if (!data.스탯.기기ID && 기기ID) {
+      data.스탯.기기ID = 기기ID;
+    }
+
+    data.스탯.접속IP = clientIP;
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    const 스탯 = data.스탯;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯 })
+      .eq("id", data.id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `자동로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`,
       });
 
     res.json(data);
@@ -418,6 +432,56 @@ app.post("/delete-user", async (req, res) => {
   }
 });
 
+app.post("/logout", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ 오류: "id 필요" });
+    }
+
+    // ① 유저 스탯 먼저 조회
+    const { data, error: fetchError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !data) {
+      return res.status(404).json({ 오류: "유저 조회 실패" });
+    }
+
+    // ② 로그 먼저 기록
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `로그아웃`,
+      });
+
+    data.스탯.기기ID = null;
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    const 스탯 = data.스탯;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ 오류: "서버 오류 발생" });
+  }
+});
+
 app.post("/main", async (req, res) => {
   try {
     const { id } = req.body;
@@ -448,8 +512,7 @@ app.post("/main", async (req, res) => {
     }
 
 
-    const { id: _, ...나머지 } = data;
-    res.json({ ...나머지 });
+    res.json(data);
 
   } catch (err) {
     console.error(err);
@@ -471,13 +534,16 @@ app.post("/lamp", async (req, res) => {
     if (error) return res.status(500).json({ 오류: "조회 실패" });
 
     if (data.스탯?.드랍 && Object.keys(data.스탯.드랍).length > 0) {
-      const { id: _, ...나머지 } = data;
-      return res.json({ ...나머지 });
+      return res.status(400).json({ 오류: "드랍장비 있음" });
     }
 
     if (!data.스탯?.램프 || data.스탯.램프.수량 < 1) {
       return res.status(400).json({ 오류: "램프 부족" });
     }
+
+
+    const 현재전투력 = 최종스탯계산(data.스탯).전투력;
+
 
     const 계정레벨 = data.스탯.계정.레벨 || 1;
     const 현재경험치 = data.스탯.계정.현재경험치 || 0;
@@ -501,7 +567,6 @@ app.post("/lamp", async (req, res) => {
 
     const idx = 등급순서.indexOf(선택등급);
 
-
     const 옵션후보 = [...특수옵션];
     const 선택된옵션 = [];
     for (let i = 0; i < 2; i++) {
@@ -518,7 +583,6 @@ app.post("/lamp", async (req, res) => {
 
     const [최소, 최대] = 특수옵션범위[선택등급];
 
-    // 옵션값: 소수점 2자리까지만 남기기
     const 옵션값1 = Math.floor((Math.random() * (최대 - 최소) + 최소) * 100) / 100;
     const 옵션값2 = Math.floor((Math.random() * (최대 - 최소) + 최소) * 100) / 100;
 
@@ -543,6 +607,18 @@ app.post("/lamp", async (req, res) => {
 
     const 스탯 = data.스탯;
 
+
+    let 비교스탯 = JSON.parse(JSON.stringify(data.스탯));
+    const 장착장비 = data.스탯[data.스탯.드랍.이름];
+    const 드랍장비 = data.스탯.드랍;
+
+    비교스탯[드랍장비.이름] = 드랍장비;
+
+    비교스탯 = { ...비교스탯, ...최종스탯계산(비교스탯) };
+
+    const 전투력차이 = Math.trunc(비교스탯.전투력 - 현재전투력);
+
+
     const { error: updateError } = await supabase
       .from("users")
       .update({ 스탯 })
@@ -563,10 +639,8 @@ app.post("/lamp", async (req, res) => {
     //     내용: `장비뽑기`,
     //   });
 
+    res.json({ ...data, 전투력차이 });
 
-
-    const { id: _, ...나머지 } = data;
-    res.json({ ...나머지 });
 
   } catch (err) {
     console.error(err);
@@ -595,6 +669,8 @@ app.post("/equip", async (req, res) => {
       return res.status(400).json({ 오류: "드랍 없음" });
     }
 
+    const 교체전전투력 = 최종스탯계산(data.스탯).전투력;
+
     const 장착장비 = data.스탯[data.스탯.드랍.이름];
     const 드랍장비 = data.스탯.드랍;
 
@@ -609,6 +685,12 @@ app.post("/equip", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
+
+    const 교체후전투력 = data.스탯.전투력;
+
+    // 차이 (상승이면 양수, 하락이면 음수)
+    const 전투력차이 = Math.trunc(교체전전투력 - 교체후전투력);
+
 
     const { error: updateError } = await supabase
       .from("users")
@@ -629,8 +711,7 @@ app.post("/equip", async (req, res) => {
     //     내용: `장비장착`,
     //   });
 
-    const { id: _, ...나머지 } = data;
-    res.json({ ...나머지 });
+    res.json({ ...data, 전투력차이 });
 
   } catch (err) {
     console.error(err);
@@ -686,14 +767,293 @@ app.post("/sell", async (req, res) => {
     //     내용: `장비판매`,
     //   });
 
-    const { id: _, ...나머지 } = data;
-    res.json({ ...나머지 });
+    res.json(data);
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/mailbox", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    const 스탯 = data.스탯;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/receive-mail", async (req, res) => {
+  try {
+    const { id, index } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (!data.스탯.우편함[index]) {
+      return res.status(400).json({ 오류: "해당 우편 없음" });
+    }
+
+    if (data.스탯.우편함[index].이름 === "램프") {
+      data.스탯.램프.수량 += data.스탯.우편함[index].수량;
+      data.스탯.우편함.splice(index, 1);
+
+    } else {
+      const 잘못된이름 = data.스탯.우편함[index].이름;
+      data.스탯.우편함.splice(index, 1);
+
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ 스탯: data.스탯 })
+        .eq("id", id);
+
+      if (updateError) {
+        console.error(updateError);
+        return res.status(500).json({ 오류: "DB저장 실패" });
+      }
+
+      await supabase.from("로그기록").insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `잘못된 우편 삭제(${잘못된이름})`,
+      });
+
+      return res.status(400).json({ 오류: "잘못된 우편이므로 자동 삭제되었습니다" });
+    }
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/master", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.주인장인가 !== 1) {
+      return res.status(500).json({ 오류: "주인장이 아닙니다" });
+    }
+
+    const { data: 전체유저, error: 전체조회에러 } = await supabase
+      .from("users")
+      .select("스탯");
+
+    if (전체조회에러) {
+      console.error(전체조회에러);
+      return res.status(500).json({ 오류: "전체유저 조회 실패" });
+    }
+
+    const 닉네임목록 = 전체유저.map(u => u.스탯?.계정?.유저닉네임 || null);
+
+    res.json({ 닉네임목록 });
+
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+app.post("/send-mail", async (req, res) => {
+  try {
+    const { 대상닉네임, 이름, 수량, 메모, id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.주인장인가 !== 1) {
+      return res.status(500).json({ 오류: "주인장이 아닙니다" });
+    }
+
+
+    if (!대상닉네임 || !이름 || !수량) {
+      return res.status(400).json({ 오류: "대상, 이름, 수량은 필수입니다" });
+    }
+
+    // 1. 대상 유저 찾기 (닉네임으로 검색)
+    const { data: 대상유저, error: 조회에러 } = await supabase
+      .from("users")
+      .select("id, 스탯")
+      .eq("스탯->계정->>유저닉네임", 대상닉네임)
+      .single();
+
+    if (조회에러 || !대상유저) {
+      console.error("대상 조회 실패:", 조회에러);
+      return res.status(404).json({ 오류: "대상 유저를 찾을 수 없습니다" });
+    }
+
+    // 2. 기존 우편함 불러오기
+    const 우편함 = 대상유저.스탯.우편함 || [];
+
+    // 3. 새 우편 생성
+    const now = new Date();
+    const 새우편 = {
+      이름,
+      수량: Number(수량),
+      시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      메모: 메모 || "",
+    };
+
+    // 4. 배열에 추가
+    우편함.unshift(새우편);
+    대상유저.스탯.우편함 = 우편함;
+
+    // 5. DB 업데이트
+    const { error: 업데이트에러 } = await supabase
+      .from("users")
+      .update({ 스탯: 대상유저.스탯 })
+      .eq("id", 대상유저.id);
+
+    if (업데이트에러) {
+      console.error("업데이트 오류:", 업데이트에러);
+      return res.status(500).json({ 오류: "우편 저장 실패" });
+    }
+
+    res.json({ 성공: true, 메시지: "우편 발송 완료" });
+  } catch (err) {
+    console.error("서버 오류:", err);
+    res.status(500).json({ 오류: "서버 오류 발생" });
+  }
+});
+
+app.post("/send-mail-all", async (req, res) => {
+  try {
+    const { 이름, 수량, 메모, id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.주인장인가 !== 1) {
+      return res.status(500).json({ 오류: "주인장이 아닙니다" });
+    }
+
+
+    if (!이름 || !수량) {
+      return res.status(400).json({ 오류: "이름, 수량은 필수입니다" });
+    }
+
+    const { data: 전체유저, error: 전체조회에러 } = await supabase
+      .from("users")
+      .select("id, 스탯");
+
+    if (전체조회에러 || !전체유저 || 전체유저.length === 0) {
+      return res.status(500).json({ 오류: "전체유저 조회 실패" });
+    }
+
+    const now = new Date();
+    const 새우편 = {
+      이름,
+      수량,
+      메모,
+      시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+    };
+
+    for (const u of 전체유저) {
+      const 우편함 = u.스탯.우편함 || [];
+      우편함.unshift(새우편);
+      u.스탯.우편함 = 우편함;
+
+      await supabase
+        .from("users")
+        .update({ 스탯: u.스탯 })
+        .eq("id", u.id);
+    }
+
+    res.json({ 성공: true });
+
+  } catch (err) {
+    console.error("서버 오류:", err);
+    res.status(500).json({ 오류: "서버 오류 발생" });
+  }
+});
+
+
+
+
+
+
+
 
 //서버응답기본꼴
 // app.post("/equip", async (req, res) => {
@@ -713,11 +1073,10 @@ app.post("/sell", async (req, res) => {
 //     }
 
 //     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-//     const 스탯 = data.스탯;
 
 //     const { error: updateError } = await supabase
 //       .from("users")
-//       .update({ 스탯 })
+//       .update({ 스탯: data.스탯 })
 //       .eq("id", id);
 
 //     if (updateError) {
@@ -725,9 +1084,8 @@ app.post("/sell", async (req, res) => {
 //       return res.status(500).json({ 오류: "DB저장 실패" });
 //     }
 
-//     const { id: _, ...나머지 } = data;
-//     res.json({ ...나머지 });
-
+//     delete data.id;
+//     res.json(data);
 //   } catch (err) {
 //     console.error(err);
 //     res.status(500).json({ 오류: "서버 오류" });
@@ -909,15 +1267,12 @@ app.use(express.static(__dirname));
 아이콘정의
 서버리턴은클라에서도리턴
 길드마스터한테 가입신청
-램프장착판매단축키
 장비스킨시스템
 날개진화
 조각상 어빌리티
-메인화면얼추끝
 던전작해야함
 길드만들기
 채팅창
-우편함
 
 git add . && git commit -m "배포" && git push origin main
 

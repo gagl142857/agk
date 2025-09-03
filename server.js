@@ -37,7 +37,7 @@ app.use(async (req, res, next) => {
     return res.status(403).send(`<html>접속이 차단된 IP입니다</html>`);
   }
 
-
+  next();
 });
 
 

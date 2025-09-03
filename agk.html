@@ -384,28 +384,6 @@
         });
 
 
-        // 설정.addEventListener("mouseover", () => {
-        //     const rect = 설정.getBoundingClientRect();
-        //     설정툴팁.style.display = "flex";
-
-        //     const 툴팁너비 = 설정툴팁.offsetWidth;
-        //     설정툴팁.style.left = `${rect.right - 툴팁너비}px`;
-        //     설정툴팁.style.top = `${rect.bottom}px`;
-        // });
-
-        // 설정.addEventListener("mouseleave", (e) => {
-        //     if (!설정.contains(e.relatedTarget) && !설정툴팁.contains(e.relatedTarget)) {
-        //         설정툴팁.style.display = "none";
-        //     }
-        // });
-
-        // 설정툴팁.addEventListener("mouseleave", (e) => {
-        //     if (!설정.contains(e.relatedTarget) && !설정툴팁.contains(e.relatedTarget)) {
-        //         설정툴팁.style.display = "none";
-        //     }
-        // });
-
-
         const 로그인화면 = document.createElement("div");
         로그인화면.id = "로그인화면";
         로그인화면.style.position = "absolute";
@@ -570,7 +548,7 @@
                 모든화면숨기기();
                 메인화면.style.display = "flex";
                 메인화면컨테이너.innerHTML = "";
-                타이틀과아이디.innerHTML = 유저데이터.스탯.계정.유저닉네임;
+                타이틀과아이디.innerHTML = 유저데이터.스탯.계정.유저닉네임 + ` v3(버전표시)`;
 
                 // 행렬만들기(메인화면컨테이너, "메인화면컨테이너일행", 1);
                 // 메인화면컨테이너일행.style.borderBottom = "0.2px solid #747474";
@@ -2183,6 +2161,7 @@
                 장비비교컨테이너,
                 우편함화면,
                 패치노트화면,
+                설정툴팁,
 
             ].forEach(el => {
                 if (el) el.style.display = "none";

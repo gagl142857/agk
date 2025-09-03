@@ -453,6 +453,12 @@
                 비밀번호.style.boxSizing = "border-box";
                 비밀번호.style.padding = "3px 8px";
                 document.getElementById("로그인화면컨테이너일행1열").append(비밀번호);
+                비밀번호.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        document.querySelector("#로그인")?.click();
+                    }
+                });
 
                 행렬만들기(로그인화면컨테이너, "로그인화면컨테이너이행", 4);
                 document.getElementById("로그인화면컨테이너이행1열").style.flexDirection = "row";
@@ -530,6 +536,7 @@
         let 자동뽑기플래그 = false;
         let 선택최소등급 = "일반";
         let 선택옵션목록 = [];
+        let 풀자동 = false;
 
         async function 메인화면보여주기() {
             try {
@@ -656,7 +663,8 @@
                     행렬만들기(램프설정컨테이너, "램프설정컨테이너일행", 1);
                     램프설정컨테이너일행.style.borderBottom = `0.2px solid #747474`;
                     램프설정컨테이너일행.style.textAlign = "center";
-                    램프설정컨테이너일행.innerHTML = `랜덤옵션은 2개까지 선택 가능하며, 선택하게되면<br>옵션이 다른 아이템은 자동판매됩니다`;
+                    램프설정컨테이너일행.style.justifyContent = "center";
+                    램프설정컨테이너일행.innerHTML = `랜덤옵션은 0개, 1개, 2개 선택가능하며<br>옵션을 모두 만족하는 아이템에서 멈춥니다<br>옵션이 다른 아이템은 자동판매됩니다`;
 
                     행렬만들기(램프설정컨테이너, "램프설정컨테이너이행", 3);
                     램프설정컨테이너이행.style.borderBottom = `0.2px solid #747474`;
@@ -737,7 +745,7 @@
                     자동뽑기.style.padding = "3px 8px";
                     자동뽑기.style.border = "0.2px solid #747474";
                     자동뽑기.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너삼행2열").append(자동뽑기);
+                    document.getElementById("램프설정컨테이너삼행1열").append(자동뽑기);
 
                     document.getElementById("자동뽑기").addEventListener("click", async (e) => {
                         e.stopPropagation();
@@ -771,12 +779,47 @@
                     램프설정컨테이너닫기.style.padding = "3px 8px";
                     램프설정컨테이너닫기.style.border = "0.2px solid #747474";
                     램프설정컨테이너닫기.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너삼행3열").append(램프설정컨테이너닫기);
+                    document.getElementById("램프설정컨테이너삼행2열").append(램프설정컨테이너닫기);
 
                     document.getElementById("램프설정컨테이너닫기").addEventListener("click", () => {
                         const 컨테이너 = document.getElementById("램프설정컨테이너");
                         컨테이너.style.display = "none";
                     });
+
+
+                    const 풀자동 = document.createElement("div");
+                    풀자동.id = "풀자동";
+                    풀자동.innerHTML = `풀자동`;
+                    풀자동.style.cursor = "pointer";
+                    풀자동.style.padding = "3px 8px";
+                    풀자동.style.border = "0.2px solid #747474";
+                    풀자동.style.borderRadius = "8px";
+                    document.getElementById("램프설정컨테이너삼행3열").append(풀자동);
+
+                    document.getElementById("풀자동").addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            화면잠금();
+
+                            풀자동 = true;
+                            자동뽑기플래그 = true;
+                            선택최소등급 = 최소등급선택.value;
+                            선택옵션목록 = Array.from(모든체크박스)
+                                .filter(c => c.checked)
+                                .map(c => c.value);
+
+                            램프설정컨테이너.style.display = "none";
+
+                            document.querySelector("#램프").click();
+
+                        } catch (e) {
+                            메시지표시("");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
 
                 });
 
@@ -1118,6 +1161,9 @@
 
                 if (자동뽑기플래그 && 드랍조건미달) {
                     document.querySelector("#판매하기").click();
+                } else if (풀자동) {
+                    if (전투력차이 > 0) document.querySelector("#장착하기").click();
+                    else document.querySelector("#판매하기").click();
                 }
 
 
@@ -1510,9 +1556,53 @@
                 (!document.querySelector("#장착하기") || !document.querySelector("#장착하기").contains(e.target))
             ) {
                 자동뽑기플래그 = false;
+                풀자동 = false;
             }
 
             설정툴팁.style.display = "none";
+
+            // if (e.target.matches("#타이틀과아이디")) {
+            //     try {
+            //         화면잠금();
+
+            //         const 기존표시 = document.getElementById("타이틀과아이디");
+            //         const 원래아이디 = 유저데이터.스탯.계정.유저닉네임;
+
+            //         // 입력창 생성
+            //         const 입력창 = document.createElement("input");
+            //         입력창.type = "text";
+            //         입력창.maxLength = 7;
+            //         입력창.placeholder = "새 아이디 입력";
+            //         입력창.style.background = "white";
+            //         입력창.style.color = "black";
+            //         입력창.size = 10;
+            //         입력창.style.outline = "none";
+            //         입력창.value = "";
+            //         기존표시.replaceWith(입력창);
+            //         입력창.focus();
+
+            //         const 외부클릭취소 = (e) => {
+            //             if (!입력창.contains(e.target)) {
+            //                 const 복원 = document.createElement("div");
+            //                 복원.id = "복원";
+            //                 복원.style.margin = "4px 8px";
+            //                 복원.style.cursor = "pointer";
+            //                 복원.innerHTML = 원래아이디;
+            //                 입력창.replaceWith(복원);
+            //                 document.removeEventListener("click", 외부클릭취소);
+            //             }
+            //         };
+
+            //         //수정중
+
+
+            //     } catch (e) {
+            //         메시지표시("서버요청실패");
+            //         console.error(e);
+            //     } finally {
+            //         화면해제();
+            //     }
+            // }
 
             if (e.target.matches("#우편함")) {
                 try {
@@ -1963,7 +2053,7 @@
 
         function 화면잠금() {
             document.body.style.pointerEvents = "none";
-            document.body.style.opacity = "0.9";
+            document.body.style.opacity = "0.8";
         }
 
         function 화면해제() {

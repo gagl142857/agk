@@ -37,6 +37,92 @@ app.use(async (req, res, next) => {
     return res.status(403).send(`<html>접속이 차단된 IP입니다</html>`);
   }
 
+  //배열에 추가
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
+  //   if (!error && 전체유저) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       let 던전 = 전체유저[i].스탯.던전;
+
+  //       // 1. 던전이 배열인 경우 → 객체로 변환
+  //       if (Array.isArray(던전)) {
+  //         const 새던전 = {};
+  //         던전.forEach(d => {
+  //           새던전[d.이름] = { 레벨: d.레벨 };
+  //         });
+  //         던전 = 새던전;
+  //       }
+
+  //       // 2. 던전이 아예 없을 경우 → 새로 생성
+  //       if (!던전) {
+  //         던전 = {};
+  //       }
+
+  //       // 3. 지니가 없으면 추가
+  //       if (!던전["지니"]) {
+  //         던전["지니"] = { 레벨: 1 };
+  //       }
+
+  //       // 4. 유저 데이터 업데이트
+  //       전체유저[i].스탯.던전 = 던전;
+
+  //       await supabase
+  //         .from("users")
+  //         .update({ 스탯: 전체유저[i].스탯 })
+  //         .eq("id", 전체유저[i].id);
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log("던전 업데이트 오류:", err);
+  // }
+
+
+  // 배열 업데이트
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
+  //   if (!error && 전체유저) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       전체유저[i].스탯.던전 = [
+  //         { 이름: "지니", 레벨: 1 }
+  //       ];
+
+  //       await supabase
+  //         .from("users")
+  //         .update({ 스탯: 전체유저[i].스탯 })
+  //         .eq("id", 전체유저[i].id);
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log("던전 재설정 오류:", err);
+  // }
+
+  // 배열 초기화
+  //  try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
+  //   if (!error && 전체유저) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       전체유저[i].스탯.던전 = []; // 모든 던전 비우기
+
+  //       await supabase
+  //         .from("users")
+  //         .update({ 스탯: 전체유저[i].스탯 })
+  //         .eq("id", 전체유저[i].id);
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log("던전 초기화 오류:", err);
+  // }
+
+
   next();
 });
 
@@ -115,6 +201,7 @@ app.post("/register", async (req, res) => {
         다음골드: 6000,
         수량: 200,
       },
+      다이아: 0,
       서버: 서버,
       서버점검: 0,
       최초IP: clientIP,
@@ -131,6 +218,13 @@ app.post("/register", async (req, res) => {
 
       ],
       주인장인가: 아이디 === "codl" ? 1 : 0,
+      던전: {
+        지니: { 레벨: 1, 열쇠: 2 },
+      },
+      민원: {
+
+      },
+
     };
 
     const { error: dbError } = await supabase
@@ -863,7 +957,7 @@ app.post("/send-mail", async (req, res) => {
     // 1. 대상 유저 찾기 (닉네임으로 검색)
     const { data: 대상유저, error: 조회에러 } = await supabase
       .from("users")
-      .select("id, 스탯")
+      .select("*")
       .eq("스탯->계정->>유저닉네임", 대상닉네임)
       .single();
 
@@ -898,6 +992,16 @@ app.post("/send-mail", async (req, res) => {
       console.error("업데이트 오류:", 업데이트에러);
       return res.status(500).json({ 오류: "우편 저장 실패" });
     }
+
+    await supabase
+      .from("로그기록")
+      .insert({
+        스탯: "개인우편",
+        유저아이디: 대상유저.스탯.계정.유저아이디,
+        유저닉네임: 대상유저.스탯.계정.유저닉네임,
+        내용: JSON.stringify(새우편),
+      });
+
 
     res.json({ 성공: true, 메시지: "우편 발송 완료" });
   } catch (err) {
@@ -965,11 +1069,158 @@ app.post("/send-mail-all", async (req, res) => {
   }
 });
 
+app.post("/change-nickname", async (req, res) => {
+  try {
+    const { id, 닉네임 } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+    if (!닉네임) return res.status(400).json({ 오류: "닉네임 필요" });
+
+    if (!/^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]+$/.test(닉네임)) {
+      return res.status(400).json({ 오류: "닉네임은 한글과 영어만 가능합니다" });
+    }
+
+    if (닉네임.length > 7) {
+      return res.status(400).json({ 오류: "닉네임은 최대 7글자입니다" });
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    data.스탯.계정.유저닉네임 = 닉네임;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+app.post("/GenieDungeon", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    const 지니 = {
+      스탯: {
+        치명: 0,
+        치명무시: 0,
+        치명피해: 0,
+        치명저항: 0,
+        콤보: 0,
+        콤보무시: 0,
+        반격: 0,
+        반격무시: 0,
+        스턴: 0,
+        스턴무시: 0,
+        회피: 0,
+        회피무시: 0,
+        회복: 0,
+        회복무시: 0,
+        에어본: 0,
+        일반공격계수: 0,
+        일반공격피해감소: 0,
+        콤보계수: 0,
+        콤보피해감소: 0,
+        반격계수: 0,
+        반격피해감소: 0,
+        스킬치명: 0,
+        스킬치명피해: 0,
+        스킬피해: 0,
+        스킬피해감소: 0,
+        보스피해: 0,
+        보스피해감소: 0,
+        동료피해: 0,
+        동료피해감소: 0,
+        치유율: 0,
+        치유량: 0,
+        관통: 0,
+        관통무시: 0,
+        막기: 0,
+        막기무시: 0,
+        동료찬사: 0,
+        동료찬사무시: 0,
+        동료저항: 0,
+        동료저항무시: 0,
+        피해감소: 0,
+        최종HP: 0,
+        최종공격력: 0,
+        최종방어력: 0,
+        최종공속: 0,
+        전투력: 0,
+      }
+    };
+    전투시뮬레이션(data, 지니);
+
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
+function 전투시뮬레이션(나, 상대) {
+  let 내HP = 나.스탯.최종HP;
+  let 상대HP = 상대.스탯.최종HP;
 
+  while (내HP > 0 && 상대HP > 0) {
+    if (나.스탯.최종공속 >= 상대.스탯.최종공속) {
+      상대.스탯.최종HP -= 나.스탯.최종공격력;
+      if (상대.스탯.최종HP <= 0) break;
+      나.스탯.최종HP -= 상대.스탯.최종공격력;
+    } else {
+      나.스탯.최종HP -= 상대.스탯.최종공격력;
+      if (나.스탯.최종HP <= 0) break;
+      상대.스탯.최종HP -= 나.스탯.최종공격력;
+    }
 
+  }
+
+}
 
 
 //서버응답기본꼴
@@ -1181,7 +1432,6 @@ app.use(express.static(__dirname));
 
 /*
 
-아이콘정의
 서버리턴은클라에서도리턴
 길드마스터한테 가입신청
 장비스킨시스템

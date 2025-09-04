@@ -587,6 +587,27 @@
                 // 스탯상세정보.style.marginBottom = "8px";
                 // 메인화면컨테이너일행1열.append(스탯상세정보);
 
+                const 설정버튼 = document.getElementById("설정");
+                const 우편함 = 유저데이터?.스탯.우편함 || [];
+                const 기존뱃지 = document.getElementById("설정알림점");
+
+                if (설정버튼 && 우편함.length > 0 && !기존뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "설정알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "0px";
+                    뱃지.style.right = "-6px";
+                    설정버튼.style.position = "relative";
+                    설정버튼.appendChild(뱃지);
+                } else if (기존뱃지 && 우편함.length === 0) {
+                    기존뱃지.remove();
+                }
+
+
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너이행", 6);
                 메인화면컨테이너이행.style.alignItems = "flex-start";
@@ -1486,6 +1507,28 @@
                                 메시지표시(`우편을 수령했습니다`);
 
                                 우편함화면보여주기();
+
+                                const 설정버튼 = document.getElementById("설정");
+                                const 우편함 = 유저데이터?.스탯.우편함 || [];
+                                const 기존뱃지 = document.getElementById("설정알림점");
+
+                                if (설정버튼 && 우편함.length > 0 && !기존뱃지) {
+                                    const 뱃지 = document.createElement("div");
+                                    뱃지.id = "설정알림점";
+                                    뱃지.style.position = "absolute";
+                                    뱃지.style.width = "7px";
+                                    뱃지.style.height = "7px";
+                                    뱃지.style.backgroundColor = "red";
+                                    뱃지.style.borderRadius = "50%";
+                                    뱃지.style.top = "0px";
+                                    뱃지.style.right = "-6px";
+                                    설정버튼.style.position = "relative";
+                                    설정버튼.appendChild(뱃지);
+                                } else if (기존뱃지 && 우편함.length === 0) {
+                                    기존뱃지.remove();
+                                }
+
+
                             } catch (e) {
                                 메시지표시("서버 통신 오류");
                                 console.error(e);
@@ -1640,9 +1683,15 @@
                     `
 
 
+25.09.05<br>
+<br>
+
 25.09.04<br>
 닉네임변경 구현<br>
 우편함완성<br>
+설정버튼과 우편함버튼에 알람표시 구현<br>
+던전화면 첫번째 몬스터 '지니' 껍데기 구현<br>
+설정버튼과 우편함버튼에 알림표시 구현<br>
 <br>
 
 
@@ -2343,6 +2392,7 @@ nodemon server.js
 
                 메시지표시(`자동로그인 되었습니다`);
                 메인화면보여주기();
+
 
             } catch (err) {
                 console.error("자동로그인 에러:", err);

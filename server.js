@@ -286,10 +286,10 @@ app.post("/login", async (req, res) => {
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
     if (시간차 > 0) {
       data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
+      data.스탯.다이아 = (data.스탯.다이아 || 0) + 시간차 * ((data.스탯.계정.레벨 || 0) * 10);
       data.스탯.접속시각 = 현재접속;
     }
 
-    // 로그인 직후 스탯 업데이트 전에 추가
     if (!data.스탯.기기ID && 기기ID) {
       data.스탯.기기ID = 기기ID;
     }
@@ -326,7 +326,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/auto-login", async (req, res) => {
+app.post("/autologin", async (req, res) => {
   try {
     const { 기기ID } = req.body;
     if (!기기ID) return res.status(400).json({ 오류: "기기ID 필요" });
@@ -352,6 +352,7 @@ app.post("/auto-login", async (req, res) => {
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
     if (시간차 > 0) {
       data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
+      data.스탯.다이아 = (data.스탯.다이아 || 0) + 시간차 * ((data.스탯.다이아 || 0) * 10);
       data.스탯.접속시각 = 현재접속;
     }
 
@@ -560,8 +561,10 @@ app.post("/lamp", async (req, res) => {
     const 현재경험치 = data.스탯.계정.현재경험치 || 0;
     const 램프레벨 = data.스탯.램프.레벨 || 1;
 
-    // 장비 레벨 결정 (레벨±1 or 동일)
-    const 후보 = [계정레벨 - 1, 계정레벨, 계정레벨 + 1].filter(lv => lv >= 1);
+    const 후보 = Array.from(
+      { length: (5 + 5) + 1 }, // 총 11개 (-5 ~ +5)
+      (_, i) => 계정레벨 - 5 + i
+    ).filter(lv => lv >= 1);
     const 장비레벨 = 후보[Math.floor(Math.random() * 후보.length)];
 
     // 등급 결정
@@ -755,6 +758,7 @@ app.post("/sell", async (req, res) => {
     data.스탯.계정.현재경험치 = Math.floor((data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.램프.현재골드 = Math.floor((data.스탯.램프.현재골드 || 0) + (50 + (10 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.드랍 = {};
+    data.스탯.램프.가루 = (data.스탯.램프.가루 || 0) + 10;
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;

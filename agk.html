@@ -1840,6 +1840,9 @@
 재화 '가루'가 구현되었습니다<br>
 가루는 램프로 드랍된 장비를 판매시 10개씩 고정으로 획득됩니다<br>
 가루 사용처는 미구현입니다<br>
+첫번째 던전몬스터 '지니'가 구현되었습니다<br>
+지니에게 도전할 수 있는 열쇠는 하루에 2개씩 자동충전되며<br>
+충전시점에 최대개수를 조회, 2개 미만일 때 2개로 초기화됩니다<br>
 <br>
 
 25.09.04<br>
@@ -1866,11 +1869,8 @@
 해야할일
 
 민원신청
-판매보상재화
 우편함에쿠폰
-장착중인템 정보
 결투장
-서버리턴은클라에서도리턴
 길드마스터한테 가입신청
 장비스킨시스템
 날개진화
@@ -1878,7 +1878,7 @@
 던전작해야함
 길드만들기
 채팅창
- 
+
 git add . && git commit -m "배포" && git push origin main
  
 nodemon server.js
@@ -1953,22 +1953,34 @@ nodemon server.js
                 첫번째몬스터속성일.style.display = "flex";
                 첫번째몬스터속성일.style.width = "100%";
                 첫번째몬스터속성일.style.boxSizing = "border-box";
-                첫번째몬스터속성일.innerHTML = `치명피해 ${유저데이터.스탯.던전.지니.레벨 * 10 + 200 || 200}`;
+                첫번째몬스터속성일.innerHTML = `치명 ${(유저데이터.스탯.치명 * 10).toFixed(2) || "0"}%`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성일);
 
                 const 첫번째몬스터속성이 = document.createElement("div");
                 첫번째몬스터속성이.style.display = "flex";
                 첫번째몬스터속성이.style.width = "100%";
                 첫번째몬스터속성이.style.boxSizing = "border-box";
-                첫번째몬스터속성이.innerHTML = `치명저항 ${유저데이터.스탯.던전.지니.레벨 * 10 || 0}`;
+                첫번째몬스터속성이.innerHTML = `치명피해 ${유저데이터.스탯.던전.지니.레벨 * 10 + 200 || 200}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성이);
+
+                const 첫번째몬스터속성삼 = document.createElement("div");
+                첫번째몬스터속성삼.style.display = "flex";
+                첫번째몬스터속성삼.style.width = "100%";
+                첫번째몬스터속성삼.style.boxSizing = "border-box";
+                첫번째몬스터속성삼.innerHTML = `치명저항 ${유저데이터.스탯.던전.지니.레벨 * 10 || 0}`;
+                document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성삼);
 
                 const 첫번째몬스터전투력 = document.createElement("div");
                 첫번째몬스터전투력.style.display = "flex";
                 첫번째몬스터전투력.style.width = "100%";
                 첫번째몬스터전투력.style.boxSizing = "border-box";
-                // 첫번째몬스터전투력.innerHTML = `전투력 ${유저데이터.스탯.던전.지니.레벨 * 10 || 0}`;
-                첫번째몬스터전투력.innerHTML = `전투력 ???`;
+                첫번째몬스터전투력.innerHTML =
+                    `전투력 ${단위변환함수(
+                        (10000 * 유저데이터.스탯.던전.지니.레벨) * 0.05 +
+                        (600 * 유저데이터.스탯.던전.지니.레벨) +
+                        (200 * 유저데이터.스탯.던전.지니.레벨) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨) * 50
+                    )}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터전투력);
 
                 던전화면컨테이너일행2열.style.borderRight = "0.2px solid #747474";
@@ -2168,9 +2180,33 @@ nodemon server.js
 
             if (e.target.matches("#첫번째몬스터소탕")) {
                 try {
+                    if (유저데이터.스탯.던전.지니.열쇠 < 1) {
+                        메시지표시(`열쇠가 부족합니다`);
+                        return;
+                    }
                     화면잠금();
-                    메시지표시("구현중입니다람쥐");
                     던전화면보여주기();
+                    const 응답 = await fetch("/Geniesweep", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id: 유저데이터.id
+                        })
+                    });
+
+                    const 결과 = await 응답.json();
+
+                    if (!응답.ok) {
+                        메시지표시(결과.오류);
+                        return;
+                    }
+
+                    유저데이터 = 결과;
+
+                    던전화면보여주기();
+
+                    메시지표시(`램프 ${유저데이터.스탯.던전.지니.레벨 * 20}개 획득`);
+
                 } catch (e) {
                     메시지표시("서버요청실패");
                     console.error(e);
@@ -2181,27 +2217,43 @@ nodemon server.js
 
             if (e.target.matches("#첫번째몬스터도전")) {
                 try {
+                    if (유저데이터.스탯.던전.지니.열쇠 < 1) {
+                        메시지표시(`열쇠가 부족합니다`);
+                        return;
+                    }
                     화면잠금();
                     던전화면보여주기();
-                    // const 응답 = await fetch("/GenieDungeon", {
-                    //     method: "POST",
-                    //     headers: { "Content-Type": "application/json" },
-                    //     body: JSON.stringify({
-                    //         id: 유저데이터.id
-                    //     })
-                    // });
+                    const 응답 = await fetch("/GenieDungeon", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id: 유저데이터.id
+                        })
+                    });
 
-                    // const 결과 = await 응답.json();
+                    const 결과 = await 응답.json();
 
-                    // if (!응답.ok) {
-                    //     메시지표시(결과.오류);
-                    //     return; // 여기서 함수 종료
-                    // }
+                    if (!응답.ok) {
+                        메시지표시(결과.오류);
+                        return; // 여기서 함수 종료
+                    }
 
-                    // 유저데이터 = 결과;
+                    유저데이터 = 결과.data;       // 유저 데이터만 저장
+                    const 전투결과 = 결과.전투결과;     // 전투 결과 따로 저장
 
-                    // 던전화면보여주기();
-                    메시지표시("구현중입니다람쥐");
+                    던전화면보여주기();
+
+                    const 확인 = await 팝업(
+                        `
+                        ${전투결과.결과}<br>
+                        내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+                        적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+                        내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
+                        적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
+                        진행된 턴수 ${전투결과.턴수}
+                        `
+                        , false);
+
 
                 } catch (e) {
                     메시지표시("서버요청실패");

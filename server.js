@@ -275,6 +275,18 @@ app.post("/login", async (req, res) => {
       return res.status(404).json({ 오류: "data 정보를 찾을 수 없습니다" });
     }
 
+    const 오늘요일 = new Date().toLocaleDateString("ko-KR", {
+      weekday: "long",
+      timeZone: "Asia/Seoul"
+    });
+    //접속보상
+    if (data.스탯.접속요일 !== 오늘요일) {
+      data.스탯.접속요일 = 오늘요일;
+      if (data.스탯.던전.지니.열쇠 < 2) {
+        data.스탯.던전.지니.열쇠 = 2;
+      }
+    }
+
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString()
       .split(",")[0]
@@ -339,6 +351,18 @@ app.post("/autologin", async (req, res) => {
 
     if (error || !data) {
       return res.status(404).json({ 오류: "agk에 찾아와주셔서 감사합니다" });
+    }
+
+    const 오늘요일 = new Date().toLocaleDateString("ko-KR", {
+      weekday: "long",
+      timeZone: "Asia/Seoul"
+    });
+    //접속보상
+    if (data.스탯.접속요일 !== 오늘요일) {
+      data.스탯.접속요일 = 오늘요일;
+      if (data.스탯.던전.지니.열쇠 < 2) {
+        data.스탯.던전.지니.열쇠 = 2;
+      }
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
@@ -1119,6 +1143,51 @@ app.post("/change-nickname", async (req, res) => {
 });
 
 
+app.post("/Geniesweep", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.던전.지니.열쇠 < 1) {
+      return res.status(400).json({ 오류: "열쇠가 부족합니다" });
+    }
+
+
+    data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 20;
+
+    data.스탯.던전.지니.열쇠 -= 1;
+
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+    // res.json({ data });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/GenieDungeon", async (req, res) => {
   try {
     const { id } = req.body;
@@ -1135,12 +1204,16 @@ app.post("/GenieDungeon", async (req, res) => {
       return res.status(500).json({ 오류: "DB조회 실패" });
     }
 
+    if (data.스탯.던전.지니.열쇠 < 1) {
+      return res.status(400).json({ 오류: "열쇠가 부족합니다" });
+    }
+
     const 지니 = {
       스탯: {
-        치명: 0,
+        치명: data.스탯.치명 * 10,
         치명무시: 0,
-        치명피해: 0,
-        치명저항: 0,
+        치명피해: 200 + 10 * data.스탯.던전.지니.레벨,
+        치명저항: 10 * data.스탯.던전.지니.레벨,
         콤보: 0,
         콤보무시: 0,
         반격: 0,
@@ -1177,14 +1250,29 @@ app.post("/GenieDungeon", async (req, res) => {
         동료저항: 0,
         동료저항무시: 0,
         피해감소: 0,
-        최종HP: 0,
-        최종공격력: 0,
-        최종방어력: 0,
-        최종공속: 0,
-        전투력: 0,
+        최종HP: 10000 * data.스탯.던전.지니.레벨,
+        최종공격력: 600 * data.스탯.던전.지니.레벨,
+        최종방어력: 200 * data.스탯.던전.지니.레벨,
+        최종공속: 1 + 0.2 * data.스탯.던전.지니.레벨,
+        전투력:
+          (10000 * data.스탯.던전.지니.레벨) * 0.05 +
+          (600 * data.스탯.던전.지니.레벨) +
+          (200 * data.스탯.던전.지니.레벨) * 2 +
+          (1 + 0.2 * data.스탯.던전.지니.레벨) * 50,
       }
     };
-    전투시뮬레이션(data, 지니);
+
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(data)), // 복사본
+      JSON.parse(JSON.stringify(지니))  // 복사본
+    );
+
+    if (전투결과.결과 === "승리") {
+      data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 20;
+      data.스탯.던전.지니.레벨 += 1;
+    }
+
+    data.스탯.던전.지니.열쇠 -= 1;
 
 
     const { error: updateError } = await supabase
@@ -1197,7 +1285,8 @@ app.post("/GenieDungeon", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    res.json(data);
+    // res.json(data);
+    res.json({ data, 전투결과 });
 
   } catch (err) {
     console.error(err);
@@ -1206,80 +1295,196 @@ app.post("/GenieDungeon", async (req, res) => {
 });
 
 
-
 function 전투시뮬레이션(나, 상대) {
-  let 내HP = 나.스탯.최종HP;
-  let 상대HP = 상대.스탯.최종HP;
+  let 나순간최고데미지 = 0;
+  let 상대순간최고데미지 = 0;
+  let 턴수 = 0;
 
-  while (내HP > 0 && 상대HP > 0) {
-    if (나.스탯.최종공속 >= 상대.스탯.최종공속) {
+  const 나최대HP = 나.스탯.최종HP;
+  const 상대최대HP = 상대.스탯.최종HP;
 
-      if (Math.random() < 나.스탯.치명 / 100) {
-        if (Math.random() < 상대.스탯.치명무시 / 100) {
-          최종데미지 = 나.스탯.최종공격력;
-        } else if (Math.random() < 상대.스탯.치명저항 / 100) {
-          최종데미지 = 나.스탯.최종공격력;
+  const 나회복량 = 나최대HP * ((나.스탯.치유율 + 나.스탯.치유량) / 100);
+  const 상대회복량 = 상대최대HP * ((상대.스탯.치유율 + 상대.스탯.치유량) / 100);
+
+  let turn = 나.스탯.최종공속 >= 상대.스탯.최종공속 ? "나" : "상대";
+
+  while (나.스탯.최종HP > 0 && 상대.스탯.최종HP > 0) {
+    턴수++;
+
+    if (turn === "나") {
+      let 기본데미지 = 나.스탯.최종공격력 - 상대.스탯.최종방어력;
+      let 최종데미지 = 기본데미지;
+
+      if (Math.random() * 100 < 나.스탯.치명) {
+        if (Math.random() * 100 >= 상대.스탯.치명무시) {
+          최종데미지 = 기본데미지 * (나.스탯.치명피해 / 100) / (상대.스탯.치명저항 / 100);
         } else {
-          최종데미지 = 나.스탯.최종공격력 * (1 + 나.스탯.치명피해 / 100);
+          최종데미지 = 기본데미지 * (나.스탯.일반공격계수 / 100) * ((100 - 상대.스탯.일반공격피해감소) / 100);
         }
-
-      } else {
-        최종데미지 = 나.스탯.최종공격력;
       }
 
+      if (Math.random() * 100 < 나.스탯.콤보) {
+        if (!(Math.random() * 100 < 상대.스탯.콤보무시)) {
+          최종데미지 = 최종데미지
+            * (나.스탯.콤보계수 / 100)
+            * ((100 - 상대.스탯.콤보피해감소) / 100)
+            * 2;
+        }
+      }
+
+      let 스턴유지 = false;
+
+      if (Math.random() * 100 < 나.스탯.스턴 || Math.random() * 100 < 나.스탯.에어본) {
+        if (!(Math.random() * 100 < 상대.스탯.스턴무시)) {
+          스턴유지 = true;
+        }
+      }
+
+      if (Math.random() * 100 < 상대.스탯.회피) {
+        if (Math.random() * 100 < 나.스탯.회피무시) {
+          // 회피무시 성공 → 최종데미지 유지
+        } else {
+          최종데미지 = 0; // 회피 성공, 무시 못함 → 데미지 없음
+        }
+      }
+
+      상대.스탯.최종HP -= 최종데미지;
       if (상대.스탯.최종HP <= 0) break;
-      나.스탯.최종HP -= 상대.스탯.최종공격력;
+
+      if (Math.random() * 100 < 상대.스탯.반격) {
+        if (!(Math.random() * 100 < 나.스탯.반격무시)) {
+          let 반격데미지 = 상대.스탯.최종공격력 - 나.스탯.최종방어력;
+          반격데미지 = 반격데미지
+            * (상대.스탯.일반공격계수 / 100)
+            * (상대.스탯.반격계수 / 100)
+            * ((100 - 나.스탯.반격피해감소) / 100);
+          나.스탯.최종HP -= 반격데미지;
+        }
+      }
+      if (나.스탯.최종HP <= 0) break;
+
+
+      if (Math.random() * 100 < 나.스탯.회복) {
+        if (!(Math.random() * 100 < 상대.스탯.회복무시)) {
+          나.스탯.최종HP = Math.min(나최대HP, 나.스탯.최종HP + 나회복량);
+        }
+      }
+
+      if (최종데미지 > 나순간최고데미지) 나순간최고데미지 = 최종데미지;
+      turn = 스턴유지 ? "나" : "상대";
 
     } else {
+      let 기본데미지 = 상대.스탯.최종공격력 - 나.스탯.최종방어력;
+      let 최종데미지 = 기본데미지;
 
-      나.스탯.최종HP -= 상대.스탯.최종공격력;
+      if (Math.random() * 100 < 상대.스탯.치명) {
+        if (Math.random() * 100 >= 나.스탯.치명무시) {
+          최종데미지 = 기본데미지 * (상대.스탯.치명피해 / 100) / (나.스탯.치명저항 / 100);
+        } else {
+          최종데미지 = 기본데미지 * (상대.스탯.일반공격계수 / 100) * ((100 - 나.스탯.일반공격피해감소) / 100);
+        }
+      }
 
+      if (Math.random() * 100 < 상대.스탯.콤보) {
+        if (!(Math.random() * 100 < 나.스탯.콤보무시)) {
+          최종데미지 = 최종데미지
+            * (상대.스탯.콤보계수 / 100)
+            * ((100 - 나.스탯.콤보피해감소) / 100)
+            * 2;
+        }
+      }
+
+      let 스턴유지 = false;
+
+      if (Math.random() * 100 < 상대.스탯.스턴 || Math.random() * 100 < 상대.스탯.에어본) {
+        if (!(Math.random() * 100 < 나.스탯.스턴무시)) {
+          스턴유지 = true;
+        }
+      }
+
+      if (Math.random() * 100 < 나.스탯.회피) {
+        if (Math.random() * 100 < 상대.스탯.회피무시) {
+          // 회피무시 성공 → 최종데미지 유지
+        } else {
+          최종데미지 = 0;
+        }
+      }
+
+      나.스탯.최종HP -= 최종데미지;
       if (나.스탯.최종HP <= 0) break;
-      상대.스탯.최종HP -= 나.스탯.최종공격력;
 
+      if (Math.random() * 100 < 나.스탯.반격) {
+        if (!(Math.random() * 100 < 상대.스탯.반격무시)) {
+          let 반격데미지 = 나.스탯.최종공격력 - 상대.스탯.최종방어력;
+          반격데미지 = 반격데미지
+            * (나.스탯.일반공격계수 / 100)
+            * (나.스탯.반격계수 / 100)
+            * ((100 - 상대.스탯.반격피해감소) / 100);
+          상대.스탯.최종HP -= 반격데미지;
+        }
+      }
+      if (상대.스탯.최종HP <= 0) break;
+
+      if (Math.random() * 100 < 상대.스탯.회복) {
+        if (!(Math.random() * 100 < 나.스탯.회복무시)) {
+          상대.스탯.최종HP = Math.min(상대최대HP, 상대.스탯.최종HP + 상대회복량);
+        }
+      }
+
+      if (최종데미지 > 상대순간최고데미지) 상대순간최고데미지 = 최종데미지;
+      turn = 스턴유지 ? "상대" : "나";
     }
 
   }
 
+  const 결과 = 나.스탯.최종HP > 0 ? "승리" : "패배";
+
+  return {
+    결과,
+    나HP: 나.스탯.최종HP,
+    상대HP: 상대.스탯.최종HP,
+    나순간최고데미지,
+    상대순간최고데미지,
+    턴수
+  };
+
 }
 
 
-//서버응답기본꼴
-// app.post("/equip", async (req, res) => {
-//   try {
-//     const { id } = req.body;
-//     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-//     const { data, error } = await supabase
-//       .from("users")
-//       .select("*")
-//       .eq("id", id)
-//       .single();
 
-//     if (error) {
-//       console.error(error);
-//       return res.status(500).json({ 오류: "DB조회 실패" });
-//     }
 
-//     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-//     const { error: updateError } = await supabase
-//       .from("users")
-//       .update({ 스탯: data.스탯 })
-//       .eq("id", id);
 
-//     if (updateError) {
-//       console.error(updateError);
-//       return res.status(500).json({ 오류: "DB저장 실패" });
-//     }
 
-//     delete data.id;
-//     res.json(data);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ 오류: "서버 오류" });
-//   }
-// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1401,7 +1606,7 @@ function 최종스탯계산(스탯) {
         합계 += Number(스탯[장비][옵션명]);
       }
     }
-    결과[옵션명] = Math.floor(합계 * 100) / 100;
+    결과[옵션명] = Math.round(합계 * 100) / 100;
   }
 
   결과.최종HP = 결과.HP + (결과.HP * 결과.HP보너스 / 100);

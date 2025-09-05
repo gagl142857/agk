@@ -1446,24 +1446,3 @@ app.listen(PORT, () => {
 
 app.use(express.static(__dirname));
 
-
-
-
-
-
-/*
-
-서버리턴은클라에서도리턴
-길드마스터한테 가입신청
-장비스킨시스템
-날개진화
-조각상 어빌리티
-던전작해야함
-길드만들기
-채팅창
-
-git add . && git commit -m "배포" && git push origin main
-
-nodemon server.js
-
-*/

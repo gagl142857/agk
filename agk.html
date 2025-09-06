@@ -1053,7 +1053,7 @@
                 const 가루 = document.createElement("div");
                 가루.style.display = "flex";
                 가루.style.width = "100%";
-                가루.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루)}`;
+                가루.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루 || 0)}`;
                 document.getElementById("메인화면컨테이너삼행3열").append(가루);
 
 
@@ -1830,6 +1830,12 @@
                     `
 
 
+25.09.06<br>
+던전 열쇠 충전수량이 2개에서 ➡ 4개로 상향되었습니다<br>
+던전몬스터의 오류를 해결하고 상세스탯을 상향했습니다<br>
+로그인 처리 실패가 해결되었습니다<br>
+<br>
+
 25.09.05<br>
 서버점검표시 구현<br>
 버전체크 자동 메테오(계정탈퇴) 구현<br>
@@ -1868,6 +1874,10 @@
  
 해야할일
 
+일반하위미정등급색상
+가루수량nan
+무기 모자 옷 기본스킨으로 변경
+스킨다이아로구매할수있게
 민원신청
 우편함에쿠폰
 결투장
@@ -1953,7 +1963,7 @@ nodemon server.js
                 첫번째몬스터속성일.style.display = "flex";
                 첫번째몬스터속성일.style.width = "100%";
                 첫번째몬스터속성일.style.boxSizing = "border-box";
-                첫번째몬스터속성일.innerHTML = `치명 ${(유저데이터.스탯.치명 * 10).toFixed(2) || "0"}%`;
+                첫번째몬스터속성일.innerHTML = `치명 ${((유저데이터.스탯.던전.지니.레벨 || 0) * 10).toFixed(2) > 100 ? 100 : ((유저데이터.스탯.던전.지니.레벨 || 0) * 10).toFixed(2)}%`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성일);
 
                 const 첫번째몬스터속성이 = document.createElement("div");
@@ -1967,7 +1977,7 @@ nodemon server.js
                 첫번째몬스터속성삼.style.display = "flex";
                 첫번째몬스터속성삼.style.width = "100%";
                 첫번째몬스터속성삼.style.boxSizing = "border-box";
-                첫번째몬스터속성삼.innerHTML = `치명저항 ${유저데이터.스탯.던전.지니.레벨 * 10 || 0}`;
+                첫번째몬스터속성삼.innerHTML = `치명저항 ${유저데이터.스탯.던전.지니.레벨 * 10 + 100 || 0}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성삼);
 
                 const 첫번째몬스터전투력 = document.createElement("div");
@@ -1976,9 +1986,9 @@ nodemon server.js
                 첫번째몬스터전투력.style.boxSizing = "border-box";
                 첫번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (10000 * 유저데이터.스탯.던전.지니.레벨) * 0.05 +
-                        (600 * 유저데이터.스탯.던전.지니.레벨) +
-                        (200 * 유저데이터.스탯.던전.지니.레벨) * 2 +
+                        (15000 * 유저데이터.스탯.던전.지니.레벨) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.지니.레벨) +
+                        (300 * 유저데이터.스탯.던전.지니.레벨) * 2 +
                         (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터전투력);
@@ -2072,9 +2082,6 @@ nodemon server.js
         민원화면설명.innerHTML =
             `
         주인장에게 민원을 신청할 수 있습니다<br>
-        오는말이 고울수록 접수속도가 빨라집니다<br>
-        민원은 최대 1개만 저장되니, 피드백 전까지는 수정을 자제하세요<br>
-        민원 내용은 주인장 재량으로 무시될 수 있습니다<br>
         피드백이 없을 시 더 강하게 호소해보세요<br>
         행운을 빕니다
         `;
@@ -2253,6 +2260,11 @@ nodemon server.js
                         진행된 턴수 ${전투결과.턴수}
                         `
                         , false);
+
+                    // const 확인 = await 팝업(
+                    //     전투결과.로그.map(l => `${l}`).join("<br>")
+                    //     , false
+                    // );
 
 
                 } catch (e) {
@@ -2526,9 +2538,10 @@ nodemon server.js
             if (e.target.matches("#회원탈퇴")) {
 
                 if (유저데이터.스탯.버전 === 3) {
-                    확인 = await 팝업("정말 탈퇴 하시겠습니까?");
+                    const 확인 = await 팝업("정말 탈퇴 하시겠습니까?");
                     if (!확인) return;
                 }
+
 
                 try {
                     화면잠금();

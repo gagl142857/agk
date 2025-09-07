@@ -47,8 +47,8 @@ app.use(async (req, res, next) => {
   //       if (!전체유저[i].스탯.던전) {
   //         전체유저[i].스탯.던전 = {};
   //       }
-  //       if (!전체유저[i].스탯.던전.지니) {
-  //         전체유저[i].스탯.던전.지니 = { 레벨: 1, 열쇠: 4 };
+  //       if (!전체유저[i].스탯.던전.로쿠규) {
+  //         전체유저[i].스탯.던전.로쿠규 = { 레벨: 1, 열쇠: 4 };
 
   //         await supabase
   //           .from("users")
@@ -58,8 +58,29 @@ app.use(async (req, res, next) => {
   //     }
   //   }
   // } catch (err) {
-  //   console.error("던전 지니 셋팅 오류:", err);
+  //   console.error("던전 로쿠규 셋팅 오류:", err);
   // }
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
+  //   if (!error && 전체유저) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       if (!전체유저[i].스탯.낙엽) {
+  //         전체유저[i].스탯.낙엽 = 0;
+  //       }
+  //       await supabase
+  //         .from("users")
+  //         .update({ 스탯: 전체유저[i].스탯 })
+  //         .eq("id", 전체유저[i].id);
+
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.error("낙엽 로쿠규 셋팅 오류:", err);
+  // }
+
 
   next();
 });
@@ -141,6 +162,7 @@ app.post("/register", async (req, res) => {
         가루: 0,
       },
       다이아: 0,
+      낙엽: 0,
       서버: 서버,
       서버점검: 0,
       최초IP: clientIP,
@@ -159,6 +181,7 @@ app.post("/register", async (req, res) => {
       주인장인가: 아이디 === "codl" ? 1 : 0,
       던전: {
         지니: { 레벨: 1, 열쇠: 4 },
+        로쿠규: { 레벨: 1, 열쇠: 4 },
       },
       민원: {
 
@@ -814,6 +837,10 @@ app.post("/receive-mail", async (req, res) => {
       data.스탯.램프.수량 += data.스탯.우편함[index].수량;
       data.스탯.우편함.splice(index, 1);
 
+    } else if (data.스탯.우편함[index].이름 === "다이아") {
+      data.스탯.다이아 += data.스탯.우편함[index].수량;
+      data.스탯.우편함.splice(index, 1);
+
     } else {
       const 잘못된이름 = data.스탯.우편함[index].이름;
       data.스탯.우편함.splice(index, 1);
@@ -1115,6 +1142,10 @@ app.post("/Geniesweep", async (req, res) => {
       return res.status(500).json({ 오류: "DB조회 실패" });
     }
 
+    if (data.스탯.던전.지니.레벨 < 2) {
+      return res.status(400).json({ 오류: "도전 성공 시 소탕 가능합니다" });
+    }
+
     if (data.스탯.던전.지니.열쇠 < 1) {
       return res.status(400).json({ 오류: "열쇠가 부족합니다" });
     }
@@ -1254,6 +1285,164 @@ app.post("/GenieDungeon", async (req, res) => {
   }
 });
 
+app.post("/Rokugyusweep", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.던전.로쿠규.레벨 < 2) {
+      return res.status(400).json({ 오류: "도전 성공 시 소탕 가능합니다" });
+    }
+
+    if (data.스탯.던전.로쿠규.열쇠 < 1) {
+      return res.status(400).json({ 오류: "열쇠가 부족합니다" });
+    }
+
+
+    data.스탯.낙엽 = data.스탯.낙엽 + data.스탯.던전.로쿠규.레벨 * 1;
+
+    data.스탯.던전.로쿠규.열쇠 -= 1;
+
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+    // res.json({ data });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/RokugyuDungeon", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.던전.로쿠규.열쇠 < 1) {
+      return res.status(400).json({ 오류: "열쇠가 부족합니다" });
+    }
+
+
+    const 로쿠규 = {
+      스탯: {
+        치명: 1 * data.스탯.던전.로쿠규.레벨,
+        치명무시: 0,
+        치명피해: 200 + 2 * data.스탯.던전.로쿠규.레벨,
+        치명저항: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        콤보: 10 * data.스탯.던전.로쿠규.레벨,
+        콤보무시: 10 * data.스탯.던전.로쿠규.레벨,
+        반격: 1 * data.스탯.던전.로쿠규.레벨,
+        반격무시: 1 * data.스탯.던전.로쿠규.레벨,
+        스턴: 1 * data.스탯.던전.로쿠규.레벨,
+        스턴무시: 1 * data.스탯.던전.로쿠규.레벨,
+        회피: 1 * data.스탯.던전.로쿠규.레벨,
+        회피무시: 1 * data.스탯.던전.로쿠규.레벨,
+        회복: 1 * data.스탯.던전.로쿠규.레벨,
+        회복무시: 1 * data.스탯.던전.로쿠규.레벨,
+        에어본: 1 * data.스탯.던전.로쿠규.레벨,
+        일반공격계수: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        일반공격피해감소: 1 * data.스탯.던전.로쿠규.레벨,
+        콤보계수: 100 + 10 * data.스탯.던전.로쿠규.레벨,
+        콤보피해감소: 10 * data.스탯.던전.로쿠규.레벨,
+        반격계수: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        반격피해감소: 0,
+        스킬치명: 0,
+        스킬치명피해: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        스킬피해: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        스킬피해감소: 0,
+        보스피해: 0,
+        보스피해감소: 0,
+        동료피해: 100 + 1 * data.스탯.던전.로쿠규.레벨,
+        동료피해감소: 0,
+        치유율: 0,
+        치유량: 0.2 + 0.002 * data.스탯.던전.로쿠규.레벨,
+        관통: 0,
+        관통무시: 0,
+        막기: 0,
+        막기무시: 0,
+        동료찬사: 0,
+        동료찬사무시: 0,
+        동료저항: 0,
+        동료저항무시: 0,
+        피해감소: 0,
+        최종HP: 15000 * data.스탯.던전.로쿠규.레벨,
+        최종공격력: 900 * data.스탯.던전.로쿠규.레벨,
+        최종방어력: 300 * data.스탯.던전.로쿠규.레벨,
+        최종공속: 1 + 0.2 * data.스탯.던전.로쿠규.레벨,
+        전투력:
+          (10000 * data.스탯.던전.로쿠규.레벨) * 0.05 +
+          (600 * data.스탯.던전.로쿠규.레벨) +
+          (200 * data.스탯.던전.로쿠규.레벨) * 2 +
+          (1 + 0.2 * data.스탯.던전.로쿠규.레벨) * 50,
+      }
+    };
+
+
+
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(data)), // 복사본
+      JSON.parse(JSON.stringify(로쿠규))  // 복사본
+    );
+
+
+    if (전투결과.결과 === "승리") {
+      data.스탯.낙엽 = data.스탯.낙엽 + data.스탯.던전.로쿠규.레벨 * 1;
+      data.스탯.던전.로쿠규.레벨 += 1;
+    }
+
+    data.스탯.던전.로쿠규.열쇠 -= 1;
+
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    // res.json(data);
+    res.json({ data, 전투결과 });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 function 전투시뮬레이션(나, 상대) {
   let 나순간최고데미지 = 0;

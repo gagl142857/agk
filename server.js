@@ -1050,6 +1050,24 @@ app.post("/change-nickname", async (req, res) => {
       return res.status(400).json({ 오류: "닉네임은 최대 7글자입니다" });
     }
 
+
+    const { data: 중복, error: 중복에러 } = await supabase
+      .from("users")
+      .select("스탯")
+      .eq("스탯->계정->>유저닉네임", 닉네임)
+      .neq("id", id)
+      .maybeSingle();
+
+    if (중복에러 && 중복에러.code !== "PGRST116") {
+      console.error(중복에러);
+      return res.status(500).json({ 오류: "중복검사 실패" });
+    }
+
+    if (중복) {
+      return res.status(400).json({ 오류: "이미 사용중인 닉네임입니다" });
+    }
+
+
     const { data, error } = await supabase
       .from("users")
       .select("*")
@@ -1080,7 +1098,6 @@ app.post("/change-nickname", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
-
 
 app.post("/Geniesweep", async (req, res) => {
   try {

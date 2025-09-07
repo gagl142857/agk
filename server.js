@@ -61,6 +61,29 @@ app.use(async (req, res, next) => {
   //   console.error("던전 로쿠규 셋팅 오류:", err);
   // }
 
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
+  //   if (!error && 전체유저) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       if (!전체유저[i].스탯.전장) {
+  //         전체유저[i].스탯.전장 = {};
+  //       }
+  //       if (!전체유저[i].스탯.전장.순위) {
+  //         전체유저[i].스탯.전장 = { 순위: 0, 티켓: 4 };
+
+  //         await supabase
+  //           .from("users")
+  //           .update({ 스탯: 전체유저[i].스탯 })
+  //           .eq("id", 전체유저[i].id);
+  //       }
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.error("전장 로쿠규 셋팅 오류:", err);
+  // }
 
   // try {
   //   const { data: 전체유저, error } = await supabase
@@ -1730,7 +1753,7 @@ app.post("/arena-challenge", async (req, res) => {
     const { data: 상대, error: 상대에러 } = await supabase
       .from("users")
       .select("*")
-      .eq("스탯->전장", data.스탯.전장?.순위 - 1) // 숫자로 저장했으니 -> 사용
+      .eq("스탯->전장->순위", data.스탯.전장?.순위 - 1) // 숫자로 저장했으니 -> 사용
       .single();
 
     if (상대에러 || !상대) {

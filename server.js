@@ -1636,11 +1636,10 @@ app.post("/join-arena", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    // ✅ 현재 전장 등록된 유저들의 전장값 중 최대값 조회
-    const { data: 전장최대값, error: 전장에러 } = await supabase
+    const { data: 전장유저, error: 전장에러 } = await supabase
       .from("users")
-      .select("스탯->>전장", { count: "exact" })
-      .not("스탯->>전장", "eq", "0");
+      .select("*")
+      .not("스탯->전장", "eq", 0);
 
     if (전장에러) {
       console.error(전장에러);
@@ -1648,13 +1647,11 @@ app.post("/join-arena", async (req, res) => {
     }
 
     let 다음전장번호 = 1;
-    if (전장최대값 && 전장최대값.length > 0) {
-      // 문자열로 들어오니까 숫자로 변환 후 최대값 계산
-      const 전장값리스트 = 전장최대값.map(u => Number(u["스탯->>전장"] || 0));
+    if (전장유저 && 전장유저.length > 0) {
+      const 전장값리스트 = 전장유저.map(u => Number(u.스탯.전장 || 0));
       const 현재최대 = Math.max(...전장값리스트);
       다음전장번호 = 현재최대 + 1;
     }
-
 
     const { data, error } = await supabase
       .from("users")
@@ -1691,7 +1688,7 @@ app.post("/arena-list", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("users")
-      .select("id, 스탯")
+      .select("*")
       .not("스탯->>전장", "eq", "0")
       .order("스탯->>전장", { ascending: true });
 

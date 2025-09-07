@@ -2457,7 +2457,7 @@ nodemon server.js
             `
         전장에 참전하려면 먼저 등록하세요<br>
         자신보다 한 순위 높은 유저에게만 도전할 수 있습니다<br>
-        
+        도전에는 티켓 1장이 소모되며, 티켓은 매일 최대 4장씩 충전됩니다<br>
         `;
         전장화면설명.style.textAlign = "center";
         전장화면설명.style.paddingBottom = "8px";
@@ -2554,6 +2554,9 @@ nodemon server.js
                         전장화면컨테이너삼행3열.style.border = "0.2px solid #747474";
                         전장화면컨테이너삼행3열.style.borderRadius = "8px";
                         전장화면컨테이너삼행3열.style.cursor = "pointer";
+
+                        전장화면컨테이너삼행4열.innerHTML = `티켓 ${유저데이터.스탯.전장.티켓}`;
+                        전장화면컨테이너삼행4열.style.boxSizing = "border-box";
 
                         전장화면컨테이너삼행3열.addEventListener("click", async () => {
                             try {

@@ -275,6 +275,12 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.지니.열쇠 < 4) {
         data.스탯.던전.지니.열쇠 = 4;
       }
+      if (data.스탯.던전.로쿠규.열쇠 < 4) {
+        data.스탯.던전.로쿠규.열쇠 = 4;
+      }
+      if (data.스탯.전장.티켓 < 4) {
+        data.스탯.전장.티켓 = 4;
+      }
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")

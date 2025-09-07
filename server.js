@@ -1689,8 +1689,8 @@ app.post("/arena-list", async (req, res) => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .not("스탯->>전장", "eq", "0")
-      .order("스탯->>전장", { ascending: true });
+      .not("스탯->전장", "eq", 0)
+      .order("스탯->전장", { ascending: true });
 
     if (error) {
       console.error(error);

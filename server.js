@@ -83,7 +83,7 @@ app.use(async (req, res, next) => {
   //   console.error("낙엽 로쿠규 셋팅 오류:", err);
   // }
 
-    
+
 
   next();
 });
@@ -1076,7 +1076,7 @@ app.post("/change-nickname", async (req, res) => {
     }
 
     if (닉네임.length > 7) {
-      return res.status(400).json({ 오류: "닉네임은 최대 7글자입니다" });
+      return res.status(400).json({ 오류: "닉네임은 최대 6글자입니다" });
     }
 
 
@@ -1631,6 +1631,81 @@ function 전투시뮬레이션(나, 상대) {
   };
 }
 
+app.post("/join-arena", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    // ✅ 현재 전장 등록된 유저들의 전장값 중 최대값 조회
+    const { data: 전장최대값, error: 전장에러 } = await supabase
+      .from("users")
+      .select("스탯->>전장", { count: "exact" })
+      .not("스탯->>전장", "eq", "0");
+
+    if (전장에러) {
+      console.error(전장에러);
+      return res.status(500).json({ 오류: "전장조회 실패" });
+    }
+
+    let 다음전장번호 = 1;
+    if (전장최대값 && 전장최대값.length > 0) {
+      // 문자열로 들어오니까 숫자로 변환 후 최대값 계산
+      const 전장값리스트 = 전장최대값.map(u => Number(u["스탯->>전장"] || 0));
+      const 현재최대 = Math.max(...전장값리스트);
+      다음전장번호 = 현재최대 + 1;
+    }
+
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    data.스탯.전장 = 다음전장번호;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/arena-list", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("id, 스탯")
+      .not("스탯->>전장", "eq", "0")
+      .order("스탯->>전장", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "전장 목록 조회 실패" });
+    }
+
+    res.json({ data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 

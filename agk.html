@@ -1957,7 +1957,7 @@
 
                 닉네임변경<br>
                 좌측상단 로그인아이디 클릭 시 닉네임 변경 가능<br>
-                한글과 영어만 가능. 최대 7자 제한<br>
+                한글과 영어만 가능. 최대 6자 제한<br>
                 <br>
 
 
@@ -2028,6 +2028,7 @@
 던전 1레벨에서 소탕이 가능하던 버그가 수정되었습니다<br>
 신규 던전몬스터 '로쿠규'가 추가되었습니다<br>
 신규 재화 '낙엽'의 사용처는 아직 미정입니다<br>
+닉네임 글자제한수가 7자에서 ➡ 6자로 너프되었습니다<br>
 <br>
 
 25.09.06<br>
@@ -2477,16 +2478,75 @@ nodemon server.js
                 모든화면숨기기();
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
-                행렬만들기(전장화면컨테이너, "전장화면컨테이너일행", 5);
-                전장화면컨테이너일행3열.innerHTML = `등록`;
-                전장화면컨테이너일행3열.style.boxSizing = "border-box";
-                전장화면컨테이너일행3열.style.border = "0.2px solid #747474";
-                전장화면컨테이너일행3열.style.borderRadius = "8px";
-                전장화면컨테이너일행3열.style.cursor = "pointer";
+
+                if (유저데이터?.스탯?.전장 === 0) {
+                    행렬만들기(전장화면컨테이너, "전장화면컨테이너일행", 5);
+                    전장화면컨테이너일행3열.innerHTML = `등록`;
+                    전장화면컨테이너일행3열.style.boxSizing = "border-box";
+                    전장화면컨테이너일행3열.style.border = "0.2px solid #747474";
+                    전장화면컨테이너일행3열.style.borderRadius = "8px";
+                    전장화면컨테이너일행3열.style.cursor = "pointer";
+
+                    전장화면컨테이너일행3열.addEventListener("click", async () => {
+                        try {
+                            화면잠금();
+                            const 응답 = await fetch("/join-arena", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: 유저데이터.id }),
+                            });
+                            const 결과 = await 응답.json();
+                            if (!응답.ok) {
+                                메시지표시(결과.오류 || "등록 실패");
+                                return;
+                            }
+                            메시지표시("전장에 등록되었습니다");
+                            유저데이터 = 결과.data;
+
+                            전장화면보여주기();
+                        } catch (err) {
+                            console.error(err);
+                            메시지표시("서버 오류");
+                        } finally {
+                            화면해제();
+                        }
+                    });
+                }
 
                 행렬만들기(전장화면컨테이너, "전장화면컨테이너이행", 4);
 
+                try {
+                    const 응답 = await fetch("/arena-list", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    const 결과 = await 응답.json();
+                    if (!응답.ok) {
+                        메시지표시(결과.오류 || "전장 조회 실패");
+                        return;
+                    }
 
+                    for (let i = 0; i < 결과.data.length; i++) {
+                        const 유저 = 결과.data[i];
+
+                        const 순위div = document.createElement("div");
+                        순위div.innerHTML = `${유저.스탯.전장}위`;
+
+                        const 전투력div = document.createElement("div");
+                        전투력div.innerHTML = `전투력 ` + 단위변환함수(유저.스탯.전투력);
+
+                        const 닉네임div = document.createElement("div");
+                        닉네임div.innerHTML = 유저.스탯.계정.유저닉네임;
+
+                        document.getElementById("전장화면컨테이너이행1열").append(순위div);
+                        document.getElementById("전장화면컨테이너이행3열").append(전투력div);
+                        document.getElementById("전장화면컨테이너이행4열").append(닉네임div);
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    메시지표시("전장 조회 오류");
+                }
 
 
             } catch (err) {
@@ -2918,7 +2978,7 @@ nodemon server.js
                         }
 
                         if (입력창.value.length > 7) {
-                            메시지표시("닉네임은 최대 7글자까지 가능합니다");
+                            메시지표시("닉네임은 최대 6글자까지 가능합니다");
                             입력창.value = 입력창.value.slice(0, 7);
                         }
                     });

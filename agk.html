@@ -2477,7 +2477,14 @@ nodemon server.js
                 모든화면숨기기();
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
-                행렬만들기(전장화면컨테이너, "전장화면컨테이너일행", 4);
+                행렬만들기(전장화면컨테이너, "전장화면컨테이너일행", 5);
+                전장화면컨테이너일행3열.innerHTML = `등록`;
+                전장화면컨테이너일행3열.style.boxSizing = "border-box";
+                전장화면컨테이너일행3열.style.border = "0.2px solid #747474";
+                전장화면컨테이너일행3열.style.borderRadius = "8px";
+                전장화면컨테이너일행3열.style.cursor = "pointer";
+
+                행렬만들기(전장화면컨테이너, "전장화면컨테이너이행", 4);
 
 
 
@@ -2539,7 +2546,7 @@ nodemon server.js
 
 
 
-        
+
 
 
 

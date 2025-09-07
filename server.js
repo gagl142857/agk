@@ -60,6 +60,8 @@ app.use(async (req, res, next) => {
   // } catch (err) {
   //   console.error("던전 로쿠규 셋팅 오류:", err);
   // }
+
+
   // try {
   //   const { data: 전체유저, error } = await supabase
   //     .from("users")
@@ -81,6 +83,7 @@ app.use(async (req, res, next) => {
   //   console.error("낙엽 로쿠규 셋팅 오류:", err);
   // }
 
+    
 
   next();
 });
@@ -176,7 +179,6 @@ app.post("/register", async (req, res) => {
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
         },
-
       ],
       주인장인가: 아이디 === "codl" ? 1 : 0,
       던전: {
@@ -186,7 +188,7 @@ app.post("/register", async (req, res) => {
       민원: {
 
       },
-
+      전장: 0,
     };
 
     const { error: dbError } = await supabase

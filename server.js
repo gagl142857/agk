@@ -1848,7 +1848,7 @@ app.post("/arena-challenge", async (req, res) => {
 
     }
 
-    res.json({ data, 전투결과 });
+    res.json({ data, 전투결과, 상대닉네임: 상대.스탯.계정.유저닉네임 });
 
   } catch (err) {
     console.error(err);

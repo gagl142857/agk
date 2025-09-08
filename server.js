@@ -1790,31 +1790,56 @@ app.post("/arena-challenge", async (req, res) => {
 
     if (전투결과.결과 === "승리") {
       data.스탯.전장.순위 -= 1;
-
       상대.스탯.전장.순위 += 1;
 
-      const { error: updateError } = await supabase
+      const 내순위 = data.스탯.전장.순위;
+      const 상대순위 = 상대.스탯.전장.순위;
+
+      const { error: 내에러 } = await supabase
         .from("users")
-        .upsert([
-          { id: data.id, 스탯: data.스탯 },
-          { id: 상대.id, 스탯: 상대.스탯 }
-        ]);
+        .update({
+          스탯: {
+            ...data.스탯,
+            전장: {
+              ...data.스탯.전장,
+              순위: 내순위,
+              티켓: data.스탯.전장.티켓
+            }
+          }
+        })
+        .eq("id", data.id);
 
-      if (updateError) {
-        console.error(updateError);
-        return res.status(500).json({ 오류: "DB저장 실패" });
-      }
-
+      const { error: 상대에러 } = await supabase
+        .from("users")
+        .update({
+          스탯: {
+            ...상대.스탯,
+            전장: {
+              ...상대.스탯.전장,
+              순위: 상대순위
+            }
+          }
+        })
+        .eq("id", 상대.id);
     } else {
       const { error: updateError } = await supabase
         .from("users")
-        .update({ 스탯: data.스탯 })
+        .update({
+          스탯: {
+            ...data.스탯,
+            전장: {
+              ...data.스탯.전장,
+              티켓: data.스탯.전장.티켓
+            }
+          }
+        })
         .eq("id", id);
 
       if (updateError) {
         console.error(updateError);
         return res.status(500).json({ 오류: "DB저장 실패" });
       }
+
     }
 
     res.json({ data, 전투결과 });

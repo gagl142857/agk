@@ -42,6 +42,34 @@ app.use(async (req, res, next) => {
   //     .from("users")
   //     .select("id, 스탯");
 
+  //   if (error) {
+  //     console.error(error);
+  //     return res.status(500).json({ 오류: "유저 조회 실패" });
+  //   }
+
+  //   전체유저.sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
+
+  //   await Promise.all(
+  //     전체유저.map((u, i) => {
+  //       u.스탯.전장 = u.스탯.전장 || {};
+  //       u.스탯.전장.순위 = i + 1;
+
+  //       return supabase
+  //         .from("users")
+  //         .update({ 스탯: u.스탯 })
+  //         .eq("id", u.id);
+  //     })
+  //   );
+
+  // } catch (err) {
+  //   console.error("", err);
+  // }
+
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
+
   //   if (!error && 전체유저) {
   //     for (let i = 0; i < 전체유저.length; i++) {
   //       if (!전체유저[i].스탯.던전) {
@@ -59,51 +87,6 @@ app.use(async (req, res, next) => {
   //   }
   // } catch (err) {
   //   console.error("던전 로쿠규 셋팅 오류:", err);
-  // }
-
-  // try {
-  //   const { data: 전체유저, error } = await supabase
-  //     .from("users")
-  //     .select("id, 스탯");
-
-  //   if (!error && 전체유저) {
-  //     for (let i = 0; i < 전체유저.length; i++) {
-  //       if (!전체유저[i].스탯.전장) {
-  //         전체유저[i].스탯.전장 = {};
-  //       }
-  //       if (!전체유저[i].스탯.전장.순위) {
-  //         전체유저[i].스탯.전장 = { 순위: 0, 티켓: 4 };
-
-  //         await supabase
-  //           .from("users")
-  //           .update({ 스탯: 전체유저[i].스탯 })
-  //           .eq("id", 전체유저[i].id);
-  //       }
-  //     }
-  //   }
-  // } catch (err) {
-  //   console.error("전장 로쿠규 셋팅 오류:", err);
-  // }
-
-  // try {
-  //   const { data: 전체유저, error } = await supabase
-  //     .from("users")
-  //     .select("id, 스탯");
-
-  //   if (!error && 전체유저) {
-  //     for (let i = 0; i < 전체유저.length; i++) {
-  //       if (!전체유저[i].스탯.낙엽) {
-  //         전체유저[i].스탯.낙엽 = 0;
-  //       }
-  //       await supabase
-  //         .from("users")
-  //         .update({ 스탯: 전체유저[i].스탯 })
-  //         .eq("id", 전체유저[i].id);
-
-  //     }
-  //   }
-  // } catch (err) {
-  //   console.error("낙엽 로쿠규 셋팅 오류:", err);
   // }
 
 
@@ -361,10 +344,17 @@ app.post("/autologin", async (req, res) => {
     //접속보상
     if (data.스탯.접속요일 !== 오늘요일) {
       data.스탯.접속요일 = 오늘요일;
-      if (data.스탯.던전.지니.열쇠 < 2) {
-        data.스탯.던전.지니.열쇠 = 2;
+      if (data.스탯.던전.지니.열쇠 < 4) {
+        data.스탯.던전.지니.열쇠 = 4;
+      }
+      if (data.스탯.던전.로쿠규.열쇠 < 4) {
+        data.스탯.던전.로쿠규.열쇠 = 4;
+      }
+      if (data.스탯.전장.티켓 < 4) {
+        data.스탯.전장.티켓 = 4;
       }
     }
+
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString()

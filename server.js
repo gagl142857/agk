@@ -1855,6 +1855,54 @@ app.post("/arena-challenge", async (req, res) => {
   }
 });
 
+app.post("/pump", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.낙엽 < 2 * (data.스탯.탈것.레벨 + 1) - 1) {
+      return res.status(400).json({ 오류: "낙엽이 부족합니다" });
+    }
+
+
+    data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
+
+    data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
+    data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
+    data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
+
+    data.스탯.탈것.레벨++;
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 

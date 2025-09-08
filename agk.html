@@ -279,7 +279,18 @@
                 기본: 장비아이콘변환(기본신발아이콘),
             },
             탈것: {
-                기본: 장비아이콘변환(기본탈것아이콘),
+                기본: 비장비아이콘변환(기본탈것아이콘),
+                D: 장비아이콘변환(D탈것아이콘),
+                C: 장비아이콘변환(C탈것아이콘),
+                B: 장비아이콘변환(B탈것아이콘),
+                A: 장비아이콘변환(A탈것아이콘),
+                S: 장비아이콘변환(S탈것아이콘),
+                SS: 장비아이콘변환(SS탈것아이콘),
+                L: 장비아이콘변환(L탈것아이콘),
+                LL: 장비아이콘변환(LL탈것아이콘),
+                U: 장비아이콘변환(U탈것아이콘),
+                UU: 장비아이콘변환(UU탈것아이콘),
+                X: 장비아이콘변환(X탈것아이콘),
             },
             날개: {
                 기본: 장비아이콘변환(기본날개아이콘),
@@ -697,6 +708,7 @@
         탈것컨테이너.style.display = "none";
         탈것컨테이너.style.padding = "8px";
         탈것컨테이너.style.gap = "8px";
+        탈것컨테이너.style.zIndex = "99";
         document.body.append(탈것컨테이너);
 
         let 자동뽑기플래그 = false;
@@ -927,10 +939,28 @@
                     });
                 }
 
-                const 탈것박스 = document.createElement("탈것박스");
+                let 탈것레벨변수 = 유저데이터.스탯.탈것.레벨;
+                let 탈것등급변수 = "기본";
+
+                if (탈것레벨변수 >= 1 && 탈것레벨변수 <= 10) 탈것등급변수 = "D";
+                if (탈것레벨변수 >= 11 && 탈것레벨변수 <= 20) 탈것등급변수 = "C";
+                if (탈것레벨변수 >= 21 && 탈것레벨변수 <= 30) 탈것등급변수 = "B";
+                if (탈것레벨변수 >= 31 && 탈것레벨변수 <= 40) 탈것등급변수 = "A";
+                if (탈것레벨변수 >= 41 && 탈것레벨변수 <= 50) 탈것등급변수 = "S";
+                if (탈것레벨변수 >= 51 && 탈것레벨변수 <= 60) 탈것등급변수 = "SS";
+                if (탈것레벨변수 >= 61 && 탈것레벨변수 <= 70) 탈것등급변수 = "L";
+                if (탈것레벨변수 >= 71 && 탈것레벨변수 <= 80) 탈것등급변수 = "LL";
+                if (탈것레벨변수 >= 81 && 탈것레벨변수 <= 90) 탈것등급변수 = "U";
+                if (탈것레벨변수 >= 91 && 탈것레벨변수 <= 100) 탈것등급변수 = "UU";
+                if (탈것레벨변수 >= 101) 탈것등급변수 = "X";
+
+
+                const 탈것박스 = document.createElement("div");
                 탈것박스.id = "탈것";
                 탈것박스.style.display = "flex";
-                탈것박스.innerHTML = 비장비아이콘변환(기본탈것아이콘);
+                탈것박스.innerHTML =
+                    장비아이콘[`탈것`]?.[탈것등급변수]
+                    || 장비아이콘[`탈것`]?.기본;
                 탈것박스.style.color = "white";
                 탈것박스.style.cursor = "pointer";
                 탈것박스.style.width = "32px";
@@ -939,77 +969,181 @@
                 탈것박스.style.marginTop = "8px";
                 탈것박스.style.borderRadius = "8px";
                 탈것박스.style.border = `0.2px solid #747474`;
-                탈것박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                탈것박스.style.background = `radial-gradient(circle, ${등급색상[탈것등급변수].좌} 40%, ${등급색상[탈것등급변수].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행3열").append(탈것박스);
-                // 탈것박스.addEventListener("click", () => {
-                //     메시지표시("탈것 클릭됨");
-                //     탈것컨테이너.style.display = "flex";
-                //     탈것컨테이너.innerHTML = "";
 
-                //     행렬만들기(탈것컨테이너, "탈것컨테이너일행", 3)
-                //     탈것컨테이너일행.style.borderBottom = `0.2px solid #747474`;
-                //     탈것컨테이너일행.style.alignItems = `flex-start`;
-                //     탈것컨테이너일행.style.padding = `8px 0px`;
-                //     탈것컨테이너일행1열.style.gap = ``;
+                const 탈것버튼 = document.getElementById("탈것");
+                const 낙엽수량 =
+                    (유저데이터.스탯.낙엽 || 0);
+                const 기존탈것뱃지 = document.getElementById("탈것알림점");
 
-                //     const 탈것장비박스 = document.createElement("div");
-                //     탈것장비박스.style.display = "flex";
-                //     탈것장비박스.innerHTML = `탈것장비`;
-                //     document.getElementById("탈것컨테이너일행1열").append(탈것장비박스);
+                if (탈것버튼 && 낙엽수량 >= (2 * (유저데이터.스탯.탈것.레벨 + 1) - 1) && !기존탈것뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "탈것알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "-3px";
+                    뱃지.style.right = "-3px";
+                    탈것버튼.style.position = "relative";
+                    탈것버튼.appendChild(뱃지);
+                } else if (기존탈것뱃지 && 낙엽수량 < (2 * (유저데이터.스탯.탈것.레벨 + 1) - 1)) {
+                    기존탈것뱃지.remove();
+                }
 
-                //     const 탈것장비아이콘변환박스 = document.createElement("div");
-                //     탈것장비아이콘변환박스.style.display = "flex";
-                //     탈것장비아이콘변환박스.style.flex = "1";
-                //     탈것장비아이콘변환박스.innerHTML =
-                //         장비아이콘[유저데이터.스탯.탈것]?.[유저데이터.스탯.탈것.등급]
-                //         || 장비아이콘[유저데이터.스탯.탈것]?.기본;
-                //     탈것장비아이콘변환박스.style.width = "32px";
-                //     탈것장비아이콘변환박스.style.height = "32px";
-                //     탈것장비아이콘변환박스.style.padding = "8px";
-                //     탈것장비아이콘변환박스.style.borderRadius = "8px";
-                //     탈것장비아이콘변환박스.style.border = `0.2px solid #747474`;
-                //     탈것장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[유저데이터.스탯.탈것.등급].좌} 40%, ${등급색상[유저데이터.스탯.탈것.등급].우} 100%)`;
-                //     document.getElementById("탈것컨테이너일행1열").append(탈것장비아이콘변환박스);
+                탈것박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
 
-                //     const 탈것등급 = document.createElement("div");
-                //     탈것등급.style.display = "flex";
-                //     탈것등급.innerHTML = `${유저데이터.스탯.탈것.등급}`;
-                //     document.getElementById("탈것컨테이너일행1열").append(탈것등급);
+                    탈것컨테이너.style.display = "flex";
+                    탈것컨테이너.innerHTML = "";
 
-                //     const 탈것레벨 = document.createElement("div");
-                //     탈것레벨.style.display = "flex";
-                //     탈것레벨.innerHTML = `Lv ${유저데이터.스탯.탈것.레벨}`;
-                //     document.getElementById("탈것컨테이너일행1열").append(탈것레벨);
+                    행렬만들기(탈것컨테이너, "탈것컨테이너일행", 3)
+                    탈것컨테이너일행.style.borderBottom = `0.2px solid #747474`;
+                    탈것컨테이너일행.style.alignItems = `flex-start`;
+                    탈것컨테이너일행.style.padding = `8px 0px`;
+                    탈것컨테이너일행1열.style.gap = ``;
 
+                    const 탈것장비박스 = document.createElement("div");
+                    탈것장비박스.style.display = "flex";
+                    탈것장비박스.innerHTML = `탈것장비`;
+                    document.getElementById("탈것컨테이너일행1열").append(탈것장비박스);
 
-                //     const 탈것HP보너스 = document.createElement("div");
-                //     탈것HP보너스.style.display = "flex";
-                //     탈것HP보너스.style.justifyContent = "space-between";
-                //     탈것HP보너스.style.width = "100%";
-                //     탈것HP보너스.style.borderBottom = `0.2px solid #747474`;
-                //     탈것HP보너스.innerHTML = `<span>HP</span><span>${유저데이터.스탯.탈것.HP보너스}</span>`;
-                //     document.getElementById("탈것컨테이너일행2열").append(탈것HP보너스);
+                    const 탈것장비아이콘변환박스 = document.createElement("div");
+                    탈것장비아이콘변환박스.style.display = "flex";
+                    탈것장비아이콘변환박스.style.flex = "1";
+                    탈것장비아이콘변환박스.innerHTML =
+                        장비아이콘[`탈것`]?.[탈것등급변수]
+                        || 장비아이콘[`탈것`]?.기본;
+                    탈것장비아이콘변환박스.style.width = "32px";
+                    탈것장비아이콘변환박스.style.height = "32px";
+                    탈것장비아이콘변환박스.style.padding = "8px";
+                    탈것장비아이콘변환박스.style.borderRadius = "8px";
+                    탈것장비아이콘변환박스.style.border = `0.2px solid #747474`;
+                    탈것장비아이콘변환박스.style.background = `radial-gradient(circle, ${등급색상[탈것등급변수].좌} 40%, ${등급색상[탈것등급변수].우} 100%)`;
+                    document.getElementById("탈것컨테이너일행1열").append(탈것장비아이콘변환박스);
 
-                //     const 탈것공격력보너스 = document.createElement("div");
-                //     탈것공격력보너스.style.display = "flex";
-                //     탈것공격력보너스.style.justifyContent = "space-between";
-                //     탈것공격력보너스.style.width = "100%";
-                //     탈것공격력보너스.style.borderBottom = `0.2px solid #747474`;
-                //     탈것공격력보너스.innerHTML = `<span>공격력</span><span>${유저데이터.스탯.탈것.공격력보너스}</span>`;
-                //     document.getElementById("탈것컨테이너일행2열").append(탈것공격력보너스);
+                    const 탈것등급 = document.createElement("div");
+                    탈것등급.style.display = "flex";
+                    탈것등급.innerHTML = `${탈것등급변수}`;
+                    document.getElementById("탈것컨테이너일행1열").append(탈것등급);
 
-                //     const 탈것방어력보너스 = document.createElement("div");
-                //     탈것방어력보너스.style.display = "flex";
-                //     탈것방어력보너스.style.justifyContent = "space-between";
-                //     탈것방어력보너스.style.width = "100%";
-                //     탈것방어력보너스.style.borderBottom = `0.2px solid #747474`;
-                //     탈것방어력보너스.innerHTML = `<span>방어력</span><span>${유저데이터.스탯.탈것.방어력보너스}</span>`;
-                //     document.getElementById("탈것컨테이너일행2열").append(탈것방어력보너스);
+                    const 탈것레벨 = document.createElement("div");
+                    탈것레벨.style.display = "flex";
+                    탈것레벨.innerHTML = `Lv ${유저데이터.스탯.탈것.레벨}`;
+                    document.getElementById("탈것컨테이너일행1열").append(탈것레벨);
 
+                    const 현재레벨 = document.createElement("div");
+                    현재레벨.style.display = "flex";
+                    현재레벨.innerHTML = `현재Lv ${유저데이터.스탯.탈것.레벨}`;
+                    document.getElementById("탈것컨테이너일행2열").append(현재레벨);
 
-                //     행렬만들기(탈것컨테이너, "탈것컨테이너버튼", 3)
+                    const 탈것HP보너스 = document.createElement("div");
+                    탈것HP보너스.style.display = "flex";
+                    탈것HP보너스.style.justifyContent = "space-between";
+                    탈것HP보너스.style.width = "100%";
+                    탈것HP보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것HP보너스.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.탈것.HP보너스}</span>`;
+                    document.getElementById("탈것컨테이너일행2열").append(탈것HP보너스);
 
-                // });
+                    const 탈것공격력보너스 = document.createElement("div");
+                    탈것공격력보너스.style.display = "flex";
+                    탈것공격력보너스.style.justifyContent = "space-between";
+                    탈것공격력보너스.style.width = "100%";
+                    탈것공격력보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것공격력보너스.innerHTML = `<span>공보너스</span><span>${유저데이터.스탯.탈것.공격력보너스}</span>`;
+                    document.getElementById("탈것컨테이너일행2열").append(탈것공격력보너스);
+
+                    const 탈것방어력보너스 = document.createElement("div");
+                    탈것방어력보너스.style.display = "flex";
+                    탈것방어력보너스.style.justifyContent = "space-between";
+                    탈것방어력보너스.style.width = "100%";
+                    탈것방어력보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것방어력보너스.innerHTML = `<span>방보너스</span><span>${유저데이터.스탯.탈것.방어력보너스}</span>`;
+                    document.getElementById("탈것컨테이너일행2열").append(탈것방어력보너스);
+
+                    const 다음레벨 = document.createElement("div");
+                    다음레벨.style.display = "flex";
+                    다음레벨.innerHTML = `다음Lv ${유저데이터.스탯.탈것.레벨 + 1}`;
+                    document.getElementById("탈것컨테이너일행3열").append(다음레벨);
+
+                    const 탈것HP다음보너스 = document.createElement("div");
+                    탈것HP다음보너스.style.display = "flex";
+                    탈것HP다음보너스.style.justifyContent = "space-between";
+                    탈것HP다음보너스.style.width = "100%";
+                    탈것HP다음보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것HP다음보너스.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.탈것.HP보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    document.getElementById("탈것컨테이너일행3열").append(탈것HP다음보너스);
+
+                    const 탈것공격력다음보너스 = document.createElement("div");
+                    탈것공격력다음보너스.style.display = "flex";
+                    탈것공격력다음보너스.style.justifyContent = "space-between";
+                    탈것공격력다음보너스.style.width = "100%";
+                    탈것공격력다음보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것공격력다음보너스.innerHTML = `<span>공보너스</span><span>${유저데이터.스탯.탈것.공격력보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    document.getElementById("탈것컨테이너일행3열").append(탈것공격력다음보너스);
+
+                    const 탈것방어력다음보너스 = document.createElement("div");
+                    탈것방어력다음보너스.style.display = "flex";
+                    탈것방어력다음보너스.style.justifyContent = "space-between";
+                    탈것방어력다음보너스.style.width = "100%";
+                    탈것방어력다음보너스.style.borderBottom = `0.2px solid #747474`;
+                    탈것방어력다음보너스.innerHTML = `<span>방보너스</span><span>${유저데이터.스탯.탈것.방어력보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    document.getElementById("탈것컨테이너일행3열").append(탈것방어력다음보너스);
+
+                    행렬만들기(탈것컨테이너, "탈것컨테이너필요낙엽", 1)
+                    탈것컨테이너필요낙엽1열.innerHTML = `필요낙엽 ${2 * (유저데이터.스탯.탈것.레벨 + 1) - 1}개`;
+
+                    행렬만들기(탈것컨테이너, "탈것컨테이너버튼", 3)
+                    탈것컨테이너버튼2열.innerHTML = `연료주입`;
+                    탈것컨테이너버튼2열.style.padding = "3px 8px";
+                    탈것컨테이너버튼2열.style.borderRadius = "8px";
+                    탈것컨테이너버튼2열.style.border = `0.2px solid #747474`;
+                    탈것컨테이너버튼2열.style.cursor = "pointer";
+
+                    탈것컨테이너버튼2열.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+
+                        try {
+                            화면잠금();
+
+                            if (유저데이터.스탯.낙엽 < 2 * (유저데이터.스탯.탈것.레벨 + 1) - 1) {
+                                메시지표시(`낙엽이 부족합니다`);
+                                return;
+                            }
+
+                            const 응답 = await fetch("/pump", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+
+                            메시지표시(`탈것 레벨업!`);
+
+                            메인화면보여주기();
+                            탈것박스.click();
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+
+                    });
+                });
 
 
                 const 날개박스 = document.createElement("날개박스");
@@ -2148,6 +2282,9 @@
 새로운 기기에서 로그인 시 자동로그인이 활성화됩니다<br>
 구현된 재화 수량이 메인화면 최상단에 표시됩니다<br>
 앞으로 구현되는 재화들도 순서대로 추가할 예정입니다<br>
+신규장비, 탈것이 구현되었습니다<br>
+로쿠규로부터 획득한 재화, 낙엽을 이용해서 탈것에 연료를 주입해<br>
+탈것을 레벨업시킬 수 있습니다<br>
 <br>
 
 25.09.07<br>
@@ -2522,7 +2659,6 @@ nodemon server.js
         민원화면설명.innerHTML =
             `
         주인장에게 민원을 신청할 수 있습니다<br>
-        흥분하지 마시고 차분하게 신청해주시면 감사하겠습니다<br>
         행운을 빕니다
         `;
         민원화면설명.style.textAlign = "center";
@@ -2873,7 +3009,6 @@ nodemon server.js
                         return;
                     }
                     화면잠금();
-                    던전화면보여주기();
                     const 응답 = await fetch("/Geniesweep", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -2933,7 +3068,6 @@ nodemon server.js
                         return;
                     }
                     화면잠금();
-                    던전화면보여주기();
                     const 응답 = await fetch("/GenieDungeon", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -3009,7 +3143,6 @@ nodemon server.js
                         return;
                     }
                     화면잠금();
-                    던전화면보여주기();
                     const 응답 = await fetch("/Rokugyusweep", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -3069,7 +3202,6 @@ nodemon server.js
                         return;
                     }
                     화면잠금();
-                    던전화면보여주기();
                     const 응답 = await fetch("/RokugyuDungeon", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },

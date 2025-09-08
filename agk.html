@@ -2283,6 +2283,7 @@
 신규장비, 탈것이 구현되었습니다<br>
 로쿠규로부터 획득한 재화, 낙엽을 이용해서 탈것에 연료를 주입해<br>
 탈것을 레벨업시킬 수 있습니다<br>
+이제 램프와 다이아의 방치보상이 우편함으로 지급됩니다<br>
 <br>
 
 25.09.07<br>
@@ -3693,7 +3694,7 @@ nodemon server.js
                 }
 
                 화면잠금();
-                const 응답 = await fetch("/autologin", {
+                const 응답 = await fetch("/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 기기ID })

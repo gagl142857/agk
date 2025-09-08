@@ -224,57 +224,47 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// 로그인하기
 app.post("/login", async (req, res) => {
   try {
     const { 아이디, 비밀번호, 기기ID } = req.body;
-    if (!아이디 || !비밀번호) {
-      return res.status(400).json({ 오류: "아이디와 비밀번호가 필요합니다" });
+    let data;
+
+    if (아이디 && 비밀번호) {
+      const email = `${아이디}@agk.com`;
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({ email, password: 비밀번호 });
+      if (authError || !authData.user) {
+        return res.status(400).json({ 오류: "아이디 또는 비밀번호가 올바르지 않습니다" });
+      }
+      const { data: userData, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authData.user.id)
+        .single();
+      if (error || !userData) return res.status(404).json({ 오류: "유저 데이터 없음" });
+      data = userData;
+    } else if (기기ID) {
+      const { data: userData, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("스탯->>기기ID", 기기ID)
+        .single();
+      if (error || !userData) return res.status(404).json({ 오류: "agk에 찾아와주셔서 감사합니다" });
+      data = userData;
+    } else {
+      return res.status(400).json({ 오류: "아이디/비밀번호 또는 기기ID 필요" });
     }
 
-    const email = `${아이디}@agk.com`;
-
-    const { data: authData, error: authError } =
-      await supabase.auth.signInWithPassword({ email, password: 비밀번호 });
-
-    if (authError || !authData.user) {
-      return res.status(400).json({ 오류: "아이디 또는 비밀번호가 올바르지 않습니다" });
-    }
-
-    const id = authData.user.id;
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !data) {
-      return res.status(404).json({ 오류: "data 정보를 찾을 수 없습니다" });
-    }
-
-    const 오늘요일 = new Date().toLocaleDateString("ko-KR", {
-      weekday: "long",
-      timeZone: "Asia/Seoul"
-    });
-    //접속보상
+    const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
     if (data.스탯.접속요일 !== 오늘요일) {
       data.스탯.접속요일 = 오늘요일;
-      if (data.스탯.던전.지니.열쇠 < 4) {
-        data.스탯.던전.지니.열쇠 = 4;
-      }
-      if (data.스탯.던전.로쿠규.열쇠 < 4) {
-        data.스탯.던전.로쿠규.열쇠 = 4;
-      }
-      if (data.스탯.전장.티켓 < 4) {
-        data.스탯.전장.티켓 = 4;
-      }
+      if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
+      if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
+      if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
-      .toString()
-      .split(",")[0]
-      .trim();
+      .toString().split(",")[0].trim();
 
     const now = new Date();
     const 현재접속 = Math.floor(now.getTime() / 3600000);
@@ -286,123 +276,48 @@ app.post("/login", async (req, res) => {
       data.스탯.접속시각 = 현재접속;
     }
 
-    if (기기ID) {
-      data.스탯.기기ID = 기기ID;
+    if (시간차 > 0) {
+      const 램프보상 = {
+        이름: "램프",
+        수량: 시간차 * (data.스탯.램프.레벨 * 20),
+        시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+        메모: `${시간차}시간 방치보상`,
+      };
+
+      const 다이아보상 = {
+        이름: "다이아",
+        수량: 시간차 * ((data.스탯.계정.레벨 || 0) * 10),
+        시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+        메모: `${시간차}시간 방치보상`,
+      };
+
+      if (!data.스탯.우편함) data.스탯.우편함 = [];
+      data.스탯.우편함.unshift(램프보상);
+      data.스탯.우편함.unshift(다이아보상);
+
+      data.스탯.접속시각 = 현재접속;
     }
 
+
+    if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
 
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯 })
-      .eq("id", data.id);
+    const { error: updateError } = await supabase.from("users").update({ 스탯 }).eq("id", data.id);
+    if (updateError) return res.status(500).json({ 오류: "DB저장 실패" });
 
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    await supabase
-      .from("로그기록")
-      .insert({
-        스탯: data.스탯,
-        유저아이디: data.스탯.계정.유저아이디,
-        유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`,
-      });
+    await supabase.from("로그기록").insert({
+      스탯: data.스탯,
+      유저아이디: data.스탯.계정.유저아이디,
+      유저닉네임: data.스탯.계정.유저닉네임,
+      내용: (아이디 && 비밀번호) ? `로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}` : `자동로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`
+    });
 
     res.json(data);
-
-
   } catch (err) {
     console.error("로그인 오류:", err);
     res.status(500).json({ 오류: "로그인 처리 실패" });
-  }
-});
-
-app.post("/autologin", async (req, res) => {
-  try {
-    const { 기기ID } = req.body;
-    if (!기기ID) return res.status(400).json({ 오류: "기기ID 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("스탯->>기기ID", 기기ID) // JSON 컬럼 안의 기기ID 비교
-      .single();
-
-    if (error || !data) {
-      return res.status(404).json({ 오류: "agk에 찾아와주셔서 감사합니다" });
-    }
-
-    const 오늘요일 = new Date().toLocaleDateString("ko-KR", {
-      weekday: "long",
-      timeZone: "Asia/Seoul"
-    });
-    //접속보상
-    if (data.스탯.접속요일 !== 오늘요일) {
-      data.스탯.접속요일 = 오늘요일;
-      if (data.스탯.던전.지니.열쇠 < 4) {
-        data.스탯.던전.지니.열쇠 = 4;
-      }
-      if (data.스탯.던전.로쿠규.열쇠 < 4) {
-        data.스탯.던전.로쿠규.열쇠 = 4;
-      }
-      if (data.스탯.전장.티켓 < 4) {
-        data.스탯.전장.티켓 = 4;
-      }
-    }
-
-
-    const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
-      .toString()
-      .split(",")[0]
-      .trim();
-
-    const now = new Date();
-    const 현재접속 = Math.floor(now.getTime() / 3600000);
-    const 이전접속 = data.스탯?.접속시각 || 현재접속;
-    const 시간차 = Math.min(현재접속 - 이전접속, 24);
-    if (시간차 > 0) {
-      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
-      data.스탯.다이아 = (data.스탯.다이아 || 0) + 시간차 * ((data.스탯.계정.레벨 || 0) * 10);
-      data.스탯.접속시각 = 현재접속;
-    }
-
-    if (기기ID) {
-      data.스탯.기기ID = 기기ID;
-    }
-
-    data.스탯.접속IP = clientIP;
-    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    const 스탯 = data.스탯;
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯 })
-      .eq("id", data.id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    await supabase
-      .from("로그기록")
-      .insert({
-        스탯: data.스탯,
-        유저아이디: data.스탯.계정.유저아이디,
-        유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `자동로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`,
-      });
-
-    res.json(data);
-
-  } catch (err) {
-    console.error("자동로그인 오류:", err);
-    res.status(500).json({ 오류: "서버 오류" });
   }
 });
 

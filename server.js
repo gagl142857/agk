@@ -303,7 +303,9 @@ app.post("/login", async (req, res) => {
       data.스탯.접속시각 = 현재접속;
     }
 
-    data.스탯.기기ID = 기기ID;
+    if (기기ID) {
+      data.스탯.기기ID = 기기ID;
+    }
 
     data.스탯.접속IP = clientIP;
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -379,8 +381,7 @@ app.post("/autologin", async (req, res) => {
       data.스탯.접속시각 = 현재접속;
     }
 
-    // 로그인 직후 스탯 업데이트 전에 추가
-    if (!data.스탯.기기ID && 기기ID) {
+    if (기기ID) {
       data.스탯.기기ID = 기기ID;
     }
 

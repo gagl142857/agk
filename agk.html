@@ -3059,9 +3059,9 @@ nodemon server.js
                     입력창.focus();
 
                     입력창.addEventListener("input", () => {
-                        if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/.test(입력창.value)) {
+                        if (/[^가-힣a-zA-Z]/.test(입력창.value)) {
                             메시지표시("한글과 영어만 가능합니다");
-                            입력창.value = 입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/g, "");
+                            입력창.value = 입력창.value.replace(/[^가-힣a-zA-Z]/g, "");
                         }
 
                         if (입력창.value.length > 7) {

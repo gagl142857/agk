@@ -2023,6 +2023,12 @@
                     `
 
 
+25.09.08<br>
+전장이 구현되었습니다. 강함을 증명해보세요<br>
+전장 1위가 아님에도 대전상대를 찾을 수 없는 버그가<br>
+수정되었습니다. 이제 대전상대가 나올때까지 상대를 검색합니다<br>
+<br>
+
 25.09.07<br>
 이제 닉네임이 중복되지 않습니다<br>
 던전에서 사용가능한 열쇠가 남아있을 시<br>
@@ -2077,6 +2083,11 @@
  
 해야할일
 
+자동로그인기기자동변환
+낙엽으로탈것레벨업 탈것 1렙에 낙엽1개씩증가 탈것 10렙마다등급업
+락골렘 보상 스톤 사용처 조각상 어빌리티
+가루로 장비3종 스킨
+전장화면 한행에표시
 무기 옷 모자 등급별 정리
 결투장 구현
 신규유저 결투장열쇠 셋팅
@@ -2086,7 +2097,6 @@
 스킨다이아로구매할수있게
 민원신청
 우편함에쿠폰
-결투장
 길드마스터한테 가입신청
 장비스킨시스템
 날개진화
@@ -2456,7 +2466,7 @@ nodemon server.js
         전장화면설명.innerHTML =
             `
         전장에 참전하려면 먼저 등록하세요<br>
-        자신보다 한 순위 높은 유저에게만 도전할 수 있습니다<br>
+        자신보다 한단계 위의 유저에게만 도전할 수 있습니다<br>
         도전에는 티켓 1장이 소모되며, 티켓은 매일 최대 4장씩 충전됩니다<br>
         `;
         전장화면설명.style.textAlign = "center";
@@ -2464,6 +2474,7 @@ nodemon server.js
         전장화면.append(전장화면설명);
 
         const 전장화면컨테이너 = document.createElement("div");
+        전장화면컨테이너.id = "전장화면컨테이너";
         전장화면컨테이너.style.boxSizing = "border-box";
         전장화면컨테이너.style.border = "0.2px solid #747474";
         전장화면컨테이너.style.borderRadius = "8px";
@@ -2531,8 +2542,21 @@ nodemon server.js
                     for (let i = 0; i < 결과.data.length; i++) {
                         const 유저 = 결과.data[i];
 
+                        const 한줄div = document.createElement("div");
+                        한줄div.style.display = "flex";
+                        한줄div.style.justifyContent = "space-between";
+                        한줄div.style.alignItems = "center";
+                        한줄div.style.padding = "4px 8px";
+                        한줄div.style.borderBottom = "0.2px solid #747474";
+                        if (유저.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임) {
+                            한줄div.style.backgroundColor = "#e0e0e0";
+                        }
                         const 순위div = document.createElement("div");
                         순위div.innerHTML = `${유저.스탯.전장.순위}위`;
+
+                        const 우측div = document.createElement("div");
+                        우측div.style.display = "flex";
+                        우측div.style.gap = "12px";
 
                         const 전투력div = document.createElement("div");
                         전투력div.innerHTML = `전투력 ` + 단위변환함수(유저.스탯.전투력);
@@ -2540,10 +2564,12 @@ nodemon server.js
                         const 닉네임div = document.createElement("div");
                         닉네임div.innerHTML = 유저.스탯.계정.유저닉네임;
 
-                        document.getElementById("전장화면컨테이너이행1열").append(순위div);
-                        document.getElementById("전장화면컨테이너이행3열").append(전투력div);
-                        document.getElementById("전장화면컨테이너이행4열").append(닉네임div);
+                        우측div.append(전투력div, 닉네임div);
+                        한줄div.append(순위div, 우측div);
+
+                        document.getElementById("전장화면컨테이너").append(한줄div);
                     }
+
 
 
                     if (유저데이터?.스탯?.전장?.순위 !== 0) {

@@ -1756,14 +1756,25 @@ app.post("/arena-challenge", async (req, res) => {
       return res.status(400).json({ 오류: "도전할 상대가 없습니다" });
     }
 
-    const { data: 상대, error: 상대에러 } = await supabase
-      .from("users")
-      .select("*")
-      .eq("스탯->전장->순위", data.스탯.전장?.순위 - 1) // 숫자로 저장했으니 -> 사용
-      .single();
+    let 목표순위 = data.스탯.전장.순위 - 1;
+    let 상대 = null;
 
-    if (상대에러 || !상대) {
-      console.error(상대에러);
+    // 상대 나올 때까지 위 순위 계속 검색
+    while (목표순위 >= 1 && !상대) {
+      const { data: 후보 } = await supabase
+        .from("users")
+        .select("*")
+        .eq("스탯->전장->순위", 목표순위)
+        .single();
+
+      if (후보) {
+        상대 = 후보;
+        break;
+      }
+      목표순위 -= 1;
+    }
+
+    if (!상대) {
       return res.status(404).json({ 오류: "상대 유저를 찾을 수 없습니다" });
     }
 

@@ -189,6 +189,7 @@ app.post("/register", async (req, res) => {
       던전: {
         지니: { 레벨: 1, 열쇠: 4 },
         로쿠규: { 레벨: 1, 열쇠: 4 },
+        락골렘: { 레벨: 1, 열쇠: 4 },
       },
       민원: {
 
@@ -270,23 +271,18 @@ app.post("/login", async (req, res) => {
     const 현재접속 = Math.floor(now.getTime() / 3600000);
     const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
-    if (시간차 > 0) {
-      data.스탯.램프.수량 = (data.스탯.램프.수량 || 0) + 시간차 * (data.스탯.램프.레벨 * 20);
-      data.스탯.다이아 = (data.스탯.다이아 || 0) + 시간차 * ((data.스탯.계정.레벨 || 0) * 10);
-      data.스탯.접속시각 = 현재접속;
-    }
 
     if (시간차 > 0) {
       const 램프보상 = {
         이름: "램프",
-        수량: 시간차 * (data.스탯.램프.레벨 * 20),
+        수량: 시간차 * 40,
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
         메모: `${시간차}시간 방치보상`,
       };
 
       const 다이아보상 = {
         이름: "다이아",
-        수량: 시간차 * ((data.스탯.계정.레벨 || 0) * 10),
+        수량: 시간차 * 40,
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
         메모: `${시간차}시간 방치보상`,
       };
@@ -298,6 +294,10 @@ app.post("/login", async (req, res) => {
       data.스탯.접속시각 = 현재접속;
     }
 
+    //기존유저
+    if (!data.스탯.던전.락골렘) {
+      data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
+    }
 
     if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;

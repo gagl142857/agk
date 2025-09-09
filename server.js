@@ -1206,6 +1206,9 @@ app.post("/GenieDungeon", async (req, res) => {
     if (data.스탯.던전.지니.열쇠 < 1) {
       return res.status(400).json({ 오류: "열쇠가 부족합니다" });
     }
+    if (data.스탯.던전.지니.레벨 >= 20) {
+      return res.status(400).json({ 오류: "지니의 최대Lv은 20입니다" });
+    }
 
 
     const 지니 = {
@@ -1366,6 +1369,9 @@ app.post("/RokugyuDungeon", async (req, res) => {
       return res.status(400).json({ 오류: "열쇠가 부족합니다" });
     }
 
+    if (data.스탯.던전.로쿠규.레벨 >= 20) {
+      return res.status(400).json({ 오류: "로쿠규의 최대Lv은 20입니다" });
+    }
 
     const 로쿠규 = {
       스탯: {
@@ -1525,7 +1531,9 @@ app.post("/RockgolemDungeon", async (req, res) => {
       return res.status(400).json({ 오류: "열쇠가 부족합니다" });
     }
 
-
+    if (data.스탯.던전.락골렘.레벨 >= 20) {
+      return res.status(400).json({ 오류: "락골렘의 최대Lv은 20입니다" });
+    }
     const 락골렘 = {
       스탯: {
         치명: 1 * data.스탯.던전.락골렘.레벨,

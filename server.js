@@ -262,6 +262,17 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
       if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
+
+      const 전장보상 = {
+        이름: "다이아",
+        수량: Math.Max(500, 3100 - data.스탯.전장.순위 * 100),
+        시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+        메모: `전장 ${data.스탯.전장.순위}위 보상`,
+      };
+
+      if (!data.스탯.우편함) data.스탯.우편함 = [];
+      data.스탯.우편함.unshift(전장보상);
+
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
@@ -1152,7 +1163,7 @@ app.post("/Geniesweep", async (req, res) => {
     }
 
 
-    data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 20;
+    data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 10;
 
     data.스탯.던전.지니.열쇠 -= 1;
 
@@ -1260,7 +1271,7 @@ app.post("/GenieDungeon", async (req, res) => {
 
 
     if (전투결과.결과 === "승리") {
-      data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 20;
+      data.스탯.램프.수량 = data.스탯.램프.수량 + data.스탯.던전.지니.레벨 * 10;
       data.스탯.던전.지니.레벨 += 1;
     }
 

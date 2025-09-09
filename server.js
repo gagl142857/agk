@@ -759,6 +759,61 @@ app.post("/mailbox", async (req, res) => {
   }
 });
 
+app.post("/receive-all-mail", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (!data.스탯.우편함 || data.스탯.우편함.length === 0) {
+      return res.status(400).json({ 오류: "받을 우편 없음" });
+    }
+
+    for (let i = data.스탯.우편함.length - 1; i >= 0; i--) {
+      const mail = data.스탯.우편함[i];
+      if (mail.이름 === "램프") {
+        data.스탯.램프.수량 += mail.수량;
+      } else if (mail.이름 === "다이아") {
+        data.스탯.다이아 += mail.수량;
+      } else {
+        await supabase.from("로그기록").insert({
+          스탯: data.스탯,
+          유저아이디: data.스탯.계정.유저아이디,
+          유저닉네임: data.스탯.계정.유저닉네임,
+          내용: `잘못된 우편 삭제(${mail.이름})`,
+        });
+      }
+      data.스탯.우편함.splice(i, 1);
+    }
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/receive-mail", async (req, res) => {
   try {
     const { id, index } = req.body;

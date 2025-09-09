@@ -2051,6 +2051,15 @@
                     안내.style.marginBottom = "8px";
                     우편함화면컨테이너.appendChild(안내);
                 } else {
+                    행렬만들기(우편함화면컨테이너, "모두받기컨테이너", 3);
+                    모두받기컨테이너2열.innerHTML = `모두받기`;
+                    모두받기컨테이너2열.style.marginTop = "8px";
+                    모두받기컨테이너2열.style.padding = "3px 8px";
+                    모두받기컨테이너2열.style.boxSizing = "border-box";
+                    모두받기컨테이너2열.style.border = "0.2px solid #747474";
+                    모두받기컨테이너2열.style.borderRadius = "8px";
+                    모두받기컨테이너2열.style.cursor = "pointer";
+
                     for (let i = 0; i < 유저데이터.스탯.우편함.length; i++) {
                         const 박스 = document.createElement("div");
                         박스.style.display = "flex";
@@ -2145,6 +2154,55 @@
                         });
 
                     }
+
+                    모두받기컨테이너2열.addEventListener("click", async () => {
+                        try {
+                            화면잠금();
+                            const 응답 = await fetch("/receive-all-mail", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: 유저데이터.id })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+                            메시지표시("모든 우편을 수령했습니다");
+                            우편함화면보여주기();
+
+                            const 설정버튼 = document.getElementById("설정");
+                            const 우편함 = 유저데이터?.스탯.우편함 || [];
+                            const 기존뱃지 = document.getElementById("설정알림점");
+
+                            if (설정버튼 && 우편함.length > 0 && !기존뱃지) {
+                                const 뱃지 = document.createElement("div");
+                                뱃지.id = "설정알림점";
+                                뱃지.style.position = "absolute";
+                                뱃지.style.width = "7px";
+                                뱃지.style.height = "7px";
+                                뱃지.style.backgroundColor = "red";
+                                뱃지.style.borderRadius = "50%";
+                                뱃지.style.top = "0px";
+                                뱃지.style.right = "-6px";
+                                설정버튼.style.position = "relative";
+                                설정버튼.appendChild(뱃지);
+                            } else if (기존뱃지 && 우편함.length === 0) {
+                                기존뱃지.remove();
+                            }
+
+                        } catch (e) {
+                            메시지표시("서버 통신 오류");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
                 }
 
 
@@ -2202,6 +2260,12 @@
 
 
                 agk사전화면컨테이너.innerHTML = `
+                새로고침을 생활화하세요<br>
+                서버 특성상 배포가 완료되어도 새로고침을 하지 않으면<br>
+                업데이트가 적용되지않는 경우가 있습니다<br>
+                접속할때마다 한번씩은 새로고침 하시는걸 추천드립니다<br>
+                <br>
+
                 전투력<br>
                 최종HP×0.05 + 최종공격력 + 최종방어력×2 + 최종공속×50<br>
                 <br>
@@ -2302,6 +2366,7 @@
 락골렘의 보상재화 '스톤'의 사용처는 메인화면의 가고일 조각상에<br>
 사용될 예정입니다<br>
 조각상 시스템은 어빌리티로 구상중입니다<br>
+우편함에 '모두받기' 버튼이 구현되었습니다<br>
 <br>
 
 25.09.08<br>
@@ -2370,8 +2435,6 @@
  
 해야할일
 
-락골렘 던전구현해야함
-락골렘 보상 스톤 사용처 조각상 어빌리티
 가루로 장비3종 스킨
 민원신청
 우편함에쿠폰

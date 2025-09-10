@@ -50,6 +50,8 @@
             "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "동료콤보", "동료치명",
         ];
 
+        const 등급순서 = ["D", "C", "B", "A", "S", "SS", "L", "LL", "U", "UU", "X"];
+
         const 등급색상 = {
             기본: { 좌: "#e0e0e0", 우: "##ffffff" },
             D: { 좌: "#75706A", 우: "#999387" },
@@ -1259,6 +1261,27 @@
                 조각상박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행5열").append(조각상박스);
 
+                const 조각상버튼 = document.getElementById("조각상");
+                const 가루수량 =
+                    (유저데이터.스탯.램프.가루 || 0);
+                const 기존조각상뱃지 = document.getElementById("조각상알림점");
+
+                if (조각상버튼 && 가루수량 >= (1000) && !기존조각상뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "조각상알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "-3px";
+                    뱃지.style.right = "-3px";
+                    조각상버튼.style.position = "relative";
+                    조각상버튼.appendChild(뱃지);
+                } else if (기존조각상뱃지 && 가루수량 < (1000)) {
+                    기존조각상뱃지.remove();
+                }
+
                 조각상박스.addEventListener("click", (e) => {
                     e.stopPropagation();
 
@@ -1281,7 +1304,8 @@
                         `
                     한 줄 씩 원하는 옵션을 파밍하세요<br>
                     원하는 옵션이 등장했다면 강화하세요<br>
-                    옵션 변경 시 강화수치가 초기화됩니다<br>
+                    옵션 리롤 시 강화수치가 초기화됩니다<br>
+                    등장하는 리롤목록은 agk사전을 참고하세요<br>
                     `;
                     document.getElementById("조각상컨테이너일행1열").append(조각상장비박스);
 
@@ -1313,14 +1337,14 @@
                     const 조각상일번스탯옵션 = document.createElement("div");
                     조각상일번스탯옵션.style.display = "flex";
                     조각상일번스탯옵션.style.width = "100%";
-                    const 옵션키 = Object.keys(유저데이터.스탯.조각상1).find(k => k !== "등급");
-                    조각상일번스탯옵션.innerHTML = 옵션키 || "옵션";
+                    const 조각상1번옵션 = Object.keys(유저데이터.스탯.조각상1).find(k => k !== "등급");
+                    조각상일번스탯옵션.innerHTML = 조각상1번옵션 || "옵션";
                     document.getElementById("조각상컨테이너일번스탯2열").append(조각상일번스탯옵션);
 
                     const 조각상일번스탯값 = document.createElement("div");
                     조각상일번스탯값.style.display = "flex";
                     조각상일번스탯값.style.width = "100%";
-                    조각상일번스탯값.innerHTML = `+${유저데이터.스탯.조각상1[옵션키]}%` || "+0%";
+                    조각상일번스탯값.innerHTML = `+${유저데이터.스탯.조각상1[조각상1번옵션] || 0}%`;
                     document.getElementById("조각상컨테이너일번스탯3열").append(조각상일번스탯값);
 
                     const 조각상일번스탯리롤 = document.createElement("div");
@@ -1360,6 +1384,11 @@
                         e.stopPropagation();
                         try {
 
+                            if (유저데이터.스탯.램프.가루 < 1000) {
+                                메시지표시(`가루가 부족합니다`);
+                                return;
+                            }
+
                             화면잠금();
                             const 응답 = await fetch("/reroll1", {
                                 method: "POST",
@@ -1391,6 +1420,27 @@
                     조각상일번스탯강화.addEventListener("click", async (e) => {
                         e.stopPropagation();
                         try {
+                            if (!Object.keys(유저데이터.스탯.조각상1 || {}).find(k => k !== "등급")) {
+                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                                return;
+                            }
+
+                            const 현재등급 = 유저데이터.스탯.조각상1.등급 || "기본";
+                            let 현재인덱스 = -1;
+
+                            if (현재등급 !== "기본") {
+                                현재인덱스 = 등급순서.indexOf(현재등급);
+                            }
+
+                            const 필요가루 = 현재등급 === "기본"
+                                ? 2000
+                                : (현재인덱스 + 3) * 1000;
+
+                            if ((유저데이터.스탯.램프.가루 || 0) < 필요가루) {
+                                메시지표시(`가루가 부족합니다 (필요: ${필요가루})`);
+                                return;
+                            }
+
                             화면잠금();
                             const 응답 = await fetch("/Enhance1", {
                                 method: "POST",
@@ -1425,6 +1475,164 @@
                     });
 
                     //수정중
+                    행렬만들기(조각상컨테이너, "조각상컨테이너이번스탯", 6);
+                    조각상컨테이너이번스탯.style.padding = "3px 8px";
+                    조각상컨테이너이번스탯.style.borderRadius = "8px";
+                    조각상컨테이너이번스탯.style.border = `0.2px solid #747474`;
+                    조각상컨테이너이번스탯.style.boxSizing = "border-box";
+                    // document.getElementById("조각상컨테이너이번스탯2열").style.borderLeft = `0.2px solid #747474`;
+                    document.getElementById("조각상컨테이너이번스탯1열").style.flex = "1";   // 10%
+                    document.getElementById("조각상컨테이너이번스탯2열").style.flex = "3";   // 50%
+                    document.getElementById("조각상컨테이너이번스탯3열").style.flex = "1.5";   // 20%
+                    document.getElementById("조각상컨테이너이번스탯4열").style.flex = "1.2";   // 20%
+                    document.getElementById("조각상컨테이너이번스탯5열").style.flex = "1.2";   // 20%
+                    document.getElementById("조각상컨테이너이번스탯6열").style.flex = "1.2";   // 20%
+
+                    const 조각상이번스탯등급 = document.createElement("div");
+                    조각상이번스탯등급.style.display = "flex";
+                    조각상이번스탯등급.innerHTML = 유저데이터.스탯.조각상2.등급 || "등급";
+                    document.getElementById("조각상컨테이너이번스탯1열").append(조각상이번스탯등급);
+
+                    const 조각상이번스탯옵션 = document.createElement("div");
+                    조각상이번스탯옵션.style.display = "flex";
+                    조각상이번스탯옵션.style.width = "100%";
+                    const 조각상2번옵션 = Object.keys(유저데이터.스탯.조각상2).find(k => k !== "등급");
+                    조각상이번스탯옵션.innerHTML = 조각상2번옵션 || "옵션";
+                    document.getElementById("조각상컨테이너이번스탯2열").append(조각상이번스탯옵션);
+
+                    const 조각상이번스탯값 = document.createElement("div");
+                    조각상이번스탯값.style.display = "flex";
+                    조각상이번스탯값.style.width = "100%";
+                    조각상이번스탯값.innerHTML = `+${유저데이터.스탯.조각상2[조각상2번옵션] || 0}%`;
+                    document.getElementById("조각상컨테이너이번스탯3열").append(조각상이번스탯값);
+
+                    const 조각상이번스탯리롤 = document.createElement("div");
+                    조각상이번스탯리롤.style.display = "flex";
+                    조각상이번스탯리롤.style.width = "100%";
+                    조각상이번스탯리롤.innerHTML = `리롤`;
+                    조각상이번스탯리롤.style.cursor = "pointer";
+                    조각상이번스탯리롤.style.borderRadius = "8px";
+                    조각상이번스탯리롤.style.border = `0.2px solid #747474`;
+                    조각상이번스탯리롤.style.boxSizing = "border-box";
+                    조각상이번스탯리롤.style.justifyContent = "center";
+                    document.getElementById("조각상컨테이너이번스탯4열").append(조각상이번스탯리롤);
+
+                    const 조각상이번스탯강화 = document.createElement("div");
+                    조각상이번스탯강화.style.display = "flex";
+                    조각상이번스탯강화.style.width = "100%";
+                    조각상이번스탯강화.innerHTML = `강화`;
+                    조각상이번스탯강화.style.cursor = "pointer";
+                    조각상이번스탯강화.style.borderRadius = "8px";
+                    조각상이번스탯강화.style.border = `0.2px solid #747474`;
+                    조각상이번스탯강화.style.boxSizing = "border-box";
+                    조각상이번스탯강화.style.justifyContent = "center";
+                    document.getElementById("조각상컨테이너이번스탯5열").append(조각상이번스탯강화);
+
+                    const 조각상이번스탯자동 = document.createElement("div");
+                    조각상이번스탯자동.style.display = "flex";
+                    조각상이번스탯자동.style.width = "100%";
+                    조각상이번스탯자동.innerHTML = `자동`;
+                    조각상이번스탯자동.style.cursor = "pointer";
+                    조각상이번스탯자동.style.borderRadius = "8px";
+                    조각상이번스탯자동.style.border = `0.2px solid #747474`;
+                    조각상이번스탯자동.style.boxSizing = "border-box";
+                    조각상이번스탯자동.style.justifyContent = "center";
+                    document.getElementById("조각상컨테이너이번스탯6열").append(조각상이번스탯자동);
+
+                    조각상이번스탯리롤.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+
+                            if (유저데이터.스탯.램프.가루 < 1000) {
+                                메시지표시(`가루가 부족합니다`);
+                                return;
+                            }
+
+                            화면잠금();
+                            const 응답 = await fetch("/reroll2", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+                            메인화면보여주기();
+                            document.querySelector("#조각상")?.click();
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
+                    조각상이번스탯강화.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (!Object.keys(유저데이터.스탯.조각상2 || {}).find(k => k !== "등급")) {
+                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                                return;
+                            }
+
+                            const 현재등급 = 유저데이터.스탯.조각상2.등급 || "기본";
+                            let 현재인덱스 = -1;
+
+                            if (현재등급 !== "기본") {
+                                현재인덱스 = 등급순서.indexOf(현재등급);
+                            }
+
+                            const 필요가루 = 현재등급 === "기본"
+                                ? 2000
+                                : (현재인덱스 + 3) * 1000;
+
+                            if ((유저데이터.스탯.램프.가루 || 0) < 필요가루) {
+                                메시지표시(`가루가 부족합니다 (필요: ${필요가루})`);
+                                return;
+                            }
+
+                            화면잠금();
+                            const 응답 = await fetch("/Enhance2", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+                            메인화면보여주기();
+                            document.querySelector("#조각상")?.click();
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
+                    조각상이번스탯자동.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        메시지표시(`구현중입니다`);
+                    });
+
                 });
 
 
@@ -2525,6 +2733,10 @@
                 반격계수, 콤보계수, 보스피해, 동료피해, 스킬피해<br>
                 <br>
 
+                조각상가루소모량<br>
+                리롤 : 1000, 강화 : 2000부터 등급당 1000씩 증가<br>
+                <br>
+
 
                 `;
 
@@ -2588,6 +2800,10 @@
 
 
 25.09.10<br>
+조각상(어빌리티) 시스템이 구현되었습니다<br>
+조각상에 소모되는 재화는 '가루'입니다<br>
+조각상에 등장하는 리롤목록은 agk사전을 참고하세요<br>
+조각상에 소모되는 가루량은 agk사전을 참고하세요<br>
 <br>
 
 25.09.09<br>

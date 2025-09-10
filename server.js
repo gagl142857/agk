@@ -519,7 +519,7 @@ app.post("/lamp", async (req, res) => {
     const 장비레벨 = 후보[Math.floor(Math.random() * 후보.length)];
 
     // 등급 결정
-    const 확률표 = 드랍확률표[램프레벨];
+    const 확률표 = 드랍확률표[Math.min(램프레벨, 30)];
     const 뽑기 = Math.random() * 100;
     let 누적 = 0, 선택등급 = "D";
     for (const [등급, 확률] of Object.entries(확률표)) {
@@ -709,7 +709,7 @@ app.post("/sell", async (req, res) => {
     data.스탯.계정.현재경험치 = Math.floor((data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.램프.현재골드 = Math.floor((data.스탯.램프.현재골드 || 0) + (50 + (10 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.드랍 = {};
-    data.스탯.램프.가루 = (data.스탯.램프.가루 || 0) + 10;
+    data.스탯.스톤 = (data.스탯.스톤 || 0) + 10;
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
@@ -1886,8 +1886,8 @@ app.post("/reroll1", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (data.스탯.램프.가루 < 1000) {
-      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
     const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
@@ -1896,7 +1896,7 @@ app.post("/reroll1", async (req, res) => {
     data.스탯.조각상1[랜덤스탯] = 0;
     data.스탯.조각상1.등급 = "기본";
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    data.스탯.램프.가루 -= 1000;
+    data.스탯.스톤 -= 10;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -1947,13 +1947,13 @@ app.post("/Enhance1", async (req, res) => {
 
     const 다음등급 = 등급순서[현재인덱스 + 1];
 
-    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 3) * 1000;
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
 
-    if (data.스탯.램프.가루 < 필요가루) {
-      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
     }
 
-    data.스탯.램프.가루 -= 필요가루;
+    data.스탯.스톤 -= 필요가루;
 
     const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
 
@@ -1998,8 +1998,8 @@ app.post("/reroll2", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (data.스탯.램프.가루 < 1000) {
-      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
     const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
@@ -2008,7 +2008,7 @@ app.post("/reroll2", async (req, res) => {
     data.스탯.조각상2[랜덤스탯] = 0;
     data.스탯.조각상2.등급 = "기본";
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    data.스탯.램프.가루 -= 1000;
+    data.스탯.스톤 -= 10;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -2059,13 +2059,13 @@ app.post("/Enhance2", async (req, res) => {
 
     const 다음등급 = 등급순서[현재인덱스 + 1];
 
-    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 3) * 1000;
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
 
-    if (data.스탯.램프.가루 < 필요가루) {
-      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
     }
 
-    data.스탯.램프.가루 -= 필요가루;
+    data.스탯.스톤 -= 필요가루;
 
     const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
 
@@ -2114,8 +2114,8 @@ app.post("/reroll3", async (req, res) => {
       return res.status(400).json({ 오류: "계정 15레벨 이상부터 가능합니다" });
     }
 
-    if (data.스탯.램프.가루 < 1000) {
-      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
     const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
@@ -2124,7 +2124,7 @@ app.post("/reroll3", async (req, res) => {
     data.스탯.조각상3[랜덤스탯] = 0;
     data.스탯.조각상3.등급 = "기본";
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    data.스탯.램프.가루 -= 1000;
+    data.스탯.스톤 -= 10;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -2179,13 +2179,13 @@ app.post("/Enhance3", async (req, res) => {
 
     const 다음등급 = 등급순서[현재인덱스 + 1];
 
-    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 3) * 1000;
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
 
-    if (data.스탯.램프.가루 < 필요가루) {
-      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
     }
 
-    data.스탯.램프.가루 -= 필요가루;
+    data.스탯.스톤 -= 필요가루;
 
     const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
 
@@ -2234,8 +2234,8 @@ app.post("/reroll4", async (req, res) => {
       return res.status(400).json({ 오류: "계정 30레벨 이상부터 가능합니다" });
     }
 
-    if (data.스탯.램프.가루 < 1000) {
-      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
     const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
@@ -2244,7 +2244,7 @@ app.post("/reroll4", async (req, res) => {
     data.스탯.조각상4[랜덤스탯] = 0;
     data.스탯.조각상4.등급 = "기본";
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    data.스탯.램프.가루 -= 1000;
+    data.스탯.스톤 -= 10;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -2299,13 +2299,13 @@ app.post("/Enhance4", async (req, res) => {
 
     const 다음등급 = 등급순서[현재인덱스 + 1];
 
-    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 3) * 1000;
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
 
-    if (data.스탯.램프.가루 < 필요가루) {
-      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
     }
 
-    data.스탯.램프.가루 -= 필요가루;
+    data.스탯.스톤 -= 필요가루;
 
     const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
 

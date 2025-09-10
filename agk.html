@@ -1706,7 +1706,7 @@
                     조각상삼번스탯리롤.addEventListener("click", async (e) => {
                         e.stopPropagation();
                         try {
-                            if (유저데이터.스탯.계정.레벨 > 14) {
+                            if (유저데이터.스탯.계정.레벨 < 15) {
                                 메시지표시(`계정 15레벨 이상부터 가능합니다`);
                                 return;
                             }
@@ -1746,7 +1746,7 @@
                     조각상삼번스탯강화.addEventListener("click", async (e) => {
                         e.stopPropagation();
                         try {
-                            if (유저데이터.스탯.계정.레벨 > 14) {
+                            if (유저데이터.스탯.계정.레벨 < 15) {
                                 메시지표시(`계정 15레벨 이상부터 가능합니다`);
                                 return;
                             }

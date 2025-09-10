@@ -2110,6 +2110,10 @@ app.post("/reroll3", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
+    if (data.스탯.계정.레벨 < 15) {
+      return res.status(400).json({ 오류: "계정 15레벨 이상부터 가능합니다" });
+    }
+
     if (data.스탯.램프.가루 < 1000) {
       return res.status(404).json({ 오류: "가루가 부족합니다" });
     }
@@ -2150,6 +2154,10 @@ app.post("/Enhance3", async (req, res) => {
 
     if (error || !data) {
       return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.계정.레벨 < 15) {
+      return res.status(400).json({ 오류: "계정 15레벨 이상부터 가능합니다" });
     }
 
     if (!Object.keys(data.스탯.조각상3 || {}).find(k => k !== "등급")) {

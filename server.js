@@ -314,6 +314,12 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.스톤) {
       data.스탯.스톤 = 0;
     }
+    for (let i = 1; i <= 6; i++) {
+      if (!data.스탯[`조각상${i}`]) {
+        data.스탯[`조각상${i}`] = {};
+      }
+    }
+
 
     if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;
@@ -1140,6 +1146,247 @@ app.post("/change-nickname", async (req, res) => {
   }
 });
 
+app.post("/join-arena", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 전장유저, error: 전장에러 } = await supabase
+      .from("users")
+      .select("*")
+      .not("스탯->전장->순위", "eq", "0");
+
+    if (전장에러) {
+      console.error(전장에러);
+      return res.status(500).json({ 오류: "전장조회 실패" });
+    }
+
+    let 다음전장번호 = 1;
+    if (전장유저 && 전장유저.length > 0) {
+      const 전장값리스트 = 전장유저.map(u => Number(u.스탯.전장?.순위 || 0));
+      const 현재최대 = Math.max(...전장값리스트);
+      다음전장번호 = 현재최대 + 1;
+    }
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    data.스탯.전장.순위 = 다음전장번호;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/arena-list", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .not("스탯->전장->순위", "eq", 0)              // 순위 0 아닌 유저만
+      .order("스탯->전장->순위", { ascending: true }); // 순위 오름차순 정렬
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "전장 목록 조회 실패" });
+    }
+
+    res.json({ data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/arena-challenge", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.전장?.순위 <= 1) {
+      return res.status(400).json({ 오류: "도전할 상대가 없습니다" });
+    }
+
+    let 목표순위 = data.스탯.전장.순위 - 1;
+    let 상대 = null;
+
+    // 상대 나올 때까지 위 순위 계속 검색
+    while (목표순위 >= 1 && !상대) {
+      const { data: 후보 } = await supabase
+        .from("users")
+        .select("*")
+        .eq("스탯->전장->순위", 목표순위)
+        .single();
+
+      if (후보) {
+        상대 = 후보;
+        break;
+      }
+      목표순위 -= 1;
+    }
+
+    if (!상대) {
+      return res.status(404).json({ 오류: "상대 유저를 찾을 수 없습니다" });
+    }
+
+    if (data.스탯.전장.티켓 < 1) {
+      return res.status(404).json({ 오류: "티켓이 부족합니다" });
+
+    }
+
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(data)), // 복사본
+      JSON.parse(JSON.stringify(상대))  // 복사본
+    );
+
+    data.스탯.전장.티켓 -= 1;
+
+    if (전투결과.결과 === "승리") {
+      data.스탯.전장.순위 -= 1;
+      상대.스탯.전장.순위 += 1;
+
+      const 내순위 = data.스탯.전장.순위;
+      const 상대순위 = 상대.스탯.전장.순위;
+
+      const { error: 내에러 } = await supabase
+        .from("users")
+        .update({
+          스탯: {
+            ...data.스탯,
+            전장: {
+              ...data.스탯.전장,
+              순위: 내순위,
+              티켓: data.스탯.전장.티켓
+            }
+          }
+        })
+        .eq("id", data.id);
+
+      const { error: 상대에러 } = await supabase
+        .from("users")
+        .update({
+          스탯: {
+            ...상대.스탯,
+            전장: {
+              ...상대.스탯.전장,
+              순위: 상대순위
+            }
+          }
+        })
+        .eq("id", 상대.id);
+    } else {
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({
+          스탯: {
+            ...data.스탯,
+            전장: {
+              ...data.스탯.전장,
+              티켓: data.스탯.전장.티켓
+            }
+          }
+        })
+        .eq("id", id);
+
+      if (updateError) {
+        console.error(updateError);
+        return res.status(500).json({ 오류: "DB저장 실패" });
+      }
+
+    }
+
+    res.json({ data, 전투결과, 상대닉네임: 상대.스탯.계정.유저닉네임 });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/pump", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.낙엽 < 2 * (data.스탯.탈것.레벨 + 1) - 1) {
+      return res.status(400).json({ 오류: "낙엽이 부족합니다" });
+    }
+
+
+    data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
+
+    data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
+    data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
+    data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
+
+    data.스탯.탈것.레벨++;
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+
+
 app.post("/Geniesweep", async (req, res) => {
   try {
     const { id } = req.body;
@@ -1625,6 +1872,142 @@ app.post("/RockgolemDungeon", async (req, res) => {
   }
 });
 
+app.post("/reroll1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.램프.가루 < 1000) {
+      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    }
+
+    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+
+    data.스탯.조각상1 = {};
+    data.스탯.조각상1[랜덤스탯] = 0;
+    data.스탯.조각상1.등급 = "기본";
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    data.스탯.램프.가루 -= 1000;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!Object.keys(data.스탯.조각상1 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    const 조각상 = data.스탯.조각상1;
+    const 현재등급 = 조각상.등급 || "기본";
+
+    const 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+
+    if (현재인덱스 === -1 && 현재등급 !== "기본") {
+      return res.status(400).json({ 오류: "잘못된 등급입니다" });
+    }
+    if (현재인덱스 === 등급순서.length - 1) {
+      return res.status(400).json({ 오류: "더 이상 강화할 수 없습니다" });
+    }
+
+    const 다음등급 = 등급순서[현재인덱스 + 1];
+
+    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 2) * 1000;
+
+    if (data.스탯.램프.가루 < 필요가루) {
+      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    }
+
+    data.스탯.램프.가루 -= 필요가루;
+
+    const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+
+    if (Math.random() < 성공확률) {
+      조각상.등급 = 다음등급;
+      const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+      if (옵션키) {
+        조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1850,245 +2233,6 @@ function 전투시뮬레이션(나, 상대) {
   };
 }
 
-app.post("/join-arena", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data: 전장유저, error: 전장에러 } = await supabase
-      .from("users")
-      .select("*")
-      .not("스탯->전장->순위", "eq", "0");
-
-    if (전장에러) {
-      console.error(전장에러);
-      return res.status(500).json({ 오류: "전장조회 실패" });
-    }
-
-    let 다음전장번호 = 1;
-    if (전장유저 && 전장유저.length > 0) {
-      const 전장값리스트 = 전장유저.map(u => Number(u.스탯.전장?.순위 || 0));
-      const 현재최대 = Math.max(...전장값리스트);
-      다음전장번호 = 현재최대 + 1;
-    }
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    data.스탯.전장.순위 = 다음전장번호;
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: data.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/arena-list", async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .not("스탯->전장->순위", "eq", 0)              // 순위 0 아닌 유저만
-      .order("스탯->전장->순위", { ascending: true }); // 순위 오름차순 정렬
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "전장 목록 조회 실패" });
-    }
-
-    res.json({ data });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/arena-challenge", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    if (data.스탯.전장?.순위 <= 1) {
-      return res.status(400).json({ 오류: "도전할 상대가 없습니다" });
-    }
-
-    let 목표순위 = data.스탯.전장.순위 - 1;
-    let 상대 = null;
-
-    // 상대 나올 때까지 위 순위 계속 검색
-    while (목표순위 >= 1 && !상대) {
-      const { data: 후보 } = await supabase
-        .from("users")
-        .select("*")
-        .eq("스탯->전장->순위", 목표순위)
-        .single();
-
-      if (후보) {
-        상대 = 후보;
-        break;
-      }
-      목표순위 -= 1;
-    }
-
-    if (!상대) {
-      return res.status(404).json({ 오류: "상대 유저를 찾을 수 없습니다" });
-    }
-
-    if (data.스탯.전장.티켓 < 1) {
-      return res.status(404).json({ 오류: "티켓이 부족합니다" });
-
-    }
-
-    const 전투결과 = 전투시뮬레이션(
-      JSON.parse(JSON.stringify(data)), // 복사본
-      JSON.parse(JSON.stringify(상대))  // 복사본
-    );
-
-    data.스탯.전장.티켓 -= 1;
-
-    if (전투결과.결과 === "승리") {
-      data.스탯.전장.순위 -= 1;
-      상대.스탯.전장.순위 += 1;
-
-      const 내순위 = data.스탯.전장.순위;
-      const 상대순위 = 상대.스탯.전장.순위;
-
-      const { error: 내에러 } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...data.스탯,
-            전장: {
-              ...data.스탯.전장,
-              순위: 내순위,
-              티켓: data.스탯.전장.티켓
-            }
-          }
-        })
-        .eq("id", data.id);
-
-      const { error: 상대에러 } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...상대.스탯,
-            전장: {
-              ...상대.스탯.전장,
-              순위: 상대순위
-            }
-          }
-        })
-        .eq("id", 상대.id);
-    } else {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...data.스탯,
-            전장: {
-              ...data.스탯.전장,
-              티켓: data.스탯.전장.티켓
-            }
-          }
-        })
-        .eq("id", id);
-
-      if (updateError) {
-        console.error(updateError);
-        return res.status(500).json({ 오류: "DB저장 실패" });
-      }
-
-    }
-
-    res.json({ data, 전투결과, 상대닉네임: 상대.스탯.계정.유저닉네임 });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/pump", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    if (data.스탯.낙엽 < 2 * (data.스탯.탈것.레벨 + 1) - 1) {
-      return res.status(400).json({ 오류: "낙엽이 부족합니다" });
-    }
-
-
-    data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
-
-    data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
-
-    data.스탯.탈것.레벨++;
-
-    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: data.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-
 
 
 
@@ -2187,7 +2331,27 @@ const 장비목록 = [
   "계정", //깡스탯
   "전직", //보너스
   "무기", "모자", "안경", "견갑", "옷", "완갑", "장갑", "벨트", "무릎아머", "신발", //깡스탯
-  "탈것", "조각상", "유물" //보너스
+  "탈것",
+  "조각상1", "조각상2", "조각상3", "조각상4", "조각상5", "조각상6",
+  "유물" //보너스
+];
+
+const 조각상리롤목록 = [
+  "공격력보너스", "방어력보너스", "HP보너스", "치명피해", "치명저항", "콤보계수", "반격계수", "보스피해", "스킬피해", "동료피해",
+];
+// 12단계 확률 (기본→D ~ UU→X)
+const 조각상강화확률표 = [
+  0.700000,  // 기본 → D
+  0.294400,  // D → C
+  0.123900,  // C → B
+  0.052100,  // B → A
+  0.021900,  // A → S
+  0.009190,  // S → SS
+  0.003860,  // SS → L
+  0.001620,  // L → LL
+  0.000682,  // LL → U
+  0.000287,  // U → UU
+  0.000121   // UU → X (≈0.01%)
 ];
 
 const 스탯목록 = [
@@ -2244,11 +2408,11 @@ function 최종스탯계산(스탯) {
     결과[옵션명] = Math.round(합계 * 100) / 100;
   }
 
-  결과.최종HP = 결과.HP + (결과.HP * 결과.HP보너스 / 100);
-  결과.최종공격력 = 결과.공격력 + (결과.공격력 * 결과.공격력보너스 / 100);
-  결과.최종방어력 = 결과.방어력 + (결과.방어력 * 결과.방어력보너스 / 100);
-  결과.최종공속 = 결과.공속 + (결과.공속 * 결과.공속보너스 / 100);
-  결과.전투력 = 결과.최종HP * 0.05 + 결과.최종공격력 + 결과.최종방어력 * 2 + 결과.최종공속 * 50;
+  결과.최종HP = Math.floor(결과.HP + (결과.HP * 결과.HP보너스 / 100));
+  결과.최종공격력 = Math.floor(결과.공격력 + (결과.공격력 * 결과.공격력보너스 / 100));
+  결과.최종방어력 = Math.floor(결과.방어력 + (결과.방어력 * 결과.방어력보너스 / 100));
+  결과.최종공속 = Math.floor(결과.공속 + (결과.공속 * 결과.공속보너스 / 100));
+  결과.전투력 = Math.floor(결과.최종HP * 0.05 + 결과.최종공격력 + 결과.최종방어력 * 2 + 결과.최종공속 * 50);
 
   return 결과;
 }

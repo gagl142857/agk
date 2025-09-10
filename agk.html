@@ -3707,9 +3707,10 @@ nodemon server.js
         전장화면설명.style.flexDirection = "column";
         전장화면설명.innerHTML =
             `
-        전장에 참전하려면 먼저 등록하세요<br>
-        자신보다 한단계 위의 유저에게만 도전할 수 있습니다<br>
         도전에는 티켓 1장이 소모되며, 티켓은 매일 최대 4장씩 충전됩니다<br>
+        도전 시 전투력 기준 자신보다 강한 3명과 약한 3명 중<br>
+        랜덤한 한명과 전투를 진행, 승리시 10포인트를 획득하고<br>
+        패배시 3포인트를 잃습니다<br>
         `;
         전장화면설명.style.textAlign = "center";
         전장화면설명.style.paddingBottom = "8px";
@@ -3734,150 +3735,7 @@ nodemon server.js
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
 
-                if (유저데이터?.스탯?.전장?.순위 === 0) {
-                    행렬만들기(전장화면컨테이너, "전장화면컨테이너일행", 5);
-                    전장화면컨테이너일행3열.innerHTML = `등록`;
-                    전장화면컨테이너일행3열.style.boxSizing = "border-box";
-                    전장화면컨테이너일행3열.style.border = "0.2px solid #747474";
-                    전장화면컨테이너일행3열.style.borderRadius = "8px";
-                    전장화면컨테이너일행3열.style.cursor = "pointer";
-
-                    전장화면컨테이너일행3열.addEventListener("click", async () => {
-                        try {
-                            화면잠금();
-                            const 응답 = await fetch("/join-arena", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ id: 유저데이터.id }),
-                            });
-                            const 결과 = await 응답.json();
-                            if (!응답.ok) {
-                                메시지표시(결과.오류 || "등록 실패");
-                                return;
-                            }
-                            유저데이터 = 결과;
-
-                            전장화면보여주기();
-                            메시지표시("전장에 등록되었습니다");
-                        } catch (err) {
-                            console.error(err);
-                            메시지표시("서버 오류");
-                        } finally {
-                            화면해제();
-                        }
-                    });
-                }
-
-                행렬만들기(전장화면컨테이너, "전장화면컨테이너이행", 4);
-
-                try {
-                    const 응답 = await fetch("/arena-list", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" }
-                    });
-                    const 결과 = await 응답.json();
-                    if (!응답.ok) {
-                        메시지표시(결과.오류 || "전장 조회 실패");
-                        return;
-                    }
-
-                    for (let i = 0; i < 결과.data.length; i++) {
-                        const 유저 = 결과.data[i];
-
-                        const 한줄div = document.createElement("div");
-                        한줄div.style.display = "flex";
-                        한줄div.style.justifyContent = "space-between";
-                        한줄div.style.alignItems = "center";
-                        한줄div.style.padding = "4px 8px";
-                        한줄div.style.borderBottom = "0.2px solid #747474";
-                        if (유저.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임) {
-                            한줄div.style.backgroundColor = "#e0e0e0";
-                        }
-                        const 순위div = document.createElement("div");
-                        순위div.innerHTML = `${유저.스탯.전장.순위}위`;
-
-                        const 우측div = document.createElement("div");
-                        우측div.style.display = "flex";
-                        우측div.style.gap = "12px";
-
-                        const 전투력div = document.createElement("div");
-                        전투력div.innerHTML = `전투력 ` + 단위변환함수(유저.스탯.전투력);
-
-                        const 닉네임div = document.createElement("div");
-                        닉네임div.innerHTML = 유저.스탯.계정.유저닉네임;
-
-                        우측div.append(전투력div, 닉네임div);
-                        한줄div.append(순위div, 우측div);
-
-                        document.getElementById("전장화면컨테이너").append(한줄div);
-                    }
-
-
-
-                    if (유저데이터?.스탯?.전장?.순위 !== 0) {
-                        행렬만들기(전장화면컨테이너, "전장화면컨테이너삼행", 5);
-
-                        전장화면컨테이너삼행3열.innerHTML = `도전`;
-                        전장화면컨테이너삼행3열.style.boxSizing = "border-box";
-                        전장화면컨테이너삼행3열.style.border = "0.2px solid #747474";
-                        전장화면컨테이너삼행3열.style.borderRadius = "8px";
-                        전장화면컨테이너삼행3열.style.cursor = "pointer";
-
-                        전장화면컨테이너삼행4열.innerHTML = `티켓 ${유저데이터.스탯.전장.티켓}`;
-                        전장화면컨테이너삼행4열.style.boxSizing = "border-box";
-
-                        전장화면컨테이너삼행3열.addEventListener("click", async () => {
-                            try {
-                                if (유저데이터.스탯.전장.티켓 < 1) {
-                                    메시지표시(`티켓이 부족합니다`);
-                                    return;
-                                }
-
-
-                                화면잠금();
-                                const 응답 = await fetch("/arena-challenge", {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ id: 유저데이터.id }),
-                                });
-                                const 결과 = await 응답.json();
-                                if (!응답.ok) {
-                                    메시지표시(결과.오류 || "등록 실패");
-                                    return;
-                                }
-
-                                유저데이터 = 결과.data;       // 유저 데이터만 저장
-                                const 전투결과 = 결과.전투결과;     // 전투 결과 따로 저장
-
-                                전장화면보여주기();
-
-                                const 확인 = await 팝업(
-                                    `
-                        대전상대 < ${결과.상대닉네임} ><br>
-                        ${전투결과.결과}<br>
-                        내 남은HP ${단위변환함수(전투결과.나HP)}<br>
-                        적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
-                        내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
-                        적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}
-                        `
-                                    , false);
-
-                            } catch (err) {
-                                console.error(err);
-                                메시지표시("서버 오류");
-                            } finally {
-                                화면해제();
-                            }
-                        });
-
-                    }
-
-                } catch (err) {
-                    console.error(err);
-                    메시지표시("전장 조회 오류");
-                }
-
+                메시지표시(`리뉴얼중입니다`);
 
             } catch (err) {
                 메시지표시("서버요청실패");
@@ -4435,7 +4293,8 @@ nodemon server.js
             if (e.target.matches("#전장")) {
                 try {
                     화면잠금();
-                    전장화면보여주기();
+                    // 전장화면보여주기();
+                    메시지표시(`리뉴얼중입니다`);
                 } catch (e) {
                     메시지표시("서버요청실패");
                     console.error(e);

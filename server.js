@@ -167,7 +167,7 @@ app.post("/register", async (req, res) => {
         레벨: 1,
         현재골드: 0,
         다음골드: 6000,
-        수량: 200,
+        수량: 1000,
         가루: 0,
       },
       다이아: 0,
@@ -194,10 +194,6 @@ app.post("/register", async (req, res) => {
       },
       민원: {
 
-      },
-      전장: {
-        순위: 0,
-        티켓: 4,
       },
       탈것: {
         HP보너스: 0,
@@ -267,17 +263,16 @@ app.post("/login", async (req, res) => {
       data.스탯.접속요일 = 오늘요일;
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
-      if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
 
-      const 전장보상 = {
-        이름: "다이아",
-        수량: Math.max(500, 3100 - data.스탯.전장.순위 * 100),
-        시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-        메모: `전장 ${data.스탯.전장.순위}위 보상`,
-      };
+      // const 전장보상 = {
+      //   이름: "다이아",
+      //   수량: Math.max(500, 3100 - data.스탯.전장.순위 * 100),
+      //   시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      //   메모: `전장 ${data.스탯.전장.순위}위 보상`,
+      // };
 
-      if (!data.스탯.우편함) data.스탯.우편함 = [];
-      data.스탯.우편함.unshift(전장보상);
+      // if (!data.스탯.우편함) data.스탯.우편함 = [];
+      // data.스탯.우편함.unshift(전장보상);
 
     }
 
@@ -1146,194 +1141,6 @@ app.post("/change-nickname", async (req, res) => {
   }
 });
 
-app.post("/join-arena", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data: 전장유저, error: 전장에러 } = await supabase
-      .from("users")
-      .select("*")
-      .not("스탯->전장->순위", "eq", "0");
-
-    if (전장에러) {
-      console.error(전장에러);
-      return res.status(500).json({ 오류: "전장조회 실패" });
-    }
-
-    let 다음전장번호 = 1;
-    if (전장유저 && 전장유저.length > 0) {
-      const 전장값리스트 = 전장유저.map(u => Number(u.스탯.전장?.순위 || 0));
-      const 현재최대 = Math.max(...전장값리스트);
-      다음전장번호 = 현재최대 + 1;
-    }
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    data.스탯.전장.순위 = 다음전장번호;
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: data.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/arena-list", async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .not("스탯->전장->순위", "eq", 0)              // 순위 0 아닌 유저만
-      .order("스탯->전장->순위", { ascending: true }); // 순위 오름차순 정렬
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "전장 목록 조회 실패" });
-    }
-
-    res.json({ data });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/arena-challenge", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    if (data.스탯.전장?.순위 <= 1) {
-      return res.status(400).json({ 오류: "도전할 상대가 없습니다" });
-    }
-
-    let 목표순위 = data.스탯.전장.순위 - 1;
-    let 상대 = null;
-
-    // 상대 나올 때까지 위 순위 계속 검색
-    while (목표순위 >= 1 && !상대) {
-      const { data: 후보 } = await supabase
-        .from("users")
-        .select("*")
-        .eq("스탯->전장->순위", 목표순위)
-        .single();
-
-      if (후보) {
-        상대 = 후보;
-        break;
-      }
-      목표순위 -= 1;
-    }
-
-    if (!상대) {
-      return res.status(404).json({ 오류: "상대 유저를 찾을 수 없습니다" });
-    }
-
-    if (data.스탯.전장.티켓 < 1) {
-      return res.status(404).json({ 오류: "티켓이 부족합니다" });
-
-    }
-
-    const 전투결과 = 전투시뮬레이션(
-      JSON.parse(JSON.stringify(data)), // 복사본
-      JSON.parse(JSON.stringify(상대))  // 복사본
-    );
-
-    data.스탯.전장.티켓 -= 1;
-
-    if (전투결과.결과 === "승리") {
-      data.스탯.전장.순위 -= 1;
-      상대.스탯.전장.순위 += 1;
-
-      const 내순위 = data.스탯.전장.순위;
-      const 상대순위 = 상대.스탯.전장.순위;
-
-      const { error: 내에러 } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...data.스탯,
-            전장: {
-              ...data.스탯.전장,
-              순위: 내순위,
-              티켓: data.스탯.전장.티켓
-            }
-          }
-        })
-        .eq("id", data.id);
-
-      const { error: 상대에러 } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...상대.스탯,
-            전장: {
-              ...상대.스탯.전장,
-              순위: 상대순위
-            }
-          }
-        })
-        .eq("id", 상대.id);
-    } else {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({
-          스탯: {
-            ...data.스탯,
-            전장: {
-              ...data.스탯.전장,
-              티켓: data.스탯.전장.티켓
-            }
-          }
-        })
-        .eq("id", id);
-
-      if (updateError) {
-        console.error(updateError);
-        return res.status(500).json({ 오류: "DB저장 실패" });
-      }
-
-    }
-
-    res.json({ data, 전투결과, 상대닉네임: 상대.스탯.계정.유저닉네임 });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
 
 app.post("/pump", async (req, res) => {
   try {

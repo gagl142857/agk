@@ -2096,6 +2096,119 @@ app.post("/Enhance2", async (req, res) => {
   }
 });
 
+app.post("/reroll3", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.램프.가루 < 1000) {
+      return res.status(404).json({ 오류: "가루가 부족합니다" });
+    }
+
+    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+
+    data.스탯.조각상3 = {};
+    data.스탯.조각상3[랜덤스탯] = 0;
+    data.스탯.조각상3.등급 = "기본";
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    data.스탯.램프.가루 -= 1000;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance3", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!Object.keys(data.스탯.조각상3 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    const 조각상 = data.스탯.조각상3;
+    const 현재등급 = 조각상.등급 || "기본";
+
+    const 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+
+    if (현재인덱스 === -1 && 현재등급 !== "기본") {
+      return res.status(400).json({ 오류: "잘못된 등급입니다" });
+    }
+    if (현재인덱스 === 등급순서.length - 1) {
+      return res.status(400).json({ 오류: "더 이상 강화할 수 없습니다" });
+    }
+
+    const 다음등급 = 등급순서[현재인덱스 + 1];
+
+    const 필요가루 = 현재등급 === "기본" ? 2000 : (현재인덱스 + 3) * 1000;
+
+    if (data.스탯.램프.가루 < 필요가루) {
+      return res.status(400).json({ 오류: "가루가 부족합니다" });
+    }
+
+    data.스탯.램프.가루 -= 필요가루;
+
+    const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+
+    if (Math.random() < 성공확률) {
+      조각상.등급 = 다음등급;
+      const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+      if (옵션키) {
+        조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
 
 
 

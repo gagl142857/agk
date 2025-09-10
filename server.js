@@ -90,6 +90,7 @@ app.use(async (req, res, next) => {
   // }
 
 
+
   next();
 });
 
@@ -256,6 +257,11 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ 오류: "아이디/비밀번호 또는 기기ID 필요" });
     }
 
+    const now = new Date();
+    const 현재접속 = Math.floor(now.getTime() / 3600000);
+    const 이전접속 = data.스탯?.접속시각 || 현재접속;
+    const 시간차 = Math.min(현재접속 - 이전접속, 24);
+
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
     if (data.스탯.접속요일 !== 오늘요일) {
       data.스탯.접속요일 = 오늘요일;
@@ -265,7 +271,7 @@ app.post("/login", async (req, res) => {
 
       const 전장보상 = {
         이름: "다이아",
-        수량: Math.Max(500, 3100 - data.스탯.전장.순위 * 100),
+        수량: Math.max(500, 3100 - data.스탯.전장.순위 * 100),
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
         메모: `전장 ${data.스탯.전장.순위}위 보상`,
       };
@@ -278,10 +284,6 @@ app.post("/login", async (req, res) => {
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString().split(",")[0].trim();
 
-    const now = new Date();
-    const 현재접속 = Math.floor(now.getTime() / 3600000);
-    const 이전접속 = data.스탯?.접속시각 || 현재접속;
-    const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
     if (시간차 > 0) {
       const 램프보상 = {

@@ -723,6 +723,27 @@
         탈것컨테이너.style.zIndex = "99";
         document.body.append(탈것컨테이너);
 
+        const 조각상컨테이너 = document.createElement("div");
+        조각상컨테이너.id = "조각상컨테이너";
+        조각상컨테이너.className = "화면숨기기";
+        조각상컨테이너.style.position = "absolute";
+        조각상컨테이너.style.width = "300px";
+        조각상컨테이너.style.left = "50%";
+        조각상컨테이너.style.top = "50%";
+        조각상컨테이너.style.transform = "translate(-50%, -50%)";
+        조각상컨테이너.style.zIndex = "99";
+        조각상컨테이너.style.background = "white";
+        조각상컨테이너.style.border = "0.2px solid #747474";
+        조각상컨테이너.style.borderRadius = "8px";
+        조각상컨테이너.style.alignItems = "center";
+        조각상컨테이너.style.flexDirection = "column";
+        조각상컨테이너.style.justifyContent = "center";
+        조각상컨테이너.style.display = "none";
+        조각상컨테이너.style.padding = "8px";
+        조각상컨테이너.style.gap = "8px";
+        조각상컨테이너.style.zIndex = "99";
+        document.body.append(조각상컨테이너);
+
         let 자동뽑기플래그 = false;
         let 선택최소등급 = "D";
         let 선택옵션목록 = [];
@@ -859,7 +880,7 @@
                         컨테이너.innerHTML = ""; // 기존 내용 초기화
                         컨테이너.style.display = "flex";
 
-                        행렬만들기(컨테이너, "장비비교컨테이너장착장비", 3)
+                        행렬만들기(컨테이너, "장비비교컨테이너장착장비", 3);
                         const 장비비교컨테이너장착장비 = document.getElementById("장비비교컨테이너장착장비");
                         const 장비비교컨테이너장착장비1열 = document.getElementById("장비비교컨테이너장착장비1열");
                         장비비교컨테이너장착장비.style.borderBottom = `0.2px solid #747474`;
@@ -1014,8 +1035,9 @@
 
                     탈것컨테이너.style.display = "flex";
                     탈것컨테이너.innerHTML = "";
+                    조각상컨테이너.style.display = "none";
 
-                    행렬만들기(탈것컨테이너, "탈것컨테이너일행", 3)
+                    행렬만들기(탈것컨테이너, "탈것컨테이너일행", 3);
                     탈것컨테이너일행.style.borderBottom = `0.2px solid #747474`;
                     탈것컨테이너일행.style.alignItems = `flex-start`;
                     탈것컨테이너일행.style.padding = `8px 0px`;
@@ -1108,10 +1130,10 @@
                     탈것방어력다음보너스.innerHTML = `<span>방보너스</span><span>${유저데이터.스탯.탈것.방어력보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
                     document.getElementById("탈것컨테이너일행3열").append(탈것방어력다음보너스);
 
-                    행렬만들기(탈것컨테이너, "탈것컨테이너필요낙엽", 1)
+                    행렬만들기(탈것컨테이너, "탈것컨테이너필요낙엽", 1);
                     탈것컨테이너필요낙엽1열.innerHTML = `필요낙엽 ${2 * (유저데이터.스탯.탈것.레벨 + 1) - 1}개`;
 
-                    행렬만들기(탈것컨테이너, "탈것컨테이너버튼", 3)
+                    행렬만들기(탈것컨테이너, "탈것컨테이너버튼", 3);
                     탈것컨테이너버튼2열.innerHTML = `연료주입`;
                     탈것컨테이너버튼2열.style.padding = "3px 8px";
                     탈것컨테이너버튼2열.style.borderRadius = "8px";
@@ -1177,6 +1199,11 @@
                 날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행4열").append(날개박스);
 
+                날개박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
                 const 유물박스 = document.createElement("유물박스");
                 유물박스.id = "유물";
                 유물박스.style.display = "flex";
@@ -1191,6 +1218,11 @@
                 유물박스.style.border = `0.2px solid #747474`;
                 유물박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행5열").append(유물박스);
+
+                유물박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
 
                 const 별자리박스 = document.createElement("별자리박스");
                 별자리박스.id = "별자리";
@@ -1207,6 +1239,11 @@
                 별자리박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행5열").append(별자리박스);
 
+                별자리박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
                 const 조각상박스 = document.createElement("조각상박스");
                 조각상박스.id = "조각상";
                 조각상박스.style.display = "flex";
@@ -1221,6 +1258,101 @@
                 조각상박스.style.border = `0.2px solid #747474`;
                 조각상박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행5열").append(조각상박스);
+
+                조각상박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    조각상컨테이너.style.display = "flex";
+                    조각상컨테이너.innerHTML = "";
+
+                    탈것컨테이너.style.display = `none`;
+
+                    행렬만들기(조각상컨테이너, "조각상컨테이너일행", 1);
+                    조각상컨테이너일행.style.borderBottom = `0.2px solid #747474`;
+                    조각상컨테이너일행.style.alignItems = `flex-start`;
+                    조각상컨테이너일행.style.padding = `8px 0px`;
+                    조각상컨테이너일행1열.style.gap = ``;
+
+                    const 조각상장비박스 = document.createElement("div");
+                    조각상장비박스.style.display = "flex";
+                    조각상장비박스.style.textAlign = "center";
+                    // 조각상장비박스.style.marginBottom = "8px";
+                    조각상장비박스.innerHTML =
+                        `
+                    한 줄 씩 원하는 옵션을 파밍하세요<br>
+                    원하는 옵션이 등장했다면 강화하세요<br>
+                    옵션 변경 시 강화수치가 초기화됩니다<br>
+                    `;
+                    document.getElementById("조각상컨테이너일행1열").append(조각상장비박스);
+
+                    const 조각상장비아이콘변환박스 = document.createElement("div");
+                    // 조각상장비아이콘변환박스.style.borderTop = `0.2px solid #747474`;
+                    조각상장비아이콘변환박스.style.display = "flex";
+                    조각상장비아이콘변환박스.style.flex = "1";
+                    조각상장비아이콘변환박스.innerHTML = 비장비아이콘변환(기본조각상아이콘);
+                    document.getElementById("조각상컨테이너일행1열").append(조각상장비아이콘변환박스);
+
+                    행렬만들기(조각상컨테이너, "조각상컨테이너일번스탯", 4);
+                    조각상컨테이너일번스탯.style.borderRadius = "8px";
+                    조각상컨테이너일번스탯.style.padding = "3px 8px";
+                    조각상컨테이너일번스탯.style.border = `0.2px solid #747474`;
+                    조각상컨테이너일번스탯.style.boxSizing = "border-box";
+
+                    const 조각상일번스탯등급 = document.createElement("div");
+                    조각상일번스탯등급.style.display = "flex";
+                    조각상일번스탯등급.style.width = "100%";
+                    조각상일번스탯등급.innerHTML = `${유저데이터.스탯.조각상1번?.등급 || "미습득"}`;
+                    document.getElementById("조각상컨테이너일번스탯1열").append(조각상일번스탯등급);
+
+                    const 조각상일번스탯옵션 = document.createElement("div");
+                    조각상일번스탯옵션.style.display = "flex";
+                    조각상일번스탯옵션.style.width = "100%";
+                    조각상일번스탯옵션.innerHTML = `${유저데이터.스탯.조각상1번?.옵션 || "미습득"}`;
+                    document.getElementById("조각상컨테이너일번스탯2열").append(조각상일번스탯옵션);
+
+                    // 조각상컨테이너버튼2열.addEventListener("click", async (e) => {
+                    //   e.stopPropagation();
+
+                    //   try {
+                    //     화면잠금();
+
+                    //     if (유저데이터.스탯.낙엽 < 2 * (유저데이터.스탯.조각상.레벨 + 1) - 1) {
+                    //       메시지표시(`낙엽이 부족합니다`);
+                    //       return;
+                    //     }
+
+                    //     const 응답 = await fetch("/pump", {
+                    //       method: "POST",
+                    //       headers: { "Content-Type": "application/json" },
+                    //       body: JSON.stringify({
+                    //         id: 유저데이터.id
+                    //       })
+                    //     });
+
+                    //     const 결과 = await 응답.json();
+
+                    //     if (!응답.ok) {
+                    //       메시지표시(결과.오류);
+                    //       return;
+                    //     }
+
+                    //     유저데이터 = 결과;
+
+                    //     메시지표시(`조각상 레벨업!`);
+
+                    //     메인화면보여주기();
+                    //     조각상박스.click();
+
+                    //   } catch (e) {
+                    //     메시지표시("서버요청실패");
+                    //     console.error(e);
+                    //   } finally {
+                    //     화면해제();
+                    //   }
+
+                    // });
+                });
+
 
                 const 미정1박스 = document.createElement("미정1박스");
                 미정1박스.id = "미정1";
@@ -1328,7 +1460,14 @@
                     램프설정컨테이너일행.style.borderBottom = `0.2px solid #747474`;
                     램프설정컨테이너일행.style.textAlign = "center";
                     램프설정컨테이너일행.style.justifyContent = "center";
-                    램프설정컨테이너일행.innerHTML = `랜덤옵션은 0개, 1개, 2개 선택가능하며<br>옵션을 모두 만족하는 아이템에서 멈춥니다<br>옵션이 다른 아이템은 자동판매됩니다<br>`;
+                    램프설정컨테이너일행.innerHTML =
+                        `
+                     랜덤옵션은 0개, 1개, 2개 선택가능하며<br>
+                     반자동 시 조건을 만족하는 아이템에서 멈춥니다<br>
+                     풀자동 시 조건을 만족하는 아이템을 장착하며<br>
+                     드랍이 무한히 지속됩니다<br>
+                     드랍을 멈추려면 화면을 아무곳이나 클릭하면됩니다<br>
+                     `;
 
                     행렬만들기(램프설정컨테이너, "램프설정컨테이너이행", 3);
                     램프설정컨테이너이행.style.borderBottom = `0.2px solid #747474`;
@@ -1404,7 +1543,7 @@
 
                     const 자동뽑기 = document.createElement("div");
                     자동뽑기.id = "자동뽑기";
-                    자동뽑기.innerHTML = `자동뽑기`;
+                    자동뽑기.innerHTML = `반자동`;
                     자동뽑기.style.cursor = "pointer";
                     자동뽑기.style.padding = "3px 8px";
                     자동뽑기.style.border = "0.2px solid #747474";
@@ -1612,7 +1751,7 @@
 
 
                 if (유저데이터.스탯[유저데이터.스탯.드랍.이름]) {
-                    행렬만들기(장비비교컨테이너, "장비비교컨테이너장착장비", 3)
+                    행렬만들기(장비비교컨테이너, "장비비교컨테이너장착장비", 3);
                     장비비교컨테이너장착장비.style.borderBottom = `0.2px solid #747474`;
                     장비비교컨테이너장착장비.style.alignItems = `flex-start`;
                     장비비교컨테이너장착장비.style.padding = `8px 0px`;
@@ -1694,7 +1833,7 @@
 
                 }
 
-                행렬만들기(장비비교컨테이너, "장비비교컨테이너드랍장비", 3)
+                행렬만들기(장비비교컨테이너, "장비비교컨테이너드랍장비", 3);
                 장비비교컨테이너드랍장비.style.borderBottom = `0.2px solid #747474`;
                 장비비교컨테이너드랍장비.style.alignItems = `flex-start`;
                 장비비교컨테이너드랍장비.style.padding = `8px 0px`;
@@ -1789,7 +1928,7 @@
                     }
                 }
 
-                행렬만들기(장비비교컨테이너, "장비비교컨테이너버튼", 3)
+                행렬만들기(장비비교컨테이너, "장비비교컨테이너버튼", 3);
 
                 const 장착하기 = document.createElement("div");
                 장착하기.id = "장착하기";
@@ -2261,7 +2400,7 @@
 
                 agk사전화면컨테이너.innerHTML = `
                 새로고침을 생활화하세요<br>
-                서버 특성상 배포가 완료되어도 새로고침을 하지 않으면<br>
+                서버 특성상 패치가 완료되어도 새로고침을 하지 않으면<br>
                 업데이트가 적용되지않는 경우가 있습니다<br>
                 접속할때마다 한번씩은 새로고침 하시는걸 추천드립니다<br>
                 <br>
@@ -2438,6 +2577,7 @@
  
 해야할일
 
+조각상구현중
 가루로 장비3종 스킨
 민원신청
 우편함에쿠폰
@@ -2863,7 +3003,6 @@ nodemon server.js
         민원화면설명.innerHTML =
             `
         주인장에게 민원을 신청할 수 있습니다<br>
-        행운을 빕니다
         `;
         민원화면설명.style.textAlign = "center";
         민원화면설명.style.paddingBottom = "8px";
@@ -3191,6 +3330,12 @@ nodemon server.js
             if (document.querySelector("#탈것컨테이너") && document.querySelector("#탈것컨테이너").style.display !== "none") {
                 if (!document.querySelector("#탈것컨테이너").contains(e.target)) {
                     document.querySelector("#탈것컨테이너").style.display = "none";
+                }
+            }
+
+            if (document.querySelector("#조각상컨테이너") && document.querySelector("#조각상컨테이너").style.display !== "none") {
+                if (!document.querySelector("#조각상컨테이너").contains(e.target)) {
+                    document.querySelector("#조각상컨테이너").style.display = "none";
                 }
             }
 

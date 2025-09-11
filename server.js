@@ -704,7 +704,7 @@ app.post("/sell", async (req, res) => {
     data.스탯.계정.현재경험치 = Math.floor((data.스탯.계정.현재경험치 || 0) + (100 + (20 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.램프.현재골드 = Math.floor((data.스탯.램프.현재골드 || 0) + (50 + (10 * idx)) * (0.8 + Math.random() * 0.3));
     data.스탯.드랍 = {};
-    data.스탯.스톤 = (data.스탯.스톤 || 0) + 10;
+    data.스탯.램프.가루 = (data.스탯.램프.가루 || 0) + 10;
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;

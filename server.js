@@ -90,7 +90,6 @@ app.use(async (req, res, next) => {
   // }
 
 
-
   next();
 });
 
@@ -308,6 +307,9 @@ app.post("/login", async (req, res) => {
     }
     if (!data.스탯.스톤) {
       data.스탯.스톤 = 0;
+    }
+    if (!data.스탯.전장) {
+      data.스탯.전장 = 0;
     }
     for (let i = 1; i <= 6; i++) {
       if (!data.스탯[`조각상${i}`]) {
@@ -2137,6 +2139,37 @@ app.post("/Enhance4", async (req, res) => {
 
     res.json(data);
 
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+app.post("/arenalist", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+
+    if (error || !data) {
+      return res.status(500).json({ 오류: "유저 조회 실패" });
+    }
+
+    const 정렬된 = data.sort((a, b) => (b.스탯.전장 || 0) - (a.스탯.전장 || 0));
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json({ data: 정렬된 });
   } catch (e) {
     console.error(e);
     res.status(500).json({ 오류: "서버 오류" });

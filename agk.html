@@ -3228,6 +3228,7 @@
  
 해야할일
 
+전장
 민원신청
 우편함에쿠폰
 길드마스터한테 가입신청
@@ -3710,7 +3711,7 @@ nodemon server.js
         도전에는 티켓 1장이 소모되며, 티켓은 매일 최대 4장씩 충전됩니다<br>
         도전 시 전투력 기준 자신보다 강한 3명과 약한 3명 중<br>
         랜덤한 한명과 전투를 진행, 승리시 10포인트를 획득하고<br>
-        패배시 3포인트를 잃습니다<br>
+        패배시 3포인트를 획득합니다<br>
         `;
         전장화면설명.style.textAlign = "center";
         전장화면설명.style.paddingBottom = "8px";
@@ -3730,19 +3731,92 @@ nodemon server.js
 
         async function 전장화면보여주기() {
             try {
+
+                화면잠금();
+                const 응답 = await fetch("/arenalist", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: 유저데이터.id
+                    })
+                });
+
+                const 결과 = await 응답.json();
+
+                if (!응답.ok) {
+                    메시지표시(결과.오류);
+                    return;
+                }
+
                 화면잠금();
                 모든화면숨기기();
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
+                행렬만들기(전장화면컨테이너, "민원화면컨테이너일행", 5);
+                // 민원컨테이너일행3열.innerHTML = `도전`;
 
-                메시지표시(`리뉴얼중입니다`);
+                // 전장순 정렬 (순위 표시용)
+                const 전장정렬 = [...결과.data].sort((a, b) => (b.스탯.전장 || 0) - (a.스탯.전장 || 0));
 
-            } catch (err) {
+                // 전투력순 정렬 (주변 유저 뽑기용)
+                const 전투력정렬 = [...결과.data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
+
+                // 내 전투력 위치 찾기
+                const 내인덱스 = 전투력정렬.findIndex(u => u.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임);
+
+                if (내인덱스 !== -1) {
+                    const 시작 = Math.max(0, 내인덱스 - 3);
+                    const 끝 = Math.min(전투력정렬.length, 내인덱스 + 4);
+                    const 주변유저들 = 전투력정렬.slice(시작, 끝);
+
+                    for (let i = 0; i < 주변유저들.length; i++) {
+                        const 유저 = 주변유저들[i];
+
+                        // 전장 순위 = 전장정렬에서의 위치
+                        const 전장순위 = 전장정렬.findIndex(u => u.id === 유저.id) + 1;
+
+                        행렬만들기(전장화면컨테이너, `주변유저${i}`, 4);
+
+                        const 줄 = document.getElementById(`주변유저${i}`);
+                        줄.style.borderBottom = "0.2px solid #747474";
+
+                        document.getElementById(`주변유저${i}1열`).innerHTML = `${전장순위}위`; // 전장순위
+                        document.getElementById(`주변유저${i}2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
+                        document.getElementById(`주변유저${i}3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
+                        document.getElementById(`주변유저${i}4열`).innerHTML = `${유저.스탯.전장}포인트`;
+
+                        if (유저.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임) {
+                            줄.style.backgroundColor = "#f0f0f0";
+                            줄.style.paddingTop = "8px";
+                        }
+                    }
+                }
+
+                const 구분선 = document.createElement("div");
+                구분선.style.borderTop = "2px solid #000";   // 굵은 검은 줄
+                구분선.style.margin = "12px 0";              // 위아래 여백
+                전장화면컨테이너.appendChild(구분선);
+                // 그 다음 전체 순위 표시
+                for (let i = 0; i < 결과.data.length; i++) {
+                    const 유저 = 결과.data[i];
+
+                    행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
+
+                    document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #747474";
+                    document.getElementById(`${i}번째유저1열`).innerHTML = `${i + 1}위`;
+                    document.getElementById(`${i}번째유저2열`).innerHTML = `전투력${단위변환함수(유저.스탯.전투력)}`;
+                    document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
+                    document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장}포인트`;
+                }
+
+
+            } catch (e) {
                 메시지표시("서버요청실패");
-                console.error(err);
+                console.error(e);
             } finally {
                 화면해제();
             }
+
         }
 
 
@@ -4293,8 +4367,7 @@ nodemon server.js
             if (e.target.matches("#전장")) {
                 try {
                     화면잠금();
-                    // 전장화면보여주기();
-                    메시지표시(`리뉴얼중입니다`);
+                    전장화면보여주기();
                 } catch (e) {
                     메시지표시("서버요청실패");
                     console.error(e);

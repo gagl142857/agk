@@ -89,7 +89,6 @@ app.use(async (req, res, next) => {
   //   console.error("던전 로쿠규 셋팅 오류:", err);
   // }
 
-
   next();
 });
 
@@ -180,7 +179,7 @@ app.post("/register", async (req, res) => {
       우편함: [
         {
           이름: "램프",
-          수량: 200,
+          수량: 1000,
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
         },
@@ -309,7 +308,7 @@ app.post("/login", async (req, res) => {
       data.스탯.스톤 = 0;
     }
     if (!data.스탯.전장) {
-      data.스탯.전장 = 0;
+      data.스탯.전장 = { 포인트: 0, 티켓: 4 };
     }
     for (let i = 1; i <= 6; i++) {
       if (!data.스탯[`조각상${i}`]) {
@@ -2148,34 +2147,86 @@ app.post("/Enhance4", async (req, res) => {
 
 app.post("/arenalist", async (req, res) => {
   try {
-    const { id } = req.body;
-
     const { data, error } = await supabase
       .from("users")
-      .select("*")
+      .select("스탯");   // id는 빼고 스탯만 가져오기
 
     if (error || !data) {
       return res.status(500).json({ 오류: "유저 조회 실패" });
     }
 
-    const 정렬된 = data.sort((a, b) => (b.스탯.전장 || 0) - (a.스탯.전장 || 0));
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: data.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      return res.status(500).json({ 오류: "업데이트 실패" });
-    }
-
-    res.json({ data: 정렬된 });
+    // 정렬 안 하고 그대로 반환
+    res.json({ data });
   } catch (e) {
     console.error(e);
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
 
+app.post("/arenachallenge", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+
+    if (error || !data) return res.status(500).json({ 오류: "유저 조회 실패" });
+
+    // 내 데이터
+    const me = data.find(u => u.id === id);
+    if (!me) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!me.스탯.전장 || me.스탯.전장.티켓 < 1) {
+      return res.status(400).json({ 오류: "티켓 부족" });
+    }
+
+    // 전투력순 정렬
+    const 전투력정렬 = [...data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
+    const 내인덱스 = 전투력정렬.findIndex(u => u.id === id);
+
+    if (내인덱스 === -1) return res.status(404).json({ 오류: "순위 없음" });
+
+    // 내 주변 7명 (나 포함)
+    const 시작 = Math.max(0, 내인덱스 - 3);
+    const 끝 = Math.min(전투력정렬.length, 내인덱스 + 4);
+    const 주변 = 전투력정렬.slice(시작, 끝);
+
+    // 상대 랜덤 선택 (나 제외)
+    const 후보 = 주변.filter(u => u.id !== id);
+    if (후보.length === 0) return res.status(400).json({ 오류: "상대 없음" });
+
+    const 상대 = 후보[Math.floor(Math.random() * 후보.length)];
+
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(me)),
+      JSON.parse(JSON.stringify(상대))
+    );
+
+    if (전투결과.결과 === "승리") {
+      me.스탯.전장.포인트 = (me.스탯.전장.포인트 || 0) + 10;
+    } else {
+      me.스탯.전장.포인트 = (me.스탯.전장.포인트 || 0) + 3;
+    }
+
+    me.스탯.전장.티켓 = (me.스탯.전장.티켓 || 0) - 1;
+
+    // 내 스탯 업데이트
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: me.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+
+    res.json({ me, 전투결과 });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
@@ -2416,6 +2467,7 @@ function 전투시뮬레이션(나, 상대) {
 
   return {
     결과,
+    상대: 상대.스탯.계정?.유저닉네임,
     나HP: 나.스탯.최종HP,
     상대HP: 상대.스탯.최종HP,
     나순간최고데미지,

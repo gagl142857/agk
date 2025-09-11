@@ -821,7 +821,7 @@
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화이행", 3);
                 메인화면컨테이너재화이행1열.innerHTML = `스톤 ${단위변환함수(유저데이터.스탯.스톤 || 0)}`;
                 메인화면컨테이너재화이행2열.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루 || 0)}`;
-                // 메인화면컨테이너재화이행3열.innerHTML = `낙엽 ${단위변환함수(유저데이터.스탯.낙엽 || 0)}`;
+                메인화면컨테이너재화이행3열.innerHTML = `티켓 ${단위변환함수(유저데이터.스탯.전장.티켓 || 0)}`;
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너이행", 6);
                 메인화면컨테이너이행.style.borderTop = `0.2px solid #747474`;
@@ -3137,6 +3137,14 @@
                     `
 
 
+25.09.11<br>
+전장이 리뉴얼되었습니다<br>
+전장은 주간이나 월간단위로 초기화를 생각중입니다<br>
+전장 보상은 고민중에있습니다<br>
+전장 순위별로 보상을 지급하는건 조금 어려워서,<br>
+아마 포인트에 따른 지급이 구현되지 않을까 생각중입니다<br>
+<br>
+
 25.09.10<br>
 조각상(어빌리티) 시스템이 구현되었습니다<br>
 조각상에 소모되는 재화는 '스톤'입니다<br>
@@ -3748,15 +3756,12 @@ nodemon server.js
                     return;
                 }
 
-                화면잠금();
                 모든화면숨기기();
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
-                행렬만들기(전장화면컨테이너, "민원화면컨테이너일행", 5);
-                // 민원컨테이너일행3열.innerHTML = `도전`;
 
                 // 전장순 정렬 (순위 표시용)
-                const 전장정렬 = [...결과.data].sort((a, b) => (b.스탯.전장 || 0) - (a.스탯.전장 || 0));
+                const 전장정렬 = [...결과.data].sort((a, b) => (b.스탯.전장.포인트 || 0) - (a.스탯.전장.포인트 || 0));
 
                 // 전투력순 정렬 (주변 유저 뽑기용)
                 const 전투력정렬 = [...결과.data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
@@ -3772,8 +3777,8 @@ nodemon server.js
                     for (let i = 0; i < 주변유저들.length; i++) {
                         const 유저 = 주변유저들[i];
 
-                        // 전장 순위 = 전장정렬에서의 위치
-                        const 전장순위 = 전장정렬.findIndex(u => u.id === 유저.id) + 1;
+                        // 전장순위는 전장정렬에서의 위치
+                        const 전장순위 = 전장정렬.indexOf(유저) + 1;
 
                         행렬만들기(전장화면컨테이너, `주변유저${i}`, 4);
 
@@ -3783,7 +3788,7 @@ nodemon server.js
                         document.getElementById(`주변유저${i}1열`).innerHTML = `${전장순위}위`; // 전장순위
                         document.getElementById(`주변유저${i}2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                         document.getElementById(`주변유저${i}3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
-                        document.getElementById(`주변유저${i}4열`).innerHTML = `${유저.스탯.전장}포인트`;
+                        document.getElementById(`주변유저${i}4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
 
                         if (유저.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임) {
                             줄.style.backgroundColor = "#f0f0f0";
@@ -3792,23 +3797,76 @@ nodemon server.js
                     }
                 }
 
+                행렬만들기(전장화면컨테이너, "민원화면컨테이너일행", 5);
+                document.getElementById(`민원화면컨테이너일행3열`).innerHTML = `도전`;
+                document.getElementById(`민원화면컨테이너일행3열`).style.cursor = "pointer";
+                document.getElementById(`민원화면컨테이너일행3열`).style.padding = "3px 8px";
+                document.getElementById(`민원화면컨테이너일행3열`).style.border = "0.2px solid #747474";
+                document.getElementById(`민원화면컨테이너일행3열`).style.borderRadius = "8px";
+
+                document.getElementById(`민원화면컨테이너일행4열`).innerHTML = `티켓 : ${유저데이터.스탯.전장.티켓}장`;
+                document.getElementById(`민원화면컨테이너일행4열`).style.padding = "3px 8px";
+
+                민원화면컨테이너일행3열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        화면잠금();
+                        const 응답 = await fetch("/arenachallenge", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과.me;
+
+                        const 전투결과 = 결과.전투결과;
+                        전장화면보여주기();
+
+                        const 확인 = await 팝업(
+                            `
+                        상대 ${전투결과.상대}<br>
+                        ${전투결과.결과}<br>
+                        내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+                        적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+                        내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
+                        적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
+                        진행된 턴수 ${전투결과.턴수}
+                        `
+                            , false);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
                 const 구분선 = document.createElement("div");
                 구분선.style.borderTop = "2px solid #000";   // 굵은 검은 줄
                 구분선.style.margin = "12px 0";              // 위아래 여백
                 전장화면컨테이너.appendChild(구분선);
-                // 그 다음 전체 순위 표시
-                for (let i = 0; i < 결과.data.length; i++) {
-                    const 유저 = 결과.data[i];
+                for (let i = 0; i < 전장정렬.length; i++) {
+                    const 유저 = 전장정렬[i];
 
                     행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
 
                     document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #747474";
                     document.getElementById(`${i}번째유저1열`).innerHTML = `${i + 1}위`;
-                    document.getElementById(`${i}번째유저2열`).innerHTML = `전투력${단위변환함수(유저.스탯.전투력)}`;
+                    document.getElementById(`${i}번째유저2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                     document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
-                    document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장}포인트`;
+                    document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
                 }
-
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -4365,15 +4423,7 @@ nodemon server.js
             }
 
             if (e.target.matches("#전장")) {
-                try {
-                    화면잠금();
-                    전장화면보여주기();
-                } catch (e) {
-                    메시지표시("서버요청실패");
-                    console.error(e);
-                } finally {
-                    화면해제();
-                }
+                전장화면보여주기();
             }
 
             if (e.target.matches("#길드")) {

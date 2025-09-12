@@ -37,6 +37,8 @@ app.use(async (req, res, next) => {
     return res.status(403).send(`<html>접속이 차단된 IP입니다</html>`);
   }
 
+
+
   // try {
   //   const { data: 전체유저, error } = await supabase
   //     .from("users")
@@ -88,6 +90,45 @@ app.use(async (req, res, next) => {
   // } catch (err) {
   //   console.error("던전 로쿠규 셋팅 오류:", err);
   // }
+
+  // const { data, error } = await supabase
+  //   .from("users")
+  //   .select("스탯")
+  //   .eq("스탯->주인장인가", 1)   // 주인장 계정만 찾기 (조건은 상황에 맞게)
+  //   .single();
+
+  // if (error) {
+  //   console.error("서버점검 조회 실패:", error);
+  //   return res.status(500).send("<html>서버점검 조회 실패</html>");
+  // }
+
+  // if (data.스탯?.서버점검 === 1) {
+  //   return res.send(`
+  //   <html>
+  //     <head>
+  //       <meta charset="UTF-8">
+  //       <title>서버 점검중</title>
+  //       <style>
+  //         body {
+  //           display: flex;
+  //           justify-content: center;
+  //           align-items: center;
+  //           height: 100vh;
+  //           margin: 0;
+  //           background: #white;
+  //           color: #747474;
+  //           font-size: 24px;
+  //           font-family: sans-serif;
+  //         }
+  //       </style>
+  //     </head>
+  //     <body>
+  //       서버점검중>.<
+  //     </body>
+  //   </html>
+  // `);
+  // }
+
 
   next();
 });
@@ -175,7 +216,7 @@ app.post("/register", async (req, res) => {
       최초IP: clientIP,
       접속IP: clientIP,
       기기ID: req.body.기기ID || null,
-      버전: 3,
+      버전: 4,
       우편함: [
         {
           이름: "램프",
@@ -256,11 +297,13 @@ app.post("/login", async (req, res) => {
     const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
+    //하루한번
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
     if (data.스탯.접속요일 !== 오늘요일) {
       data.스탯.접속요일 = 오늘요일;
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
+      if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
 
       // const 전장보상 = {
       //   이름: "다이아",

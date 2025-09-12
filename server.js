@@ -1128,7 +1128,7 @@ app.post("/change-nickname", async (req, res) => {
     if (!id) return res.status(400).json({ 오류: "id 필요" });
     if (!닉네임) return res.status(400).json({ 오류: "닉네임 필요" });
 
-    if (!/^[가-힣a-zA-Z]+$/.test(닉네임)) {
+    if (!/^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]+$/.test(닉네임)) {
       return res.status(400).json({ 오류: "닉네임은 한글과 영어만 가능합니다" });
     }
 

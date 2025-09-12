@@ -751,6 +751,7 @@
         let 선택옵션목록 = [];
         let 풀자동플래그 = false;
 
+        //메인화면보여주기함수
         async function 메인화면보여주기() {
             try {
                 화면잠금();
@@ -814,6 +815,27 @@
                     기존던전뱃지.remove();
                 }
 
+                const 전장버튼 = document.getElementById("전장");
+                const 전장티켓수량 =
+                    (유저데이터?.스탯?.전장?.티켓 || 0);
+                const 기존전장뱃지 = document.getElementById("전장알림점");
+
+                if (전장버튼 && 전장티켓수량 > 0 && !기존전장뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "전장알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "0px";
+                    뱃지.style.right = "-6px";
+                    전장버튼.style.position = "relative";
+                    전장버튼.appendChild(뱃지);
+                } else if (기존전장뱃지 && 전장티켓수량 === 0) {
+                    기존전장뱃지.remove();
+                }
+
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화일행", 3);
                 메인화면컨테이너재화일행1열.innerHTML = `다이아 ${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
                 메인화면컨테이너재화일행2열.innerHTML = `램프 ${단위변환함수(유저데이터.스탯.램프.수량 || 0)}`;
@@ -821,7 +843,7 @@
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화이행", 3);
                 메인화면컨테이너재화이행1열.innerHTML = `스톤 ${단위변환함수(유저데이터.스탯.스톤 || 0)}`;
                 메인화면컨테이너재화이행2열.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루 || 0)}`;
-                메인화면컨테이너재화이행3열.innerHTML = `티켓 ${단위변환함수(유저데이터.스탯.전장.티켓 || 0)}`;
+                // 메인화면컨테이너재화이행3열.innerHTML = `티켓 ${단위변환함수(유저데이터.스탯.전장.티켓 || 0)}`;
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너이행", 6);
                 메인화면컨테이너이행.style.borderTop = `0.2px solid #747474`;
@@ -1032,6 +1054,7 @@
                     기존탈것뱃지.remove();
                 }
 
+                //탈것화면보여주기
                 탈것박스.addEventListener("click", (e) => {
                     e.stopPropagation();
 
@@ -1079,6 +1102,16 @@
                     현재레벨.innerHTML = `현재Lv ${유저데이터.스탯.탈것.레벨}`;
                     document.getElementById("탈것컨테이너일행2열").append(현재레벨);
 
+                    if (유저데이터.스탯.탈것.회피) {
+                        const 탈것회피 = document.createElement("div");
+                        탈것회피.style.display = "flex";
+                        탈것회피.style.justifyContent = "space-between";
+                        탈것회피.style.width = "100%";
+                        탈것회피.style.borderBottom = `0.2px solid #747474`;
+                        탈것회피.innerHTML = `<span>회피</span><span>${유저데이터.스탯.탈것.회피}</span>`;
+                        document.getElementById("탈것컨테이너일행2열").append(탈것회피);
+                    }
+
                     const 탈것HP보너스 = document.createElement("div");
                     탈것HP보너스.style.display = "flex";
                     탈것HP보너스.style.justifyContent = "space-between";
@@ -1107,6 +1140,16 @@
                     다음레벨.style.display = "flex";
                     다음레벨.innerHTML = `다음Lv ${유저데이터.스탯.탈것.레벨 + 1}`;
                     document.getElementById("탈것컨테이너일행3열").append(다음레벨);
+
+                    if (유저데이터.스탯.탈것.회피) {
+                        const 탈것다음회피 = document.createElement("div");
+                        탈것다음회피.style.display = "flex";
+                        탈것다음회피.style.justifyContent = "space-between";
+                        탈것다음회피.style.width = "100%";
+                        탈것다음회피.style.borderBottom = `0.2px solid #747474`;
+                        탈것다음회피.innerHTML = `<span>회피</span><span>${4 + Math.floor((유저데이터.스탯.탈것.레벨 + 1 || 0) / 10) * 2}</span>`;
+                        document.getElementById("탈것컨테이너일행3열").append(탈것다음회피);
+                    }
 
                     const 탈것HP다음보너스 = document.createElement("div");
                     탈것HP다음보너스.style.display = "flex";
@@ -1973,21 +2016,34 @@
 
                 });
 
+                //직업화면보여주기
+                const 직업박스 = document.createElement("직업박스");
+                직업박스.id = "직업";
+                직업박스.style.display = "flex";
+                직업박스.innerHTML = `직업`;
+                직업박스.style.textAlign = "center";
+                직업박스.style.color = "#747474";
+                // 직업박스.style.fontSize = "14px";
+                직업박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                직업박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                직업박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                직업박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                직업박스.style.cursor = "pointer";
+                직업박스.style.width = "32px";
+                직업박스.style.height = "32px";
+                직업박스.style.padding = "8px";
+                직업박스.style.marginTop = "8px";
+                직업박스.style.borderRadius = "8px";
+                직업박스.style.border = `0.2px solid #747474`;
+                직업박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행6열").append(직업박스);
 
-                const 미정1박스 = document.createElement("미정1박스");
-                미정1박스.id = "미정1";
-                미정1박스.style.display = "flex";
-                미정1박스.innerHTML = ``;
-                미정1박스.style.color = "white";
-                미정1박스.style.cursor = "pointer";
-                미정1박스.style.width = "32px";
-                미정1박스.style.height = "32px";
-                미정1박스.style.padding = "8px";
-                미정1박스.style.marginTop = "8px";
-                미정1박스.style.borderRadius = "8px";
-                미정1박스.style.border = `0.2px solid #747474`;
-                미정1박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행6열").append(미정1박스);
+                직업박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    직업화면보여주기();
+                });
+
 
                 const 미정2박스 = document.createElement("미정2박스");
                 미정2박스.id = "미정1";
@@ -3046,7 +3102,7 @@
                 P : 패치노트<br>
                 T : agk사전<br>
                 D : 던전화면<br>
-                A : 민원화면<br>
+                A : 직업화면<br>
                 <br>
 
                 닉네임변경<br>
@@ -3136,6 +3192,17 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+
+25.09.12<br>
+1차 CBT 서버오픈<br>
+전장 동점자 순위 병합 방식 적용<br>
+전장에 사용가능한 티켓 보유시 알림점 구현<br>
+탈것 능력치에 회피가 추가되었습니다<br>
+기존유저들은 탈것 1회 레벨업 시 적용됩니다<br>
+탈것의 회피는 4부터 시작해서 등급당 2씩 증가합니다<br>
+닉네임을 7자로 설정할수있던 오류를 수정했습니다<br>
+최대제한은 6자입니다. 이미 7자로 하신분은 우선 넘어가겠습니다<br>
+<br>
 
 25.09.11<br>
 전장이 리뉴얼되었습니다<br>
@@ -3236,8 +3303,14 @@
  
 해야할일
 
+탈것에 회피넣기
+상점
+유물뽑기
+스킬수집
+동료수집
+별자리 황도12궁
 서버적용
-전직구현
+직업구현
 민원신청
 우편함에쿠폰
 길드마스터한테 가입신청
@@ -3737,6 +3810,7 @@ nodemon server.js
         전장화면컨테이너.style.gap = "8px";
         전장화면.append(전장화면컨테이너);
 
+        //전장화면보여주기함수
         async function 전장화면보여주기() {
             try {
 
@@ -3756,6 +3830,27 @@ nodemon server.js
                     return;
                 }
 
+                const 전장버튼 = document.getElementById("전장");
+                const 전장티켓수량 =
+                    (유저데이터?.스탯?.전장?.티켓 || 0);
+                const 기존전장뱃지 = document.getElementById("전장알림점");
+
+                if (전장버튼 && 전장티켓수량 > 0 && !기존전장뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "전장알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "0px";
+                    뱃지.style.right = "-6px";
+                    전장버튼.style.position = "relative";
+                    전장버튼.appendChild(뱃지);
+                } else if (기존전장뱃지 && 전장티켓수량 === 0) {
+                    기존전장뱃지.remove();
+                }
+
                 모든화면숨기기();
                 전장화면.style.display = "flex";
                 전장화면컨테이너.innerHTML = "";
@@ -3765,6 +3860,22 @@ nodemon server.js
 
                 // 전투력순 정렬 (주변 유저 뽑기용)
                 const 전투력정렬 = [...결과.data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
+
+                // 순위맵 만들기 (동점 처리)
+                let 순위맵 = {};
+                let 현재순위 = 0;
+                let 이전포인트 = null;
+
+                for (let i = 0; i < 전장정렬.length; i++) {
+                    const 유저 = 전장정렬[i];
+
+                    if (유저.스탯.전장.포인트 !== 이전포인트) {
+                        현재순위 = i + 1;
+                        이전포인트 = 유저.스탯.전장.포인트;
+                    }
+
+                    순위맵[유저.스탯.계정.유저닉네임] = 현재순위;
+                }
 
                 // 내 전투력 위치 찾기
                 const 내인덱스 = 전투력정렬.findIndex(u => u.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임);
@@ -3777,15 +3888,12 @@ nodemon server.js
                     for (let i = 0; i < 주변유저들.length; i++) {
                         const 유저 = 주변유저들[i];
 
-                        // 전장순위는 전장정렬에서의 위치
-                        const 전장순위 = 전장정렬.indexOf(유저) + 1;
-
                         행렬만들기(전장화면컨테이너, `주변유저${i}`, 4);
 
                         const 줄 = document.getElementById(`주변유저${i}`);
                         줄.style.borderBottom = "0.2px solid #747474";
 
-                        document.getElementById(`주변유저${i}1열`).innerHTML = `${전장순위}위`; // 전장순위
+                        document.getElementById(`주변유저${i}1열`).innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`; // 동점 순위
                         document.getElementById(`주변유저${i}2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                         document.getElementById(`주변유저${i}3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
                         document.getElementById(`주변유저${i}4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
@@ -3797,53 +3905,44 @@ nodemon server.js
                     }
                 }
 
-                행렬만들기(전장화면컨테이너, "민원화면컨테이너일행", 5);
-                document.getElementById(`민원화면컨테이너일행3열`).innerHTML = `도전`;
-                document.getElementById(`민원화면컨테이너일행3열`).style.cursor = "pointer";
-                document.getElementById(`민원화면컨테이너일행3열`).style.padding = "3px 8px";
-                document.getElementById(`민원화면컨테이너일행3열`).style.border = "0.2px solid #747474";
-                document.getElementById(`민원화면컨테이너일행3열`).style.borderRadius = "8px";
+                행렬만들기(전장화면컨테이너, "전장화면도전", 5);
+                document.getElementById(`전장화면도전3열`).innerHTML = `도전`;
+                document.getElementById(`전장화면도전3열`).style.cursor = "pointer";
+                document.getElementById(`전장화면도전3열`).style.padding = "3px 8px";
+                document.getElementById(`전장화면도전3열`).style.border = "0.2px solid #747474";
+                document.getElementById(`전장화면도전3열`).style.borderRadius = "8px";
 
-                document.getElementById(`민원화면컨테이너일행4열`).innerHTML = `티켓 : ${유저데이터.스탯.전장.티켓}장`;
-                document.getElementById(`민원화면컨테이너일행4열`).style.padding = "3px 8px";
+                document.getElementById(`전장화면도전4열`).innerHTML = `티켓 : ${유저데이터.스탯.전장.티켓}장`;
+                document.getElementById(`전장화면도전4열`).style.padding = "3px 8px";
 
-                민원화면컨테이너일행3열.addEventListener("click", async (e) => {
+                전장화면도전3열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-
                         화면잠금();
                         const 응답 = await fetch("/arenachallenge", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: 유저데이터.id
-                            })
+                            body: JSON.stringify({ id: 유저데이터.id })
                         });
 
                         const 결과 = await 응답.json();
-
                         if (!응답.ok) {
                             메시지표시(결과.오류);
                             return;
                         }
 
                         유저데이터 = 결과.me;
-
                         const 전투결과 = 결과.전투결과;
                         전장화면보여주기();
 
-                        const 확인 = await 팝업(
-                            `
-                        상대 ${전투결과.상대}<br>
-                        ${전투결과.결과}<br>
-                        내 남은HP ${단위변환함수(전투결과.나HP)}<br>
-                        적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
-                        내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
-                        적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}
-                        `
-                            , false);
-
+                        await 팝업(
+                            `상대 ${전투결과.상대}<br>
+             ${전투결과.결과}<br>
+             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+             적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+             내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
+             적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
+             진행된 턴수 ${전투결과.턴수}`, false);
                     } catch (e) {
                         메시지표시("서버요청실패");
                         console.error(e);
@@ -3852,21 +3951,194 @@ nodemon server.js
                     }
                 });
 
+                // 순위표 전체 출력
                 const 구분선 = document.createElement("div");
-                구분선.style.borderTop = "2px solid #000";   // 굵은 검은 줄
-                구분선.style.margin = "12px 0";              // 위아래 여백
+                구분선.style.borderTop = "2px solid #000";
+                구분선.style.margin = "12px 0";
                 전장화면컨테이너.appendChild(구분선);
+
                 for (let i = 0; i < 전장정렬.length; i++) {
                     const 유저 = 전장정렬[i];
 
                     행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
 
                     document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #747474";
-                    document.getElementById(`${i}번째유저1열`).innerHTML = `${i + 1}위`;
+                    document.getElementById(`${i}번째유저1열`).innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`; // 동점 순위
                     document.getElementById(`${i}번째유저2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                     document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
                     document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
                 }
+
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+        }
+
+        const 직업화면 = document.createElement("div");
+        직업화면.style.position = "absolute";
+        직업화면.className = "화면숨기기";
+        직업화면.style.boxSizing = "border-box";
+        직업화면.style.top = "64px";
+        직업화면.style.width = "400px";
+        직업화면.style.display = "none";
+        직업화면.style.flexDirection = "column";
+        직업화면.style.gap = "8px";
+        document.body.append(직업화면);
+
+        const 직업화면설명 = document.createElement("div");
+        직업화면설명.style.boxSizing = "border-box";
+        직업화면설명.style.borderBottom = "0.2px solid #747474";
+        직업화면설명.style.flex = "1";
+        직업화면설명.style.display = "flex";
+        직업화면설명.style.flexDirection = "column";
+        직업화면설명.innerHTML =
+            `
+            직업을 결정하세요<br>
+            직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
+        `;
+        직업화면설명.style.textAlign = "center";
+        직업화면설명.style.paddingBottom = "8px";
+        직업화면.append(직업화면설명);
+
+        const 직업화면컨테이너 = document.createElement("div");
+        직업화면컨테이너.id = "직업화면컨테이너";
+        직업화면컨테이너.style.boxSizing = "border-box";
+        직업화면컨테이너.style.border = "0.2px solid #747474";
+        직업화면컨테이너.style.borderRadius = "8px";
+        직업화면컨테이너.style.flex = "1";
+        직업화면컨테이너.style.display = "flex";
+        직업화면컨테이너.style.flexDirection = "column";
+        직업화면컨테이너.style.padding = "8px";
+        직업화면컨테이너.style.gap = "8px";
+        직업화면.append(직업화면컨테이너);
+
+        //직업화면보여주기함수
+        async function 직업화면보여주기() {
+            try {
+
+                메시지표시(`구현중입니다`);
+                return;
+                모든화면숨기기();
+                직업화면.style.display = "flex";
+                직업화면컨테이너.innerHTML = "";
+
+                행렬만들기(직업화면컨테이너, "직업화면컨테이너일행", 2);
+
+                //검술
+                직업화면컨테이너일행1열.innerHTML = `검술`;
+                직업화면컨테이너일행1열.style.boxSizing = "border-box";
+                직업화면컨테이너일행1열.style.border = "0.2px solid #747474";
+                직업화면컨테이너일행1열.style.borderRadius = "8px";
+                const 검술1차 = document.createElement("div");
+                검술1차.style.display = "flex";
+                검술1차.style.textAlign = "center";
+                검술1차.innerHTML =
+                    `
+                검술1차(Lv30)<br>
+                콤보30%<br>
+                콤보무시30%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행1열").append(검술1차);
+                const 검술2차 = document.createElement("div");
+                검술2차.style.display = "flex";
+                검술2차.style.textAlign = "center";
+                검술2차.innerHTML =
+                    `
+                검술2차(Lv50)<br>
+                스턴20%<br>
+                스턴무시10%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행1열").append(검술2차);
+                const 검술3차 = document.createElement("div");
+                검술3차.style.display = "flex";
+                검술3차.style.textAlign = "center";
+                검술3차.innerHTML =
+                    `
+                검술3차(Lv70)<br>
+                콤보계수100%<br>
+                콤보피해감소50%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행1열").append(검술3차);
+                const 검술4차 = document.createElement("div");
+                검술4차.style.display = "flex";
+                검술4차.style.textAlign = "center";
+                검술4차.innerHTML =
+                    `
+                검술4차(Lv100)<br>
+                공격력보너스50%<br>
+                일반공격계수100%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행1열").append(검술4차);
+                const 검술5차 = document.createElement("div");
+                검술5차.style.display = "flex";
+                검술5차.style.textAlign = "center";
+                검술5차.innerHTML =
+                    `
+                검술5차(Lv130)<br>
+                공격력보너스100%<br>
+                일반공격피해감소50%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행1열").append(검술5차);
+
+                //체술
+                직업화면컨테이너일행2열.innerHTML = `체술`;
+                직업화면컨테이너일행2열.style.boxSizing = "border-box";
+                직업화면컨테이너일행2열.style.border = "0.2px solid #747474";
+                직업화면컨테이너일행2열.style.borderRadius = "8px";
+                const 체술1차 = document.createElement("div");
+                체술1차.style.display = "flex";
+                체술1차.style.textAlign = "center";
+                체술1차.innerHTML =
+                    `
+                체술1차(Lv30)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(체술1차);
+                const 체술2차 = document.createElement("div");
+                체술2차.style.display = "flex";
+                체술2차.style.textAlign = "center";
+                체술2차.innerHTML =
+                    `
+                체술2차(Lv50)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(체술2차);
+                const 체술3차 = document.createElement("div");
+                체술3차.style.display = "flex";
+                체술3차.style.textAlign = "center";
+                체술3차.innerHTML =
+                    `
+                체술3차(Lv70)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(체술3차);
+                const 체술4차 = document.createElement("div");
+                체술4차.style.display = "flex";
+                체술4차.style.textAlign = "center";
+                체술4차.innerHTML =
+                    `
+                체술4차(Lv100)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(체술4차);
+                const 체술5차 = document.createElement("div");
+                체술5차.style.display = "flex";
+                체술5차.style.textAlign = "center";
+                체술5차.innerHTML =
+                    `
+                체술5차(Lv130)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(체술5차);
+
+
+                행렬만들기(직업화면컨테이너, "직업화면컨테이너이행", 2);
+                직업화면컨테이너이행1열.innerHTML = `신술`;
+                직업화면컨테이너이행2열.innerHTML = `궁술`;
+
+                행렬만들기(직업화면컨테이너, "직업화면컨테이너삼행", 2);
+                직업화면컨테이너삼행1열.innerHTML = `마술`;
+                직업화면컨테이너삼행2열.innerHTML = `인술`;
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -4463,9 +4735,9 @@ nodemon server.js
                             입력창.value = 입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/g, "");
                         }
 
-                        if (입력창.value.length > 7) {
+                        if (입력창.value.length > 6) {
                             메시지표시("닉네임은 최대 6글자까지 가능합니다");
-                            입력창.value = 입력창.value.slice(0, 7);
+                            입력창.value = 입력창.value.slice(0, 6);
                         }
                     });
 
@@ -4929,7 +5201,7 @@ nodemon server.js
                         document.querySelector("#던전")?.click();
                         break;
                     case "a":
-                        document.querySelector("#민원")?.click();
+                        document.querySelector("#직업")?.click();
                         break;
                     case "j":
                         document.querySelector("#전장")?.click();

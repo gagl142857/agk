@@ -1363,12 +1363,12 @@ app.post("/RockgolemDungeon", async (req, res) => {
     );
 
     if (전투결과.결과 === "승리") {
-      유저데이터.스탯.낙엽 = 유저데이터.스탯.낙엽 + 유저데이터.스탯.던전.락골렘.레벨 * 1;
+      유저데이터.스탯.스톤 = 유저데이터.스탯.스톤 + 유저데이터.스탯.던전.락골렘.레벨 * 1;
       if (유저데이터.스탯.던전.락골렘.레벨 < 20) {
         유저데이터.스탯.던전.락골렘.레벨 += 1;
       }
     } else {
-      유저데이터.스탯.낙엽 = 유저데이터.스탯.낙엽 + (유저데이터.스탯.던전.락골렘.레벨 - 1) * 1;
+      유저데이터.스탯.스톤 = 유저데이터.스탯.스톤 + (유저데이터.스탯.던전.락골렘.레벨 - 1) * 1;
     }
 
     유저데이터.스탯.던전.락골렘.열쇠 -= 1;
@@ -1961,6 +1961,82 @@ app.post("/StoreGeniekey1", async (req, res) => {
     유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
 
     유저데이터.스탯.던전.지니.열쇠 += 1;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreRokugyukey1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
+
+    유저데이터.스탯.던전.로쿠규.열쇠 += 1;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreRockgolemkey1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
+
+    유저데이터.스탯.던전.락골렘.열쇠 += 1;
 
     const { error: updateError } = await supabase
       .from("users")

@@ -811,6 +811,10 @@ app.post("/receive-all-mail", async (req, res) => {
         data.스탯.램프.수량 += mail.수량;
       } else if (mail.이름 === "다이아") {
         data.스탯.다이아 += mail.수량;
+
+      } else if (mail.이름 === "티켓") {
+        data.스탯.전장.티켓 += mail.수량;
+
       } else {
         await supabase.from("로그기록").insert({
           스탯: data.스탯,
@@ -1930,6 +1934,44 @@ app.post("/arenachallenge", async (req, res) => {
 
     res.json({ me, 전투결과 });
 
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreGeniekey1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
+
+    유저데이터.스탯.던전.지니.열쇠 += 1;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
   } catch (e) {
     console.error(e);
     res.status(500).json({ 오류: "서버 오류" });

@@ -4441,15 +4441,48 @@ nodemon server.js
                 });
 
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록일행", 3);
-                상점화면컨테이너상품목록일행1열.innerHTML = `지니열쇠<br>×1`;
+                상점화면컨테이너상품목록일행.style.borderTop = "0.2px solid #dadada";
+                상점화면컨테이너상품목록일행.style.padding = "8px 0px";
+                상점화면컨테이너상품목록일행1열.innerHTML = `지니열쇠<br>×1<br>1000다이아`;
+                상점화면컨테이너상품목록일행1열.style.cursor = `pointer`;
                 상점화면컨테이너상품목록일행1열.style.textAlign = `center`;
                 상점화면컨테이너상품목록일행1열.style.boxSizing = "border-box";
                 상점화면컨테이너상품목록일행1열.style.border = "0.2px solid #dadada";
                 상점화면컨테이너상품목록일행1열.style.borderRadius = "8px";
-                상점화면컨테이너상품목록일행2열.innerHTML = `로쿠규열쇠<br>×1`;
-                상점화면컨테이너상품목록일행2열.style.textAlign = `center`;
-                상점화면컨테이너상품목록일행3열.innerHTML = `락골렘열쇠<br>×1`;
-                상점화면컨테이너상품목록일행3열.style.textAlign = `center`;
+                상점화면컨테이너상품목록일행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreGeniekey1", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`지니열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+
+                });
 
 
 
@@ -5526,13 +5559,21 @@ nodemon server.js
             return 결과;
         }
 
-
         function 비장비아이콘변환(svg) {
             if (!svg) return "";
             let 결과 = svg.replace(/<path[^>]*fill="#000"[^>]*><\/path>/, "");
             결과 = 결과.replace(/fill="#000"/g, 'fill="#dadada"');
             결과 = 결과.replace(/height:\s*\d+px;/, `height: 100%;`);
             결과 = 결과.replace(/width:\s*\d+px;/, `width: 100%;`);
+            return 결과;
+        }
+
+        function 아이콘변환14(svg) {
+            if (!svg) return "";
+            let 결과 = svg.replace(/<path[^>]*fill="#000"[^>]*><\/path>/, "");
+            결과 = 결과.replace(/fill="#000"/g, 'fill="#dadada"');
+            결과 = 결과.replace(/height:\s*\d+px;/, `height: 16px;`);
+            결과 = 결과.replace(/width:\s*\d+px;/, `width: 16px;`);
             return 결과;
         }
 

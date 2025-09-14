@@ -842,7 +842,7 @@
                 메인화면컨테이너재화일행3열.innerHTML = `낙엽 ${단위변환함수(유저데이터.스탯.낙엽 || 0)}`;
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화이행", 3);
                 메인화면컨테이너재화이행1열.innerHTML = `스톤 ${단위변환함수(유저데이터.스탯.스톤 || 0)}`;
-                메인화면컨테이너재화이행2열.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루 || 0)}`;
+                메인화면컨테이너재화이행2열.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.가루 || 0)}`;
                 // 메인화면컨테이너재화이행3열.innerHTML = `티켓 ${단위변환함수(유저데이터.스탯.전장.티켓 || 0)}`;
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너이행", 6);
@@ -2335,14 +2335,38 @@
                 const 가루 = document.createElement("div");
                 가루.style.display = "flex";
                 가루.style.width = "100%";
-                가루.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.램프.가루 || 0)}`;
+                가루.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.가루 || 0)}`;
                 document.getElementById("메인화면컨테이너삼행3열").append(가루);
 
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너사행", 2);
                 메인화면컨테이너사행.style.alignItems = "flex-start";
 
-                const 스탯리스트1열 = ["HP", "공격력", "방어력", "공속", "치명", "치명무시", "치명피해", "치명저항", "콤보", "콤보무시", "반격", "반격무시", "스턴", "스턴무시", "회피", "회피무시", "회복", "회복무시", "에어본", "일반공격계수", "일반공격피해감소", "콤보계수", "콤보피해감소", "반격계수", "반격피해감소", "스킬치명", "스킬치명피해", "스킬피해", "스킬피해감소"];
+                // const 스탯리스트1열 = ["HP", "공격력", "방어력", "공속", "치명", "치명무시", "치명피해", "치명저항", "콤보", "콤보무시", "반격", "반격무시", "스턴", "스턴무시", "회피", "회피무시", "회복", "회복무시", "에어본", "일반공격계수", "일반공격피해감소", "콤보계수", "콤보피해감소", "반격계수", "반격피해감소", "스킬치명", "스킬치명피해", "스킬피해", "스킬피해감소"];
+                const 스탯리스트1열 = [
+                    "HP",
+                    "공격력",
+                    "방어력",
+                    "공속",
+                    "치명",
+                    "치명무시",
+                    "치명피해",
+                    "치명저항",
+                    "콤보",
+                    "콤보무시",
+                    "콤보계수",
+                    "콤보피해감소",
+                    "반격",
+                    "반격무시",
+                    "반격계수",
+                    "반격피해감소",
+                    "스턴",
+                    "스턴무시",
+                    "회피",
+                    "회피무시",
+                    "일반공격계수",
+                    "일반공격피해감소",
+                ];
                 for (const 항목 of 스탯리스트1열) {
                     const div = document.createElement("div");
                     div.style.display = "flex";
@@ -2353,14 +2377,36 @@
                     document.getElementById("메인화면컨테이너사행1열").append(div);
                 }
 
-                const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유율", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
+                // const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유율", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
+                const 스탯리스트2열 = [
+                    "회복",
+                    "회복무시",
+                    "에어본",
+                    "스킬치명",
+                    "스킬치명피해",
+                    "스킬피해",
+                    "스킬피해감소",
+                    "치유율",
+                    "치유량",
+                    "관통",
+                    "관통무시",
+                    "피해감소",
+                    "HP보너스",
+                    "공격력보너스",
+                    "방어력보너스",
+                    "공속보너스",
+                    "최종HP",
+                    "최종공격력",
+                    "최종방어력",
+                    "최종공속"
+                ];
                 for (const 항목 of 스탯리스트2열) {
                     const div = document.createElement("div");
                     div.style.display = "flex";
                     div.style.justifyContent = "space-between";
                     div.style.width = "100%";
                     div.style.borderBottom = `0.2px solid #dadada`;
-                    div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("관통") || 항목.includes("막기") || 항목.includes("동료찬사") || 항목.includes("동료저항") || 항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
+                    div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
                     document.getElementById("메인화면컨테이너사행2열").append(div);
                 }
 
@@ -3119,12 +3165,13 @@
                 치명, 치명무시, 치명저항, 일반공격계수, 일반공격피해감소<br>
                 콤보, 콤보무시, 콤보피해감소, 스턴, 에어본, 스턴무시<br>
                 회피, 회피무시, 반격, 반격무시, 반격피해감소, 회복, 회복무시<br>
+                관통, 관통무시<br>
                 이상이고 개발에 따라 추가될 예정<br>
                 <br>
 
                 조각상리롤목록<br>
                 HP보너스, 공격력보너스, 방어력보너스, 치명피해, 치명저항<br>
-                반격계수, 콤보계수, 보스피해, 동료피해, 스킬피해<br>
+                반격계수, 콤보계수, 스킬피해<br>
                 <br>
 
                 조각상스톤소모량<br>
@@ -3192,6 +3239,22 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+
+25.09.14<br>
+초기스탯과 레벨스탯 증가량이 약 너프 및 변경되었습니다<br>
+계산식은 재접속시 적용되어 표시됩니다<br>
+전장화면이 복구되었습니다<br>
+전투시뮬레이션 관통, 관통무시 스탯이 적용됩니다<br>
+던전 소탕 기능이 삭제되었습니다<br>
+도전 성공시 현재레벨의 보상을 획득하고<br>
+도전 실패시 이전레벨의 보상을 획득합니다<br>
+<br>
+
+25.09.13<br>
+메인화면에서 구현이 오래걸릴 스탯목록을 한번 정리했습니다<br>
+전투시뮬레이션에서 치명저항값 계산수식 오류를 수정했습니다<br>
+전투시뮬레이션에 관통과 관통무시가 추가 적용됩니다<br>
+<br>
 
 25.09.12<br>
 1차 CBT 서버오픈<br>
@@ -3305,7 +3368,6 @@
  
 해야할일
 
-탈것에 회피넣기
 상점
 유물뽑기
 스킬수집
@@ -3399,21 +3461,21 @@ nodemon server.js
                 첫번째몬스터속성일.style.display = "flex";
                 첫번째몬스터속성일.style.width = "100%";
                 첫번째몬스터속성일.style.boxSizing = "border-box";
-                첫번째몬스터속성일.innerHTML = `치명 ${((유저데이터.스탯.던전.지니.레벨 || 0) * 10).toFixed(0) > 100 ? 100 : ((유저데이터.스탯.던전.지니.레벨 || 0) * 10).toFixed(0)}%`;
+                첫번째몬스터속성일.innerHTML = `치명 ${((유저데이터.스탯.던전.지니.레벨 || 1) * 10).toFixed(0) > 100 ? 100 : ((유저데이터.스탯.던전.지니.레벨 || 1) * 10).toFixed(0)}%`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성일);
 
                 const 첫번째몬스터속성이 = document.createElement("div");
                 첫번째몬스터속성이.style.display = "flex";
                 첫번째몬스터속성이.style.width = "100%";
                 첫번째몬스터속성이.style.boxSizing = "border-box";
-                첫번째몬스터속성이.innerHTML = `치명피해 ${유저데이터.스탯.던전.지니.레벨 * 20 + 200 || 200}`;
+                첫번째몬스터속성이.innerHTML = `치명피해 ${150 + 15 * (유저데이터.스탯.던전.지니.레벨)}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성이);
 
                 const 첫번째몬스터속성삼 = document.createElement("div");
                 첫번째몬스터속성삼.style.display = "flex";
                 첫번째몬스터속성삼.style.width = "100%";
                 첫번째몬스터속성삼.style.boxSizing = "border-box";
-                첫번째몬스터속성삼.innerHTML = `치명저항 ${유저데이터.스탯.던전.지니.레벨 * 10 + 100 || 0}`;
+                첫번째몬스터속성삼.innerHTML = `치명저항 ${0 + 10 * (유저데이터.스탯.던전.지니.레벨)}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터속성삼);
 
                 const 첫번째몬스터전투력 = document.createElement("div");
@@ -3462,18 +3524,6 @@ nodemon server.js
                 첫번째몬스터열쇠수량.innerHTML = `× ${유저데이터.스탯.던전.지니.열쇠 || 0}`;
                 document.getElementById("던전화면컨테이너일행4열일행1열").append(첫번째몬스터열쇠수량);
 
-                const 첫번째몬스터소탕 = document.createElement("div");
-                첫번째몬스터소탕.id = "첫번째몬스터소탕";
-                첫번째몬스터소탕.style.display = "flex";
-                첫번째몬스터소탕.style.textAlign = "center";
-                첫번째몬스터소탕.style.boxSizing = "border-box";
-                첫번째몬스터소탕.style.border = "0.2px solid #dadada";
-                첫번째몬스터소탕.style.borderRadius = "8px";
-                첫번째몬스터소탕.innerHTML = `소탕`;
-                첫번째몬스터소탕.style.padding = "3px 6px";
-                첫번째몬스터소탕.style.cursor = "pointer";
-                document.getElementById("던전화면컨테이너일행4열일행2열").append(첫번째몬스터소탕);
-
                 const 첫번째몬스터도전 = document.createElement("div");
                 첫번째몬스터도전.id = "첫번째몬스터도전";
                 첫번째몬스터도전.style.textAlign = "center";
@@ -3516,14 +3566,14 @@ nodemon server.js
                 두번째몬스터속성이.style.display = "flex";
                 두번째몬스터속성이.style.width = "100%";
                 두번째몬스터속성이.style.boxSizing = "border-box";
-                두번째몬스터속성이.innerHTML = `콤보계수 ${유저데이터.스탯.던전.로쿠규.레벨 * 10 + 100 || 200}`;
+                두번째몬스터속성이.innerHTML = `콤보계수 ${100 + 10 * 유저데이터.스탯.던전.로쿠규.레벨}`;
                 document.getElementById("던전화면컨테이너이행2열").append(두번째몬스터속성이);
 
                 const 두번째몬스터속성삼 = document.createElement("div");
                 두번째몬스터속성삼.style.display = "flex";
                 두번째몬스터속성삼.style.width = "100%";
                 두번째몬스터속성삼.style.boxSizing = "border-box";
-                두번째몬스터속성삼.innerHTML = `콤보피감 ${유저데이터.스탯.던전.로쿠규.레벨 * 10 || 0}`;
+                두번째몬스터속성삼.innerHTML = `콤보피감 ${0 + 10 * 유저데이터.스탯.던전.로쿠규.레벨}`;
                 document.getElementById("던전화면컨테이너이행2열").append(두번째몬스터속성삼);
 
                 const 두번째몬스터전투력 = document.createElement("div");
@@ -3572,18 +3622,6 @@ nodemon server.js
                 두번째몬스터열쇠수량.innerHTML = `× ${유저데이터.스탯.던전.로쿠규.열쇠 || 0}`;
                 document.getElementById("던전화면컨테이너이행4열일행1열").append(두번째몬스터열쇠수량);
 
-                const 두번째몬스터소탕 = document.createElement("div");
-                두번째몬스터소탕.id = "두번째몬스터소탕";
-                두번째몬스터소탕.style.display = "flex";
-                두번째몬스터소탕.style.textAlign = "center";
-                두번째몬스터소탕.style.boxSizing = "border-box";
-                두번째몬스터소탕.style.border = "0.2px solid #dadada";
-                두번째몬스터소탕.style.borderRadius = "8px";
-                두번째몬스터소탕.innerHTML = `소탕`;
-                두번째몬스터소탕.style.padding = "3px 6px";
-                두번째몬스터소탕.style.cursor = "pointer";
-                document.getElementById("던전화면컨테이너이행4열일행2열").append(두번째몬스터소탕);
-
                 const 두번째몬스터도전 = document.createElement("div");
                 두번째몬스터도전.id = "두번째몬스터도전";
                 두번째몬스터도전.style.textAlign = "center";
@@ -3626,14 +3664,14 @@ nodemon server.js
                 세번째몬스터속성이.style.display = "flex";
                 세번째몬스터속성이.style.width = "100%";
                 세번째몬스터속성이.style.boxSizing = "border-box";
-                세번째몬스터속성이.innerHTML = `스턴무시 ${유저데이터.스탯.던전.락골렘.레벨 * 10 || 200}`;
+                세번째몬스터속성이.innerHTML = `스턴무시 ${0 + 10 * 유저데이터.스탯.던전.락골렘.레벨}`;
                 document.getElementById("던전화면컨테이너삼행2열").append(세번째몬스터속성이);
 
                 const 세번째몬스터속성삼 = document.createElement("div");
                 세번째몬스터속성삼.style.display = "flex";
                 세번째몬스터속성삼.style.width = "100%";
                 세번째몬스터속성삼.style.boxSizing = "border-box";
-                세번째몬스터속성삼.innerHTML = `회피무시 ${유저데이터.스탯.던전.락골렘.레벨 * 10 || 0}`;
+                세번째몬스터속성삼.innerHTML = `회피무시 ${0 + 10 * 유저데이터.스탯.던전.락골렘.레벨}`;
                 document.getElementById("던전화면컨테이너삼행2열").append(세번째몬스터속성삼);
 
                 const 세번째몬스터전투력 = document.createElement("div");
@@ -3681,18 +3719,6 @@ nodemon server.js
                 세번째몬스터열쇠수량.style.boxSizing = "border-box";
                 세번째몬스터열쇠수량.innerHTML = `× ${유저데이터.스탯.던전.락골렘.열쇠 || 0}`;
                 document.getElementById("던전화면컨테이너삼행4열일행1열").append(세번째몬스터열쇠수량);
-
-                const 세번째몬스터소탕 = document.createElement("div");
-                세번째몬스터소탕.id = "세번째몬스터소탕";
-                세번째몬스터소탕.style.display = "flex";
-                세번째몬스터소탕.style.textAlign = "center";
-                세번째몬스터소탕.style.boxSizing = "border-box";
-                세번째몬스터소탕.style.border = "0.2px solid #dadada";
-                세번째몬스터소탕.style.borderRadius = "8px";
-                세번째몬스터소탕.innerHTML = `소탕`;
-                세번째몬스터소탕.style.padding = "3px 6px";
-                세번째몬스터소탕.style.cursor = "pointer";
-                document.getElementById("던전화면컨테이너삼행4열일행2열").append(세번째몬스터소탕);
 
                 const 세번째몬스터도전 = document.createElement("div");
                 세번째몬스터도전.id = "세번째몬스터도전";
@@ -4027,8 +4053,8 @@ nodemon server.js
         async function 직업화면보여주기() {
             try {
 
-                메시지표시(`구현중입니다`);
-                return;
+                // 메시지표시(`구현중입니다`);
+                // return;
                 모든화면숨기기();
                 직업화면.style.display = "flex";
                 직업화면컨테이너.innerHTML = "";
@@ -4056,8 +4082,7 @@ nodemon server.js
                 검술2차.innerHTML =
                     `
                 검술2차(Lv50)<br>
-                스턴20%<br>
-                스턴무시10%<br>
+
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술2차);
                 const 검술3차 = document.createElement("div");
@@ -4066,8 +4091,6 @@ nodemon server.js
                 검술3차.innerHTML =
                     `
                 검술3차(Lv70)<br>
-                콤보계수100%<br>
-                콤보피해감소50%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술3차);
                 const 검술4차 = document.createElement("div");
@@ -4076,8 +4099,6 @@ nodemon server.js
                 검술4차.innerHTML =
                     `
                 검술4차(Lv100)<br>
-                공격력보너스50%<br>
-                일반공격계수100%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술4차);
                 const 검술5차 = document.createElement("div");
@@ -4086,24 +4107,77 @@ nodemon server.js
                 검술5차.innerHTML =
                     `
                 검술5차(Lv130)<br>
-                공격력보너스100%<br>
-                일반공격피해감소50%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술5차);
 
-                //체술
-                직업화면컨테이너일행2열.innerHTML = `체술`;
+                //마술
+                직업화면컨테이너일행2열.innerHTML = `마술`;
                 직업화면컨테이너일행2열.style.boxSizing = "border-box";
                 직업화면컨테이너일행2열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너일행2열.style.borderRadius = "8px";
+                const 마술1차 = document.createElement("div");
+                마술1차.style.display = "flex";
+                마술1차.style.textAlign = "center";
+                마술1차.innerHTML =
+                    `
+                마술1차(Lv30)<br>
+                콤보30%<br>
+                콤보계수30%<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(마술1차);
+                const 마술2차 = document.createElement("div");
+                마술2차.style.display = "flex";
+                마술2차.style.textAlign = "center";
+                마술2차.innerHTML =
+                    `
+                마술2차(Lv50)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(마술2차);
+                const 마술3차 = document.createElement("div");
+                마술3차.style.display = "flex";
+                마술3차.style.textAlign = "center";
+                마술3차.innerHTML =
+                    `
+                마술3차(Lv70)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(마술3차);
+                const 마술4차 = document.createElement("div");
+                마술4차.style.display = "flex";
+                마술4차.style.textAlign = "center";
+                마술4차.innerHTML =
+                    `
+                마술4차(Lv100)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(마술4차);
+                const 마술5차 = document.createElement("div");
+                마술5차.style.display = "flex";
+                마술5차.style.textAlign = "center";
+                마술5차.innerHTML =
+                    `
+                마술5차(Lv130)<br>
+                `;
+                document.getElementById("직업화면컨테이너일행2열").append(마술5차);
+
+
+
+
+
+                행렬만들기(직업화면컨테이너, "직업화면컨테이너이행", 2);
+                //체술
+                직업화면컨테이너이행1열.innerHTML = `체술`;
+                직업화면컨테이너이행1열.style.boxSizing = "border-box";
+                직업화면컨테이너이행1열.style.border = "0.2px solid #dadada";
+                직업화면컨테이너이행1열.style.borderRadius = "8px";
                 const 체술1차 = document.createElement("div");
                 체술1차.style.display = "flex";
                 체술1차.style.textAlign = "center";
                 체술1차.innerHTML =
                     `
                 체술1차(Lv30)<br>
+                반격30%<br>
+                반격무시30%<br>                
                 `;
-                document.getElementById("직업화면컨테이너일행2열").append(체술1차);
+                document.getElementById("직업화면컨테이너이행1열").append(체술1차);
                 const 체술2차 = document.createElement("div");
                 체술2차.style.display = "flex";
                 체술2차.style.textAlign = "center";
@@ -4111,7 +4185,7 @@ nodemon server.js
                     `
                 체술2차(Lv50)<br>
                 `;
-                document.getElementById("직업화면컨테이너일행2열").append(체술2차);
+                document.getElementById("직업화면컨테이너이행1열").append(체술2차);
                 const 체술3차 = document.createElement("div");
                 체술3차.style.display = "flex";
                 체술3차.style.textAlign = "center";
@@ -4119,7 +4193,7 @@ nodemon server.js
                     `
                 체술3차(Lv70)<br>
                 `;
-                document.getElementById("직업화면컨테이너일행2열").append(체술3차);
+                document.getElementById("직업화면컨테이너이행1열").append(체술3차);
                 const 체술4차 = document.createElement("div");
                 체술4차.style.display = "flex";
                 체술4차.style.textAlign = "center";
@@ -4127,7 +4201,7 @@ nodemon server.js
                     `
                 체술4차(Lv100)<br>
                 `;
-                document.getElementById("직업화면컨테이너일행2열").append(체술4차);
+                document.getElementById("직업화면컨테이너이행1열").append(체술4차);
                 const 체술5차 = document.createElement("div");
                 체술5차.style.display = "flex";
                 체술5차.style.textAlign = "center";
@@ -4135,16 +4209,161 @@ nodemon server.js
                     `
                 체술5차(Lv130)<br>
                 `;
-                document.getElementById("직업화면컨테이너일행2열").append(체술5차);
+                document.getElementById("직업화면컨테이너이행1열").append(체술5차);
 
 
-                행렬만들기(직업화면컨테이너, "직업화면컨테이너이행", 2);
-                직업화면컨테이너이행1열.innerHTML = `신술`;
-                직업화면컨테이너이행2열.innerHTML = `궁술`;
+                //신술
+                직업화면컨테이너이행2열.innerHTML = `신술`;
+                직업화면컨테이너이행2열.style.boxSizing = "border-box";
+                직업화면컨테이너이행2열.style.border = "0.2px solid #dadada";
+                직업화면컨테이너이행2열.style.borderRadius = "8px";
+                const 신술1차 = document.createElement("div");
+                신술1차.style.display = "flex";
+                신술1차.style.textAlign = "center";
+                신술1차.innerHTML =
+                    `
+                신술1차(Lv30)<br>
+                반격30%<br>
+                반격피해감소30%<br>                
+                `;
+                document.getElementById("직업화면컨테이너이행2열").append(신술1차);
+                const 신술2차 = document.createElement("div");
+                신술2차.style.display = "flex";
+                신술2차.style.textAlign = "center";
+                신술2차.innerHTML =
+                    `
+                신술2차(Lv50)<br>
+                `;
+                document.getElementById("직업화면컨테이너이행2열").append(신술2차);
+                const 신술3차 = document.createElement("div");
+                신술3차.style.display = "flex";
+                신술3차.style.textAlign = "center";
+                신술3차.innerHTML =
+                    `
+                신술3차(Lv70)<br>
+                `;
+                document.getElementById("직업화면컨테이너이행2열").append(신술3차);
+                const 신술4차 = document.createElement("div");
+                신술4차.style.display = "flex";
+                신술4차.style.textAlign = "center";
+                신술4차.innerHTML =
+                    `
+                신술4차(Lv100)<br>
+                `;
+                document.getElementById("직업화면컨테이너이행2열").append(신술4차);
+                const 신술5차 = document.createElement("div");
+                신술5차.style.display = "flex";
+                신술5차.style.textAlign = "center";
+                신술5차.innerHTML =
+                    `
+                신술5차(Lv130)<br>
+                `;
+                document.getElementById("직업화면컨테이너이행2열").append(신술5차);
+
+
 
                 행렬만들기(직업화면컨테이너, "직업화면컨테이너삼행", 2);
-                직업화면컨테이너삼행1열.innerHTML = `마술`;
+                //궁술
+                직업화면컨테이너삼행1열.innerHTML = `궁술`;
+                직업화면컨테이너삼행1열.style.boxSizing = "border-box";
+                직업화면컨테이너삼행1열.style.border = "0.2px solid #dadada";
+                직업화면컨테이너삼행1열.style.borderRadius = "8px";
+                const 궁술1차 = document.createElement("div");
+                궁술1차.style.display = "flex";
+                궁술1차.style.textAlign = "center";
+                궁술1차.innerHTML =
+                    `
+                궁술1차(Lv30)<br>
+                치명30%<br>
+                치명무시30%<br>                
+                `;
+                document.getElementById("직업화면컨테이너삼행1열").append(궁술1차);
+                const 궁술2차 = document.createElement("div");
+                궁술2차.style.display = "flex";
+                궁술2차.style.textAlign = "center";
+                궁술2차.innerHTML =
+                    `
+                궁술2차(Lv50)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행1열").append(궁술2차);
+                const 궁술3차 = document.createElement("div");
+                궁술3차.style.display = "flex";
+                궁술3차.style.textAlign = "center";
+                궁술3차.innerHTML =
+                    `
+                궁술3차(Lv70)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행1열").append(궁술3차);
+                const 궁술4차 = document.createElement("div");
+                궁술4차.style.display = "flex";
+                궁술4차.style.textAlign = "center";
+                궁술4차.innerHTML =
+                    `
+                궁술4차(Lv100)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행1열").append(궁술4차);
+                const 궁술5차 = document.createElement("div");
+                궁술5차.style.display = "flex";
+                궁술5차.style.textAlign = "center";
+                궁술5차.innerHTML =
+                    `
+                궁술5차(Lv130)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행1열").append(궁술5차);
+
+
+
+
+
+                //인술
                 직업화면컨테이너삼행2열.innerHTML = `인술`;
+                직업화면컨테이너삼행2열.style.boxSizing = "border-box";
+                직업화면컨테이너삼행2열.style.border = "0.2px solid #dadada";
+                직업화면컨테이너삼행2열.style.borderRadius = "8px";
+                const 인술1차 = document.createElement("div");
+                인술1차.style.display = "flex";
+                인술1차.style.textAlign = "center";
+                인술1차.innerHTML =
+                    `
+                인술1차(Lv30)<br>
+                치명30%<br>
+                치명피해30%<br>                
+                `;
+                document.getElementById("직업화면컨테이너삼행2열").append(인술1차);
+                const 인술2차 = document.createElement("div");
+                인술2차.style.display = "flex";
+                인술2차.style.textAlign = "center";
+                인술2차.innerHTML =
+                    `
+                인술2차(Lv50)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행2열").append(인술2차);
+                const 인술3차 = document.createElement("div");
+                인술3차.style.display = "flex";
+                인술3차.style.textAlign = "center";
+                인술3차.innerHTML =
+                    `
+                인술3차(Lv70)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행2열").append(인술3차);
+                const 인술4차 = document.createElement("div");
+                인술4차.style.display = "flex";
+                인술4차.style.textAlign = "center";
+                인술4차.innerHTML =
+                    `
+                인술4차(Lv100)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행2열").append(인술4차);
+                const 인술5차 = document.createElement("div");
+                인술5차.style.display = "flex";
+                인술5차.style.textAlign = "center";
+                인술5차.innerHTML =
+                    `
+                인술5차(Lv130)<br>
+                `;
+                document.getElementById("직업화면컨테이너삼행2열").append(인술5차);
+
+
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -4265,70 +4484,6 @@ nodemon server.js
                 풀자동플래그 = false;
             }
 
-            if (e.target.matches("#첫번째몬스터소탕")) {
-                try {
-                    if (유저데이터.스탯.던전.지니.레벨 < 2) {
-                        메시지표시(`도전 성공 시 소탕 가능합니다`);
-                        return;
-                    }
-                    if (유저데이터.스탯.던전.지니.열쇠 < 1) {
-                        메시지표시(`열쇠가 부족합니다`);
-                        return;
-                    }
-                    화면잠금();
-                    const 응답 = await fetch("/Geniesweep", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            id: 유저데이터.id
-                        })
-                    });
-
-                    const 결과 = await 응답.json();
-
-                    if (!응답.ok) {
-                        메시지표시(결과.오류);
-                        return;
-                    }
-
-                    유저데이터 = 결과;
-
-                    던전화면보여주기();
-
-                    const 던전버튼 = document.getElementById("던전");
-                    const 던전열쇠수량 =
-                        (유저데이터?.스탯?.던전?.지니?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.로쿠규?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.락골렘?.열쇠 || 0);
-                    const 기존던전뱃지 = document.getElementById("던전알림점");
-
-                    if (던전버튼 && 던전열쇠수량 > 0 && !기존던전뱃지) {
-                        const 뱃지 = document.createElement("div");
-                        뱃지.id = "던전알림점";
-                        뱃지.style.position = "absolute";
-                        뱃지.style.width = "7px";
-                        뱃지.style.height = "7px";
-                        뱃지.style.backgroundColor = "red";
-                        뱃지.style.borderRadius = "50%";
-                        뱃지.style.top = "0px";
-                        뱃지.style.right = "-6px";
-                        던전버튼.style.position = "relative";
-                        던전버튼.appendChild(뱃지);
-                    } else if (기존던전뱃지 && 던전열쇠수량 === 0) {
-                        기존던전뱃지.remove();
-                    }
-
-
-                    메시지표시(`램프 ${유저데이터.스탯.던전.지니.레벨 * 10}개 획득`);
-
-                } catch (e) {
-                    메시지표시("서버요청실패");
-                    console.error(e);
-                } finally {
-                    화면해제();
-                }
-            }
-
             if (e.target.matches("#첫번째몬스터도전")) {
                 try {
                     if (유저데이터.스탯.던전.지니.열쇠 < 1) {
@@ -4397,71 +4552,7 @@ nodemon server.js
                         `
                         , false);
 
-                    메시지표시(`램프 ${유저데이터.스탯.던전.지니.레벨 * 10}개 획득`);
-
-                } catch (e) {
-                    메시지표시("서버요청실패");
-                    console.error(e);
-                } finally {
-                    화면해제();
-                }
-            }
-
-            if (e.target.matches("#두번째몬스터소탕")) {
-                try {
-                    if (유저데이터.스탯.던전.로쿠규.레벨 < 2) {
-                        메시지표시(`도전 성공 시 소탕 가능합니다`);
-                        return;
-                    }
-                    if (유저데이터.스탯.던전.로쿠규.열쇠 < 1) {
-                        메시지표시(`열쇠가 부족합니다`);
-                        return;
-                    }
-                    화면잠금();
-                    const 응답 = await fetch("/Rokugyusweep", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            id: 유저데이터.id
-                        })
-                    });
-
-                    const 결과 = await 응답.json();
-
-                    if (!응답.ok) {
-                        메시지표시(결과.오류);
-                        return;
-                    }
-
-                    유저데이터 = 결과;
-
-                    던전화면보여주기();
-
-                    const 던전버튼 = document.getElementById("던전");
-                    const 던전열쇠수량 =
-                        (유저데이터?.스탯?.던전?.지니?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.로쿠규?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.락골렘?.열쇠 || 0);
-                    const 기존던전뱃지 = document.getElementById("던전알림점");
-
-                    if (던전버튼 && 던전열쇠수량 > 0 && !기존던전뱃지) {
-                        const 뱃지 = document.createElement("div");
-                        뱃지.id = "던전알림점";
-                        뱃지.style.position = "absolute";
-                        뱃지.style.width = "7px";
-                        뱃지.style.height = "7px";
-                        뱃지.style.backgroundColor = "red";
-                        뱃지.style.borderRadius = "50%";
-                        뱃지.style.top = "0px";
-                        뱃지.style.right = "-6px";
-                        던전버튼.style.position = "relative";
-                        던전버튼.appendChild(뱃지);
-                    } else if (기존던전뱃지 && 던전열쇠수량 === 0) {
-                        기존던전뱃지.remove();
-                    }
-
-
-                    메시지표시(`낙엽 ${유저데이터.스탯.던전.로쿠규.레벨 * 1}개 획득`);
+                    메시지표시(`램프  ${(유저데이터.스탯.던전.지니.레벨 - 1) * 10}개 획득`);
 
                 } catch (e) {
                     메시지표시("서버요청실패");
@@ -4538,71 +4629,7 @@ nodemon server.js
                         `
                         , false);
 
-                    메시지표시(`낙엽 ${유저데이터.스탯.던전.로쿠규.레벨 * 1}개 획득`);
-
-                } catch (e) {
-                    메시지표시("서버요청실패");
-                    console.error(e);
-                } finally {
-                    화면해제();
-                }
-            }
-
-            if (e.target.matches("#세번째몬스터소탕")) {
-                try {
-                    if (유저데이터.스탯.던전.락골렘.레벨 < 2) {
-                        메시지표시(`도전 성공 시 소탕 가능합니다`);
-                        return;
-                    }
-                    if (유저데이터.스탯.던전.락골렘.열쇠 < 1) {
-                        메시지표시(`열쇠가 부족합니다`);
-                        return;
-                    }
-                    화면잠금();
-                    const 응답 = await fetch("/Rockgolemsweep", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            id: 유저데이터.id
-                        })
-                    });
-
-                    const 결과 = await 응답.json();
-
-                    if (!응답.ok) {
-                        메시지표시(결과.오류);
-                        return;
-                    }
-
-                    유저데이터 = 결과;
-
-                    던전화면보여주기();
-
-                    const 던전버튼 = document.getElementById("던전");
-                    const 던전열쇠수량 =
-                        (유저데이터?.스탯?.던전?.지니?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.로쿠규?.열쇠 || 0) +
-                        (유저데이터?.스탯?.던전?.락골렘?.열쇠 || 0);
-                    const 기존던전뱃지 = document.getElementById("던전알림점");
-
-                    if (던전버튼 && 던전열쇠수량 > 0 && !기존던전뱃지) {
-                        const 뱃지 = document.createElement("div");
-                        뱃지.id = "던전알림점";
-                        뱃지.style.position = "absolute";
-                        뱃지.style.width = "7px";
-                        뱃지.style.height = "7px";
-                        뱃지.style.backgroundColor = "red";
-                        뱃지.style.borderRadius = "50%";
-                        뱃지.style.top = "0px";
-                        뱃지.style.right = "-6px";
-                        던전버튼.style.position = "relative";
-                        던전버튼.appendChild(뱃지);
-                    } else if (기존던전뱃지 && 던전열쇠수량 === 0) {
-                        기존던전뱃지.remove();
-                    }
-
-
-                    메시지표시(`스톤 ${유저데이터.스탯.던전.락골렘.레벨 * 10}개 획득`);
+                    메시지표시(`낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 - 1) * 1}개 획득`);
 
                 } catch (e) {
                     메시지표시("서버요청실패");
@@ -4674,11 +4701,11 @@ nodemon server.js
                         적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
                         내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
                         적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}
+                        진행된 턴수 ${전투결과.턴수}<br>
                         `
                         , false);
 
-                    메시지표시(`스톤 ${유저데이터.스탯.던전.락골렘.레벨 * 10}개 획득`);
+                    메시지표시(`스톤 ${(유저데이터.스탯.던전.락골렘.레벨 - 1) * 10}개 획득`);
 
                 } catch (e) {
                     메시지표시("서버요청실패");
@@ -4728,7 +4755,7 @@ nodemon server.js
                     입력창.maxLength = 7;
                     입력창.placeholder = "새 아이디 입력";
                     입력창.style.background = "black";
-                    입력창.style.color = "black";
+                    입력창.style.color = "white";
                     입력창.size = 10;
                     입력창.style.outline = "none";
                     입력창.value = "";

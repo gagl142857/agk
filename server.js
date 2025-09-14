@@ -210,6 +210,7 @@ app.post("/register", async (req, res) => {
       낙엽: 0,
       스톤: 0,
       가루: 0,
+
       서버: 서버,
       서버점검: 0,
       최초IP: clientIP,
@@ -242,7 +243,7 @@ app.post("/register", async (req, res) => {
       },
       전장: {
         포인트: 0,
-        티켓: 0,
+        티켓: 4,
       }
     };
 
@@ -2092,6 +2093,127 @@ app.post("/StoreTicket1", async (req, res) => {
   }
 });
 
+app.post("/lampallin", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) return res.status(500).json({ 오류: "조회 실패" });
+
+    if (유저데이터.스탯?.드랍 && Object.keys(유저데이터.스탯.드랍).length > 0) {
+      return res.status(400).json({ 오류: "드랍장비 있음" });
+    }
+
+    if (!유저데이터.스탯?.램프 || 유저데이터.스탯.램프.수량 < 1) {
+      return res.status(400).json({ 오류: "램프 부족" });
+    }
+
+    // 반복: 램프 다 쓸 때까지
+    while (유저데이터.스탯.램프.수량 > 0) {
+      const 현재전투력 = 최종스탯계산(유저데이터.스탯).전투력;
+      const 계정레벨 = 유저데이터.스탯.계정.레벨 || 1;
+      const 램프레벨 = 유저데이터.스탯.램프.레벨 || 1;
+
+      // 드랍 생성
+      const 후보 = Array.from({ length: 11 }, (_, i) => 계정레벨 - 5 + i).filter(lv => lv >= 1);
+      const 장비레벨 = 후보[Math.floor(Math.random() * 후보.length)];
+      const 확률표 = 드랍확률표[Math.min(램프레벨, 30)];
+      const 뽑기 = Math.random() * 100;
+      let 누적 = 0, 선택등급 = "D";
+      for (const [등급, 확률] of Object.entries(확률표)) {
+        누적 += 확률;
+        if (뽑기 <= 누적) {
+          선택등급 = 등급;
+          break;
+        }
+      }
+      const idx = 등급순서.indexOf(선택등급);
+      const 옵션후보 = [...특수옵션];
+      const 선택된옵션 = [];
+      for (let i = 0; i < 2; i++) {
+        const idx2 = Math.floor(Math.random() * 옵션후보.length);
+        선택된옵션.push(옵션후보.splice(idx2, 1)[0]);
+      }
+      const HP = Math.floor((100 + (30 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
+      const 공격력 = Math.floor((5 + (2 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
+      const 방어력 = Math.floor((2 + (1 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3));
+      const 공속원본 = (0.001 + (0.001 * idx)) * 장비레벨 * (0.8 + Math.random() * 0.3);
+      const 공속 = Math.floor(공속원본 * 1000) / 1000;
+      const [최소, 최대] = 특수옵션범위[선택등급];
+      const 옵션값1 = Math.floor((Math.random() * (최대 - 최소) + 최소) * 100) / 100;
+      const 옵션값2 = Math.floor((Math.random() * (최대 - 최소) + 최소) * 100) / 100;
+
+      const 드랍 = {
+        이름: 드랍장비이름[Math.floor(Math.random() * 드랍장비이름.length)],
+        레벨: 장비레벨,
+        등급: 선택등급,
+        HP,
+        공격력,
+        방어력,
+        공속,
+      };
+      드랍[선택된옵션[0]] = Number(옵션값1);
+      드랍[선택된옵션[1]] = Number(옵션값2);
+
+      // 램프 차감
+      유저데이터.스탯.램프.수량 = Math.max(0, 유저데이터.스탯.램프.수량 - 1);
+
+      // 가짜 장착 시뮬레이션
+      let 비교스탯 = JSON.parse(JSON.stringify(유저데이터.스탯));
+      비교스탯[드랍.이름] = 드랍;
+      비교스탯 = { ...비교스탯, ...최종스탯계산(비교스탯) };
+      const 전투력차이 = 비교스탯.전투력 - 현재전투력;
+
+      if (전투력차이 > 0) {
+        // 교체 + 기존 장비 판매
+        const 기존 = 유저데이터.스탯[드랍.이름];
+        if (기존) {
+          const idx2 = 등급순서.indexOf(기존.등급);
+          유저데이터.스탯.계정.현재경험치 = Math.floor((유저데이터.스탯.계정.현재경험치 || 0) + (100 + (20 * idx2)) * (0.8 + Math.random() * 0.3));
+          유저데이터.스탯.램프.현재골드 = Math.floor((유저데이터.스탯.램프.현재골드 || 0) + (50 + (10 * idx2)) * (0.8 + Math.random() * 0.3));
+          유저데이터.스탯.가루 = (유저데이터.스탯.가루 || 0) + 10;
+        }
+        유저데이터.스탯[드랍.이름] = 드랍;
+        유저데이터.스탯.드랍 = null;
+      } else {
+        // 드랍템만 판매
+        const idx3 = 등급순서.indexOf(드랍.등급);
+        유저데이터.스탯.계정.현재경험치 = Math.floor((유저데이터.스탯.계정.현재경험치 || 0) + (100 + (20 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.램프.현재골드 = Math.floor((유저데이터.스탯.램프.현재골드 || 0) + (50 + (10 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.가루 = (유저데이터.스탯.가루 || 0) + 10;
+        유저데이터.스탯.드랍 = null;
+      }
+
+      // 스탯 갱신
+      유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+    }
+
+    // 마지막에 DB 업데이트
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "저장 실패" });
+    }
+
+    res.json(유저데이터);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
 
 
 
@@ -2164,8 +2286,8 @@ function 전투시뮬레이션(나, 상대) {
   const 나최대HP = 나.스탯.최종HP;
   const 상대최대HP = 상대.스탯.최종HP;
 
-  const 나회복량 = 나최대HP * ((나.스탯.치유율 + 나.스탯.치유량) / 100);
-  const 상대회복량 = 상대최대HP * ((상대.스탯.치유율 + 상대.스탯.치유량) / 100);
+  const 나회복량 = 나최대HP * ((나.스탯.치유량) / 100);
+  const 상대회복량 = 상대최대HP * ((상대.스탯.치유량) / 100);
 
   let turn = 나.스탯.최종공속 >= 상대.스탯.최종공속 ? "나" : "상대";
 
@@ -2502,7 +2624,6 @@ const 스탯목록 = [
   "스킬피해감소",
   "일반공격계수",
   "일반공격피해감소",
-  "치유율",
   "치유량",
   "관통",
   "관통무시",
@@ -2541,7 +2662,6 @@ function 스탯생성(레벨) {
       스킬치명피해: 150 + 1 * 레벨,
       스킬피해: 100 + 1 * 레벨,
       스킬피해감소: 0 + 1 * 레벨,
-      치유율: 0 + 0 * 레벨,
       치유량: 0.2 + 0.002 * 레벨,
       관통: 0 + 1 * 레벨,
       관통무시: 0 + 1 * 레벨,

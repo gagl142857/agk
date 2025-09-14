@@ -2097,10 +2097,16 @@
                 메인화면컨테이너삼행.style.borderBottom = `0.2px solid #dadada`;
                 메인화면컨테이너삼행.style.borderTop = "0.2px solid #dadada";
 
+                const 직업이름 = document.createElement("div");
+                직업이름.style.display = "flex";
+                직업이름.style.width = "100%";
+                직업이름.innerHTML = `${유저데이터.스탯.직업?.이름 || ``}`;
+                document.getElementById("메인화면컨테이너삼행1열").append(직업이름);
+
                 const 레벨 = document.createElement("div");
                 레벨.style.display = "flex";
                 레벨.style.width = "100%";
-                레벨.innerHTML = `계정lv ${유저데이터.스탯.계정.레벨}`;
+                레벨.innerHTML = `lv ${유저데이터.스탯.계정.레벨}`;
                 document.getElementById("메인화면컨테이너삼행1열").append(레벨);
 
                 const 전투력표시 = document.createElement("div");
@@ -2319,6 +2325,52 @@
 
                 });
 
+                const 램프원샷 = document.createElement("div");
+                램프원샷.id = "램프원샷";
+                램프원샷.style.display = "flex";
+                램프원샷.innerHTML = `램프원샷`;
+                램프원샷.style.cursor = "pointer";
+                document.getElementById("메인화면컨테이너삼행2열").append(램프원샷);
+
+                램프원샷.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    if (유저데이터.스탯.램프.수량 < 1) {
+                        메시지표시("램프가 부족합니다");
+                        return;
+                    }
+
+                    const 확인 = await 팝업("모든램프를 한번에 터시겠습니까?<br>모든수량을 한번에 처리하는데 시간이 걸리니<br>화면을 건들지 말고 기다려주세요");
+                    if (!확인) return;
+                    try {
+
+                        화면잠금();
+                        const 응답 = await fetch("/lampallin", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        메시지표시(`램프올인성공`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+
+                });
+
 
 
                 const 램프레벨 = document.createElement("div");
@@ -2394,7 +2446,7 @@
                     document.getElementById("메인화면컨테이너사행1열").append(div);
                 }
 
-                // const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유율", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
+                // const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
                 const 스탯리스트2열 = [
                     "회복",
                     "회복무시",
@@ -2403,7 +2455,6 @@
                     "스킬치명피해",
                     "스킬피해",
                     "스킬피해감소",
-                    "치유율",
                     "치유량",
                     "관통",
                     "관통무시",
@@ -3267,6 +3318,9 @@
 조각상 강화시 성공 또는 실패 메시지가 표시됩니다<br>
 다이아 소모처인 상점이 구현되었습니다<br>
 상품은 계속 추가될 예정입니다<br>
+상점 단축키는 S입니다<br>
+풀자동 시스템을 보유한 램프수량만큼 한번에 처리하는<br>
+램프원샷 버튼이 추가되었습니다<br>
 <br>
 
 25.09.13<br>
@@ -3392,7 +3446,6 @@
 동료수집
 별자리 황도12궁
 서버적용
-직업구현
 민원신청
 우편함에쿠폰
 길드마스터한테 가입신청
@@ -4047,9 +4100,13 @@ nodemon server.js
         직업화면설명.style.display = "flex";
         직업화면설명.style.flexDirection = "column";
         직업화면설명.innerHTML =
+            //     `
+            //     원하는 직업박스를 클릭하세요<br>
+            //     직업 선택과 변경에는 1000다이아가 소모됩니다<br>
+            //     직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
+            // `;
             `
-            직업을 결정하세요<br>
-            직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
+            구현중입니다<br>
         `;
         직업화면설명.style.textAlign = "center";
         직업화면설명.style.paddingBottom = "8px";
@@ -4080,7 +4137,7 @@ nodemon server.js
                 행렬만들기(직업화면컨테이너, "직업화면컨테이너일행", 2);
 
                 //검술
-                직업화면컨테이너일행1열.innerHTML = `검술`;
+                직업화면컨테이너일행1열.innerHTML = `<span style="font-weight:bold; font-size:16px;">검술</span>`;
                 직업화면컨테이너일행1열.style.boxSizing = "border-box";
                 직업화면컨테이너일행1열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너일행1열.style.borderRadius = "8px";
@@ -4089,7 +4146,7 @@ nodemon server.js
                 검술1차.style.textAlign = "center";
                 검술1차.innerHTML =
                     `
-                검술1차(Lv30)<br>
+                검술1차 베후이아(Lv30)<br>
                 콤보30%<br>
                 콤보무시30%<br>
                 `;
@@ -4099,8 +4156,9 @@ nodemon server.js
                 검술2차.style.textAlign = "center";
                 검술2차.innerHTML =
                     `
-                검술2차(Lv50)<br>
-
+                검술2차 하카미아(Lv50)<br>
+                공격력보너스15%<br>
+                방어력보너스15%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술2차);
                 const 검술3차 = document.createElement("div");
@@ -4108,7 +4166,8 @@ nodemon server.js
                 검술3차.style.textAlign = "center";
                 검술3차.innerHTML =
                     `
-                검술3차(Lv70)<br>
+                검술3차 라우비아(Lv70)<br>
+                피해감소10%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술3차);
                 const 검술4차 = document.createElement("div");
@@ -4116,7 +4175,7 @@ nodemon server.js
                 검술4차.style.textAlign = "center";
                 검술4차.innerHTML =
                     `
-                검술4차(Lv100)<br>
+                검술4차 예후이아(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술4차);
                 const 검술5차 = document.createElement("div");
@@ -4124,12 +4183,12 @@ nodemon server.js
                 검술5차.style.textAlign = "center";
                 검술5차.innerHTML =
                     `
-                검술5차(Lv130)<br>
+                검술5차 미카엘(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술5차);
 
                 //마술
-                직업화면컨테이너일행2열.innerHTML = `마술`;
+                직업화면컨테이너일행2열.innerHTML = `<span style="font-weight:bold; font-size:16px;">마술</span>`;
                 직업화면컨테이너일행2열.style.boxSizing = "border-box";
                 직업화면컨테이너일행2열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너일행2열.style.borderRadius = "8px";
@@ -4138,7 +4197,7 @@ nodemon server.js
                 마술1차.style.textAlign = "center";
                 마술1차.innerHTML =
                     `
-                마술1차(Lv30)<br>
+                마술1차 시타엘(Lv30)<br>
                 콤보30%<br>
                 콤보계수30%<br>
                 `;
@@ -4148,7 +4207,8 @@ nodemon server.js
                 마술2차.style.textAlign = "center";
                 마술2차.innerHTML =
                     `
-                마술2차(Lv50)<br>
+                마술2차 니트하이아(Lv50)<br>
+                공격력보너스30%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술2차);
                 const 마술3차 = document.createElement("div");
@@ -4156,7 +4216,8 @@ nodemon server.js
                 마술3차.style.textAlign = "center";
                 마술3차.innerHTML =
                     `
-                마술3차(Lv70)<br>
+                마술3차 아니엘(Lv70)<br>
+                콤보계수100%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술3차);
                 const 마술4차 = document.createElement("div");
@@ -4164,7 +4225,7 @@ nodemon server.js
                 마술4차.style.textAlign = "center";
                 마술4차.innerHTML =
                     `
-                마술4차(Lv100)<br>
+                마술4차 아살리야(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술4차);
                 const 마술5차 = document.createElement("div");
@@ -4172,7 +4233,7 @@ nodemon server.js
                 마술5차.style.textAlign = "center";
                 마술5차.innerHTML =
                     `
-                마술5차(Lv130)<br>
+                마술5차 무미아(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술5차);
 
@@ -4182,7 +4243,7 @@ nodemon server.js
 
                 행렬만들기(직업화면컨테이너, "직업화면컨테이너이행", 2);
                 //체술
-                직업화면컨테이너이행1열.innerHTML = `체술`;
+                직업화면컨테이너이행1열.innerHTML = `<span style="font-weight:bold; font-size:16px;">체술</span>`;
                 직업화면컨테이너이행1열.style.boxSizing = "border-box";
                 직업화면컨테이너이행1열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너이행1열.style.borderRadius = "8px";
@@ -4191,7 +4252,7 @@ nodemon server.js
                 체술1차.style.textAlign = "center";
                 체술1차.innerHTML =
                     `
-                체술1차(Lv30)<br>
+                체술1차 카헤텔(Lv30)<br>
                 반격30%<br>
                 반격무시30%<br>                
                 `;
@@ -4201,7 +4262,9 @@ nodemon server.js
                 체술2차.style.textAlign = "center";
                 체술2차.innerHTML =
                     `
-                체술2차(Lv50)<br>
+                체술2차 세헤이아(Lv50)<br>
+                HP보너스15%<br>
+                방어력보너스15%<br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술2차);
                 const 체술3차 = document.createElement("div");
@@ -4209,7 +4272,8 @@ nodemon server.js
                 체술3차.style.textAlign = "center";
                 체술3차.innerHTML =
                     `
-                체술3차(Lv70)<br>
+                체술3차 르하엘(Lv70)<br>
+                반격피해100%<br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술3차);
                 const 체술4차 = document.createElement("div");
@@ -4217,7 +4281,7 @@ nodemon server.js
                 체술4차.style.textAlign = "center";
                 체술4차.innerHTML =
                     `
-                체술4차(Lv100)<br>
+                체술4차 미츠라엘(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술4차);
                 const 체술5차 = document.createElement("div");
@@ -4225,13 +4289,13 @@ nodemon server.js
                 체술5차.style.textAlign = "center";
                 체술5차.innerHTML =
                     `
-                체술5차(Lv130)<br>
+                체술5차 하라헬(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술5차);
 
 
                 //신술
-                직업화면컨테이너이행2열.innerHTML = `신술`;
+                직업화면컨테이너이행2열.innerHTML = `<span style="font-weight:bold; font-size:16px;">신술</span>`;
                 직업화면컨테이너이행2열.style.boxSizing = "border-box";
                 직업화면컨테이너이행2열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너이행2열.style.borderRadius = "8px";
@@ -4240,9 +4304,9 @@ nodemon server.js
                 신술1차.style.textAlign = "center";
                 신술1차.innerHTML =
                     `
-                신술1차(Lv30)<br>
-                반격30%<br>
-                반격피해감소30%<br>                
+                신술1차 라라헬(Lv30)<br>
+                회복30%<br>
+                치유량3%<br>                
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술1차);
                 const 신술2차 = document.createElement("div");
@@ -4250,7 +4314,8 @@ nodemon server.js
                 신술2차.style.textAlign = "center";
                 신술2차.innerHTML =
                     `
-                신술2차(Lv50)<br>
+                신술2차 마하시아(Lv50)<br>
+                HP보너스30%<br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술2차);
                 const 신술3차 = document.createElement("div");
@@ -4258,7 +4323,8 @@ nodemon server.js
                 신술3차.style.textAlign = "center";
                 신술3차.innerHTML =
                     `
-                신술3차(Lv70)<br>
+                신술3차 하후이아(Lv70)<br>
+                치유량5%<br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술3차);
                 const 신술4차 = document.createElement("div");
@@ -4266,7 +4332,7 @@ nodemon server.js
                 신술4차.style.textAlign = "center";
                 신술4차.innerHTML =
                     `
-                신술4차(Lv100)<br>
+                신술4차 하하헬(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술4차);
                 const 신술5차 = document.createElement("div");
@@ -4274,7 +4340,7 @@ nodemon server.js
                 신술5차.style.textAlign = "center";
                 신술5차.innerHTML =
                     `
-                신술5차(Lv130)<br>
+                신술5차 라파엘(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술5차);
 
@@ -4282,7 +4348,7 @@ nodemon server.js
 
                 행렬만들기(직업화면컨테이너, "직업화면컨테이너삼행", 2);
                 //궁술
-                직업화면컨테이너삼행1열.innerHTML = `궁술`;
+                직업화면컨테이너삼행1열.innerHTML = `<span style="font-weight:bold; font-size:16px;">궁술</span>`;
                 직업화면컨테이너삼행1열.style.boxSizing = "border-box";
                 직업화면컨테이너삼행1열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너삼행1열.style.borderRadius = "8px";
@@ -4291,7 +4357,7 @@ nodemon server.js
                 궁술1차.style.textAlign = "center";
                 궁술1차.innerHTML =
                     `
-                궁술1차(Lv30)<br>
+                궁술1차 옴마엘(Lv30)<br>
                 치명30%<br>
                 치명무시30%<br>                
                 `;
@@ -4301,7 +4367,8 @@ nodemon server.js
                 궁술2차.style.textAlign = "center";
                 궁술2차.innerHTML =
                     `
-                궁술2차(Lv50)<br>
+                궁술2차 레이옐(Lv50)<br>
+                공격력보너스30%<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술2차);
                 const 궁술3차 = document.createElement("div");
@@ -4309,7 +4376,8 @@ nodemon server.js
                 궁술3차.style.textAlign = "center";
                 궁술3차.innerHTML =
                     `
-                궁술3차(Lv70)<br>
+                궁술3차 옐라히아(Lv70)<br>
+                치명피해100%<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술3차);
                 const 궁술4차 = document.createElement("div");
@@ -4317,7 +4385,7 @@ nodemon server.js
                 궁술4차.style.textAlign = "center";
                 궁술4차.innerHTML =
                     `
-                궁술4차(Lv100)<br>
+                궁술4차 세알리아(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술4차);
                 const 궁술5차 = document.createElement("div");
@@ -4325,7 +4393,7 @@ nodemon server.js
                 궁술5차.style.textAlign = "center";
                 궁술5차.innerHTML =
                     `
-                궁술5차(Lv130)<br>
+                궁술5차 가브리엘(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술5차);
 
@@ -4334,7 +4402,7 @@ nodemon server.js
 
 
                 //인술
-                직업화면컨테이너삼행2열.innerHTML = `인술`;
+                직업화면컨테이너삼행2열.innerHTML = `<span style="font-weight:bold; font-size:16px;">인술</span>`;
                 직업화면컨테이너삼행2열.style.boxSizing = "border-box";
                 직업화면컨테이너삼행2열.style.border = "0.2px solid #dadada";
                 직업화면컨테이너삼행2열.style.borderRadius = "8px";
@@ -4343,7 +4411,7 @@ nodemon server.js
                 인술1차.style.textAlign = "center";
                 인술1차.innerHTML =
                     `
-                인술1차(Lv30)<br>
+                인술1차 이에이아엘(Lv30)<br>
                 치명30%<br>
                 치명피해30%<br>                
                 `;
@@ -4353,7 +4421,9 @@ nodemon server.js
                 인술2차.style.textAlign = "center";
                 인술2차.innerHTML =
                     `
-                인술2차(Lv50)<br>
+                인술2차 메나델(Lv50)<br>
+                공격력보너스15%<br>
+                HP보너스15%
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술2차);
                 const 인술3차 = document.createElement("div");
@@ -4361,7 +4431,9 @@ nodemon server.js
                 인술3차.style.textAlign = "center";
                 인술3차.innerHTML =
                     `
-                인술3차(Lv70)<br>
+                인술3차 다마비아(Lv70)<br>
+                치명피해50%<br>
+                치명저항30%<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술3차);
                 const 인술4차 = document.createElement("div");
@@ -4369,7 +4441,7 @@ nodemon server.js
                 인술4차.style.textAlign = "center";
                 인술4차.innerHTML =
                     `
-                인술4차(Lv100)<br>
+                인술4차 우마벨(Lv100)<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술4차);
                 const 인술5차 = document.createElement("div");
@@ -4377,10 +4449,22 @@ nodemon server.js
                 인술5차.style.textAlign = "center";
                 인술5차.innerHTML =
                     `
-                인술5차(Lv130)<br>
+                인술5차 사리에(Lv130)<br>
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술5차);
 
+                직업화면컨테이너일행1열.style.padding = "8px 0px";
+                직업화면컨테이너일행2열.style.padding = "8px 0px";
+                직업화면컨테이너이행1열.style.padding = "8px 0px";
+                직업화면컨테이너이행2열.style.padding = "8px 0px";
+                직업화면컨테이너삼행1열.style.padding = "8px 0px";
+                직업화면컨테이너삼행2열.style.padding = "8px 0px";
+                직업화면컨테이너일행1열.style.cursor = "pointer";
+                직업화면컨테이너일행2열.style.cursor = "pointer";
+                직업화면컨테이너이행1열.style.cursor = "pointer";
+                직업화면컨테이너이행2열.style.cursor = "pointer";
+                직업화면컨테이너삼행1열.style.cursor = "pointer";
+                직업화면컨테이너삼행2열.style.cursor = "pointer";
 
 
             } catch (e) {

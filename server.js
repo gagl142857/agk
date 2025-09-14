@@ -1273,7 +1273,7 @@ app.post("/RokugyuDungeon", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data: 유저데이터, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1284,17 +1284,17 @@ app.post("/RokugyuDungeon", async (req, res) => {
       return res.status(500).json({ 오류: "DB조회 실패" });
     }
 
-    if (data.스탯.던전.로쿠규.열쇠 < 1) {
+    if (유저데이터.스탯.던전.로쿠규.열쇠 < 1) {
       return res.status(400).json({ 오류: "열쇠가 부족합니다" });
     }
 
-    const 로쿠규 = 스탯생성(data.스탯.던전.로쿠규.레벨);
-    로쿠규.스탯.콤보 = 10 * data.스탯.던전.로쿠규.레벨;
-    로쿠규.스탯.콤보계수 = 100 + 10 * data.스탯.던전.로쿠규.레벨;
-    로쿠규.스탯.콤보피해감소 = 0 + 10 * data.스탯.던전.로쿠규.레벨;
+    const 로쿠규 = 스탯생성(유저데이터.스탯.던전.로쿠규.레벨);
+    로쿠규.스탯.콤보 = 10 * 유저데이터.스탯.던전.로쿠규.레벨;
+    로쿠규.스탯.콤보계수 = 100 + 10 * 유저데이터.스탯.던전.로쿠규.레벨;
+    로쿠규.스탯.콤보피해감소 = 0 + 10 * 유저데이터.스탯.던전.로쿠규.레벨;
 
     const 전투결과 = 전투시뮬레이션(
-      JSON.parse(JSON.stringify(data)), // 복사본
+      JSON.parse(JSON.stringify(유저데이터)), // 복사본
       JSON.parse(JSON.stringify(로쿠규))  // 복사본
     );
 
@@ -1307,11 +1307,11 @@ app.post("/RokugyuDungeon", async (req, res) => {
       유저데이터.스탯.낙엽 = 유저데이터.스탯.낙엽 + (유저데이터.스탯.던전.로쿠규.레벨 - 1) * 1;
     }
 
-    data.스탯.던전.로쿠규.열쇠 -= 1;
+    유저데이터.스탯.던전.로쿠규.열쇠 -= 1;
 
     const { error: updateError } = await supabase
       .from("users")
-      .update({ 스탯: data.스탯 })
+      .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
 
     if (updateError) {
@@ -1319,8 +1319,8 @@ app.post("/RokugyuDungeon", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    // res.json(data);
-    res.json({ data, 전투결과 });
+    // res.json(유저데이터);
+    res.json({ 유저데이터, 전투결과 });
 
   } catch (err) {
     console.error(err);

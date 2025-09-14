@@ -1504,6 +1504,10 @@
                             }
 
                             유저데이터 = 결과;
+                            if (현재등급 != 유저데이터.스탯.조각상1.등급) {
+                                메시지표시(`강화성공`);
+                            } else 메시지표시(`강화실패`);
+
                             메인화면보여주기();
                             document.querySelector("#조각상")?.click();
 
@@ -1667,6 +1671,10 @@
                             유저데이터 = 결과;
                             메인화면보여주기();
                             document.querySelector("#조각상")?.click();
+
+                            if (현재등급 != 유저데이터.스탯.조각상2.등급) {
+                                메시지표시(`강화성공`);
+                            } else 메시지표시(`강화실패`);
 
                         } catch (e) {
                             메시지표시("서버요청실패");
@@ -1835,6 +1843,10 @@
                             메인화면보여주기();
                             document.querySelector("#조각상")?.click();
 
+                            if (현재등급 != 유저데이터.스탯.조각상3.등급) {
+                                메시지표시(`강화성공`);
+                            } else 메시지표시(`강화실패`);
+
                         } catch (e) {
                             메시지표시("서버요청실패");
                             console.error(e);
@@ -2001,6 +2013,10 @@
                             유저데이터 = 결과;
                             메인화면보여주기();
                             document.querySelector("#조각상")?.click();
+
+                            if (현재등급 != 유저데이터.스탯.조각상4.등급) {
+                                메시지표시(`강화성공`);
+                            } else 메시지표시(`강화실패`);
 
                         } catch (e) {
                             메시지표시("서버요청실패");
@@ -3248,6 +3264,9 @@
 던전 소탕 기능이 삭제되었습니다<br>
 도전 성공시 현재레벨의 보상을 획득하고<br>
 도전 실패시 이전레벨의 보상을 획득합니다<br>
+조각상 강화시 성공 또는 실패 메시지가 표시됩니다<br>
+다이아 소모처인 상점이 구현되었습니다<br>
+상품은 계속 추가될 예정입니다<br>
 <br>
 
 25.09.13<br>
@@ -4445,6 +4464,11 @@ nodemon server.js
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록일행", 3);
                 상점화면컨테이너상품목록일행.style.borderTop = "0.2px solid #dadada";
                 상점화면컨테이너상품목록일행.style.padding = "8px 0px";
+
+
+
+
+
                 상점화면컨테이너상품목록일행1열.innerHTML = `지니열쇠<br>×1<br>1000다이아`;
                 상점화면컨테이너상품목록일행1열.style.cursor = `pointer`;
                 상점화면컨테이너상품목록일행1열.style.textAlign = `center`;
@@ -4565,6 +4589,219 @@ nodemon server.js
                         화면해제();
                     }
                 });
+
+
+
+                행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록이행", 3);
+
+                상점화면컨테이너상품목록이행1열.innerHTML = `전장티켓<br>×1<br>1000다이아`;
+                상점화면컨테이너상품목록이행1열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록이행1열.style.textAlign = `center`;
+                상점화면컨테이너상품목록이행1열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록이행1열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록이행1열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록이행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreTicket1", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`전장티켓를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
+                행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록삼행", 3);
+
+                상점화면컨테이너상품목록삼행1열.innerHTML = `지니열쇠<br>×10<br>10000다이아`;
+                상점화면컨테이너상품목록삼행1열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록삼행1열.style.textAlign = `center`;
+                상점화면컨테이너상품목록삼행1열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록삼행1열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록삼행1열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록삼행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 10000) {
+                            메시지표시(`10000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreGeniekey10", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`지니열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+
+                });
+
+                상점화면컨테이너상품목록삼행2열.innerHTML = `로쿠규열쇠<br>×10<br>10000다이아`;
+                상점화면컨테이너상품목록삼행2열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록삼행2열.style.textAlign = `center`;
+                상점화면컨테이너상품목록삼행2열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록삼행2열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록삼행2열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록삼행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 10000) {
+                            메시지표시(`10000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreRokugyukey10", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`로쿠규열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                상점화면컨테이너상품목록삼행3열.innerHTML = `락골렘열쇠<br>×10<br>10000다이아`;
+                상점화면컨테이너상품목록삼행3열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록삼행3열.style.textAlign = `center`;
+                상점화면컨테이너상품목록삼행3열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록삼행3열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록삼행3열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록삼행3열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 10000) {
+                            메시지표시(`10000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreRockgolemkey10", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`락골렘열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
+
+                행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록사행", 3);
+
+                상점화면컨테이너상품목록사행1열.innerHTML = `전장티켓<br>×10<br>10000다이아`;
+                상점화면컨테이너상품목록사행1열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록사행1열.style.textAlign = `center`;
+                상점화면컨테이너상품목록사행1열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록사행1열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록사행1열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록사행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 10000) {
+                            메시지표시(`10000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/StoreTicket10", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`전장티켓를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
 
             } catch (e) {
                 메시지표시("서버요청실패");

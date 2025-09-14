@@ -785,43 +785,6 @@ app.post("/sell", async (req, res) => {
   }
 });
 
-app.post("/mailbox", async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
-    const 스탯 = data.스탯;
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
 app.post("/receive-all-mail", async (req, res) => {
   try {
     const { id } = req.body;
@@ -903,6 +866,10 @@ app.post("/receive-mail", async (req, res) => {
 
     } else if (data.스탯.우편함[index].이름 === "다이아") {
       data.스탯.다이아 += data.스탯.우편함[index].수량;
+      data.스탯.우편함.splice(index, 1);
+
+    } else if (data.스탯.우편함[index].이름 === "티켓") {
+      data.스탯.전장.티켓 += data.스탯.우편함[index].수량;
       data.스탯.우편함.splice(index, 1);
 
     } else {

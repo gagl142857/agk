@@ -483,7 +483,6 @@
         민원.style.cursor = "pointer";
         설정툴팁.append(민원);
 
-
         const 패치노트 = document.createElement("div");
         패치노트.id = "패치노트";
         패치노트.style.boxSizing = "border-box";
@@ -491,6 +490,12 @@
         패치노트.style.cursor = "pointer";
         설정툴팁.append(패치노트);
 
+        const 상점노트 = document.createElement("div");
+        상점노트.id = "상점";
+        상점노트.style.boxSizing = "border-box";
+        상점노트.innerHTML = "상점";
+        상점노트.style.cursor = "pointer";
+        설정툴팁.append(상점노트);
 
         document.addEventListener("mouseover", (e) => {
             if (!설정.contains(e.target) && !설정툴팁.contains(e.target)) {
@@ -523,11 +528,8 @@
                 } else if (기존뱃지 && 우편함.length === 0) {
                     기존뱃지.remove();
                 }
-
             }
-
         });
-
 
         const 로그인화면 = document.createElement("div");
         로그인화면.id = "로그인화면";
@@ -562,7 +564,6 @@
         로그인화면컨테이너.style.padding = "8px";
         로그인화면컨테이너.style.gap = "8px";
         로그인화면.append(로그인화면컨테이너);
-
 
         async function 로그인화면보여주기() {
             try {
@@ -3239,12 +3240,11 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
-
 25.09.14<br>
 초기스탯과 레벨스탯 증가량이 약 너프 및 변경되었습니다<br>
 계산식은 재접속시 적용되어 표시됩니다<br>
 전장화면이 복구되었습니다<br>
-전투시뮬레이션 관통, 관통무시 스탯이 적용됩니다<br>
+전투시뮬레이션에 관통, 관통무시 스탯이 적용됩니다<br>
 던전 소탕 기능이 삭제되었습니다<br>
 도전 성공시 현재레벨의 보상을 획득하고<br>
 도전 실패시 이전레벨의 보상을 획득합니다<br>
@@ -4374,6 +4374,95 @@ nodemon server.js
 
         }
 
+        const 상점화면 = document.createElement("div");
+        상점화면.style.position = "absolute";
+        상점화면.className = "화면숨기기";
+        상점화면.style.boxSizing = "border-box";
+        상점화면.style.top = "64px";
+        상점화면.style.width = "400px";
+        상점화면.style.display = "none";
+        상점화면.style.flexDirection = "column";
+        상점화면.style.gap = "8px";
+        document.body.append(상점화면);
+
+        const 상점화면설명 = document.createElement("div");
+        상점화면설명.style.boxSizing = "border-box";
+        상점화면설명.style.borderBottom = "0.2px solid #dadada";
+        상점화면설명.style.flex = "1";
+        상점화면설명.style.display = "flex";
+        상점화면설명.style.flexDirection = "column";
+        상점화면설명.innerHTML =
+            `
+            상점입니다<br>
+            구매제한은 없습니다<br>
+        `;
+        상점화면설명.style.textAlign = "center";
+        상점화면설명.style.paddingBottom = "8px";
+        상점화면.append(상점화면설명);
+
+        const 상점화면컨테이너 = document.createElement("div");
+        상점화면컨테이너.id = "상점화면컨테이너";
+        상점화면컨테이너.style.boxSizing = "border-box";
+        상점화면컨테이너.style.border = "0.2px solid #dadada";
+        상점화면컨테이너.style.borderRadius = "8px";
+        상점화면컨테이너.style.flex = "1";
+        상점화면컨테이너.style.display = "flex";
+        상점화면컨테이너.style.flexDirection = "column";
+        상점화면컨테이너.style.padding = "8px";
+        상점화면컨테이너.style.gap = "8px";
+        상점화면.append(상점화면컨테이너);
+
+        //상점화면보여주기함수
+        async function 상점화면보여주기() {
+            try {
+
+                모든화면숨기기();
+                상점화면.style.display = "flex";
+                상점화면컨테이너.innerHTML = "";
+
+                행렬만들기(상점화면컨테이너, "상점화면컨테이너일행", 3);
+                상점화면컨테이너일행1열.innerHTML = `1000 다이아 충전`;
+                상점화면컨테이너일행2열.innerHTML = `11000 다이아 충전`;
+                상점화면컨테이너일행3열.innerHTML = `37000 다이아 충전`;
+
+                상점화면컨테이너일행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                });
+
+                상점화면컨테이너일행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                });
+
+                상점화면컨테이너일행3열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                });
+
+                행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록일행", 3);
+                상점화면컨테이너상품목록일행1열.innerHTML = `지니열쇠<br>×1`;
+                상점화면컨테이너상품목록일행1열.style.textAlign = `center`;
+                상점화면컨테이너상품목록일행1열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록일행1열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록일행1열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록일행2열.innerHTML = `로쿠규열쇠<br>×1`;
+                상점화면컨테이너상품목록일행2열.style.textAlign = `center`;
+                상점화면컨테이너상품목록일행3열.innerHTML = `락골렘열쇠<br>×1`;
+                상점화면컨테이너상품목록일행3열.style.textAlign = `center`;
+
+
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+        }
+
+
 
 
 
@@ -4729,6 +4818,10 @@ nodemon server.js
 
             if (e.target.matches("#전장")) {
                 전장화면보여주기();
+            }
+
+            if (e.target.matches("#상점")) {
+                상점화면보여주기();
             }
 
             if (e.target.matches("#길드")) {
@@ -5239,6 +5332,9 @@ nodemon server.js
                     case "j":
                         document.querySelector("#전장")?.click();
                         break;
+                    case "s":
+                        document.querySelector("#상점")?.click();
+                        break;
                 }
 
             }
@@ -5377,6 +5473,7 @@ nodemon server.js
             });
         }
 
+        //메시지표시함수
         function 메시지표시(내용) {
             const msg = document.createElement("div");
             msg.innerText = 내용;
@@ -5390,7 +5487,7 @@ nodemon server.js
 
             msg.style.left = `${randomX}px`;
             msg.style.top = `${randomY}px`;
-            msg.style.color = "#008000";
+            msg.style.color = "#01e901";
             msg.style.fontWeight = "bold";
             msg.style.boxSizing = "border-box";
             msg.style.backgroundColor = "black";

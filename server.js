@@ -206,7 +206,7 @@ app.post("/register", async (req, res) => {
         수량: 1000,
       },
       //재화
-      다이아: 0,
+      다이아: 1000,
       낙엽: 0,
       스톤: 0,
       가루: 0,
@@ -2096,6 +2096,158 @@ app.post("/StoreTicket1", async (req, res) => {
   }
 });
 
+app.post("/StoreGeniekey10", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 10000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
+
+    유저데이터.스탯.던전.지니.열쇠 += 10;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreRokugyukey10", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 10000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
+
+    유저데이터.스탯.던전.로쿠규.열쇠 += 10;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreRockgolemkey10", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 10000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
+
+    유저데이터.스탯.던전.락골렘.열쇠 += 10;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/StoreTicket10", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 10000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
+
+    유저데이터.스탯.전장.티켓 += 10;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/lamponeshot", async (req, res) => {
   try {
     const { id, 선택최소등급, 선택옵션목록 } = req.body;
@@ -2164,11 +2316,7 @@ app.post("/lamponeshot", async (req, res) => {
       드랍[선택된옵션[0]] = Number(옵션값1);
       드랍[선택된옵션[1]] = Number(옵션값2);
 
-      // 램프 차감
       유저데이터.스탯.램프.수량 = Math.max(0, 유저데이터.스탯.램프.수량 - 1);
-
-
-
 
       const 최소등급조건 = 등급순서.indexOf(드랍.등급) >= 등급순서.indexOf(선택최소등급);
       if (!최소등급조건) {
@@ -2235,6 +2383,10 @@ app.post("/lamponeshot", async (req, res) => {
 
       // 스탯 갱신
       유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+    }
+
+    if (유저데이터.스탯.계정.유저닉네임 === "염소") {
+      유저데이터.스탯.램프.수량 += 100;
     }
 
     // 마지막에 DB 업데이트

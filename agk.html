@@ -2062,35 +2062,65 @@
                 });
 
 
-                const 미정2박스 = document.createElement("미정2박스");
-                미정2박스.id = "미정1";
-                미정2박스.style.display = "flex";
-                미정2박스.innerHTML = ``;
-                미정2박스.style.color = "black";
-                미정2박스.style.cursor = "pointer";
-                미정2박스.style.width = "32px";
-                미정2박스.style.height = "32px";
-                미정2박스.style.padding = "8px";
-                미정2박스.style.marginTop = "8px";
-                미정2박스.style.borderRadius = "8px";
-                미정2박스.style.border = `0.2px solid #dadada`;
-                미정2박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행6열").append(미정2박스);
+                //스킬화면보여주기
+                const 스킬박스 = document.createElement("스킬박스");
+                스킬박스.id = "스킬";
+                스킬박스.style.display = "flex";
+                스킬박스.innerHTML = `스킬`;
+                스킬박스.style.textAlign = "center";
+                스킬박스.style.color = "#dadada";
+                // 스킬박스.style.fontSize = "14px";
+                스킬박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                스킬박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                스킬박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                스킬박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                스킬박스.style.cursor = "pointer";
+                스킬박스.style.width = "32px";
+                스킬박스.style.height = "32px";
+                스킬박스.style.padding = "8px";
+                스킬박스.style.marginTop = "8px";
+                스킬박스.style.borderRadius = "8px";
+                스킬박스.style.border = `0.2px solid #dadada`;
+                스킬박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행6열").append(스킬박스);
 
-                const 미정3박스 = document.createElement("미정3박스");
-                미정3박스.id = "미정1";
-                미정3박스.style.display = "flex";
-                미정3박스.innerHTML = ``;
-                미정3박스.style.color = "black";
-                미정3박스.style.cursor = "pointer";
-                미정3박스.style.width = "32px";
-                미정3박스.style.height = "32px";
-                미정3박스.style.padding = "8px";
-                미정3박스.style.marginTop = "8px";
-                미정3박스.style.borderRadius = "8px";
-                미정3박스.style.border = `0.2px solid #dadada`;
-                미정3박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행6열").append(미정3박스);
+                스킬박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    메시지표시(`구현중입니다`);
+
+                });
+
+
+                //동료화면보여주기
+                const 동료박스 = document.createElement("동료박스");
+                동료박스.id = "동료";
+                동료박스.style.display = "flex";
+                동료박스.innerHTML = `동료`;
+                동료박스.style.textAlign = "center";
+                동료박스.style.color = "#dadada";
+                // 동료박스.style.fontSize = "14px";
+                동료박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                동료박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                동료박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                동료박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                동료박스.style.cursor = "pointer";
+                동료박스.style.width = "32px";
+                동료박스.style.height = "32px";
+                동료박스.style.padding = "8px";
+                동료박스.style.marginTop = "8px";
+                동료박스.style.borderRadius = "8px";
+                동료박스.style.border = `0.2px solid #dadada`;
+                동료박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행6열").append(동료박스);
+
+                동료박스.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    메시지표시(`구현중입니다`);
+
+                });
+
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너삼행", 3);
                 메인화면컨테이너삼행.style.padding = "8px 0px";
@@ -2100,7 +2130,7 @@
                 const 직업이름 = document.createElement("div");
                 직업이름.style.display = "flex";
                 직업이름.style.width = "100%";
-                직업이름.innerHTML = `${유저데이터.스탯.직업?.이름 || ``}`;
+                직업이름.innerHTML = 유저데이터.스탯.직업?.이름 ? `${유저데이터.스탯.직업?.이름}(${유저데이터.스탯.직업?.종류})` : ``;
                 document.getElementById("메인화면컨테이너삼행1열").append(직업이름);
 
                 const 레벨 = document.createElement("div");
@@ -3307,6 +3337,14 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.15<br>
+직업이 구현되었습니다<br>
+아직 직업별 3차 스탯까지만 구현되었습니다<br>
+4차와 5차 능력은 스탯업이아닌 직업별 고유효과를<br>
+구현하고싶어서, 시간이 좀 걸릴듯 합니다<br>
+차차 추가하겠습니다<br>
+<br>
+
 25.09.14<br>
 초기스탯과 레벨스탯 증가량이 약 너프 및 변경되었습니다<br>
 계산식은 재접속시 적용되어 표시됩니다<br>
@@ -3441,6 +3479,7 @@
  
 해야할일
 
+램프원샷 조건적용되게
 유물뽑기
 스킬수집
 동료수집
@@ -4099,14 +4138,14 @@ nodemon server.js
         직업화면설명.style.display = "flex";
         직업화면설명.style.flexDirection = "column";
         직업화면설명.innerHTML =
-            //     `
-            //     원하는 직업박스를 클릭하세요<br>
-            //     직업 선택과 변경에는 1000다이아가 소모됩니다<br>
-            //     직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
-            // `;
             `
-            구현중입니다<br>
-        `;
+                원하는 직업박스를 클릭하세요<br>
+                직업 선택과 변경에는 1000다이아가 소모됩니다<br>
+                직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
+            `;
+        //     `
+        //     구현중입니다<br>
+        // `;
         직업화면설명.style.textAlign = "center";
         직업화면설명.style.paddingBottom = "8px";
         직업화면.append(직업화면설명);
@@ -4465,7 +4504,252 @@ nodemon server.js
                 직업화면컨테이너삼행1열.style.cursor = "pointer";
                 직업화면컨테이너삼행2열.style.cursor = "pointer";
 
+                직업화면컨테이너일행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
 
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+                        화면잠금();
+                        const 응답 = await fetch("/swordart", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`검술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                직업화면컨테이너일행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+                        화면잠금();
+                        const 응답 = await fetch("/magic", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`마술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                직업화면컨테이너이행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+                        화면잠금();
+                        const 응답 = await fetch("/somatic", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`체술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                직업화면컨테이너이행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+                        화면잠금();
+                        const 응답 = await fetch("/healing", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`신술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                직업화면컨테이너삼행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+                        화면잠금();
+                        const 응답 = await fetch("/archery", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`궁술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                직업화면컨테이너삼행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업("1000다이아로 직업을 선택하시겠습니까?");
+                        if (!확인) return;
+
+                        화면잠금();
+                        const 응답 = await fetch("/medicine", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`인술을 선택했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
             } catch (e) {
                 메시지표시("서버요청실패");
                 console.error(e);
@@ -4858,6 +5142,7 @@ nodemon server.js
                             메시지표시(`10000다이아가 필요합니다`);
                             return;
                         }
+
                         화면잠금();
                         const 응답 = await fetch("/StoreTicket10", {
                             method: "POST",

@@ -2352,55 +2352,61 @@
                         }
                     });
 
+                    행렬만들기(램프설정컨테이너, "램프설정컨테이너사행", 3);
 
-                });
+                    const 램프원샷 = document.createElement("div");
+                    램프원샷.id = "램프원샷";
+                    램프원샷.style.display = "flex";
+                    램프원샷.innerHTML = `램프원샷`;
+                    램프원샷.style.cursor = "pointer";
+                    램프원샷.style.padding = "3px 8px";
+                    램프원샷.style.border = "0.2px solid #dadada";
+                    램프원샷.style.borderRadius = "8px";
+                    document.getElementById("램프설정컨테이너사행3열").append(램프원샷);
 
-                const 램프원샷 = document.createElement("div");
-                램프원샷.id = "램프원샷";
-                램프원샷.style.display = "flex";
-                램프원샷.innerHTML = `램프원샷`;
-                램프원샷.style.cursor = "pointer";
-                document.getElementById("메인화면컨테이너삼행2열").append(램프원샷);
-
-                램프원샷.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    if (유저데이터.스탯.램프.수량 < 1) {
-                        메시지표시("램프가 부족합니다");
-                        return;
-                    }
-
-                    const 확인 = await 팝업("모든램프를 한번에 터시겠습니까?<br>모든수량을 한번에 처리하는데 시간이 걸리니<br>화면을 건들지 말고 기다려주세요");
-                    if (!확인) return;
-                    try {
-
-                        화면잠금();
-                        const 응답 = await fetch("/lampallin", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: 유저데이터.id
-                            })
-                        });
-
-                        const 결과 = await 응답.json();
-
-                        if (!응답.ok) {
-                            메시지표시(결과.오류);
+                    램프원샷.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        if (유저데이터.스탯.램프.수량 < 1) {
+                            메시지표시("램프가 부족합니다");
                             return;
                         }
 
-                        유저데이터 = 결과;
-                        메인화면보여주기();
-                        메시지표시(`램프올인성공`);
-                    } catch (e) {
-                        메시지표시("서버요청실패");
-                        console.error(e);
-                    } finally {
-                        화면해제();
-                    }
+                        const 확인 = await 팝업("모든램프를 한번에 터시겠습니까?<br>모든수량을 한번에 처리하는데 시간이 걸리니<br>화면을 건들지 말고 기다려주세요");
+                        if (!확인) return;
+                        try {
 
+                            화면잠금();
+                            const 응답 = await fetch("/lamponeshot", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id,
+                                    선택최소등급: 최소등급선택.value,
+                                    선택옵션목록: Array.from(모든체크박스)
+                                        .filter(c => c.checked)
+                                        .map(c => c.value)
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+                            램프설정컨테이너.style.display = "none";
+                            메인화면보여주기();
+                            메시지표시(`램프원샷성공`);
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
                 });
-
 
 
                 const 램프레벨 = document.createElement("div");
@@ -2939,6 +2945,8 @@
                                 } else {
                                     메시지표시(`${선택된유저}님에게 우편을 보냈습니다`);
                                 }
+                                location.reload();
+
                             } catch (e) {
                                 메시지표시("서버 통신 오류");
                                 console.error(e);
@@ -2988,6 +2996,8 @@
                                 } else {
                                     메시지표시(`전체유저에게 우편을 보냈습니다`);
                                 }
+                                location.reload();
+
                             } catch (e) {
                                 메시지표시("서버 통신 오류");
                                 console.error(e);
@@ -3247,6 +3257,7 @@
                 T : agk사전<br>
                 D : 던전화면<br>
                 A : 직업화면<br>
+                S : 상점화면<br>
                 <br>
 
                 닉네임변경<br>
@@ -3343,6 +3354,11 @@
 4차와 5차 능력은 스탯업이아닌 직업별 고유효과를<br>
 구현하고싶어서, 시간이 좀 걸릴듯 합니다<br>
 차차 추가하겠습니다<br>
+전장 일일보상이 추가되었습니다<br>
+우선 전장 포인트만큼의 다이아를 지급해보겠습니다<br>
+전장 리셋은 주단위로할지 월단위로할지 고민중입니다<br>
+램프원샷 버튼이 램프설정 팝업 안으로 이동되었습니다<br>
+램프원샷에 등급조건과 옵션조건이 적용됩니다<br>
 <br>
 
 25.09.14<br>

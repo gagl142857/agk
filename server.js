@@ -311,15 +311,18 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
       if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
 
-      // const 전장보상 = {
-      //   이름: "다이아",
-      //   수량: Math.max(500, 3100 - data.스탯.전장.순위 * 100),
-      //   시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-      //   메모: `전장 ${data.스탯.전장.순위}위 보상`,
-      // };
+      if (data.스탯.전장.포인트 != 0) {
+        const 전장보상 = {
+          이름: "다이아",
+          수량: data.스탯.전장.포인트,
+          시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+          메모: `전장 포인트별 일일보상`,
+        };
 
-      // if (!data.스탯.우편함) data.스탯.우편함 = [];
-      // data.스탯.우편함.unshift(전장보상);
+        if (!data.스탯.우편함) data.스탯.우편함 = [];
+        data.스탯.우편함.unshift(전장보상);
+
+      }
 
     }
 
@@ -2093,9 +2096,9 @@ app.post("/StoreTicket1", async (req, res) => {
   }
 });
 
-app.post("/lampallin", async (req, res) => {
+app.post("/lamponeshot", async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id, 선택최소등급, 선택옵션목록 } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
     const { data: 유저데이터, error } = await supabase
@@ -2163,6 +2166,46 @@ app.post("/lampallin", async (req, res) => {
 
       // 램프 차감
       유저데이터.스탯.램프.수량 = Math.max(0, 유저데이터.스탯.램프.수량 - 1);
+
+
+
+
+      const 최소등급조건 = 등급순서.indexOf(드랍.등급) >= 등급순서.indexOf(선택최소등급);
+      if (!최소등급조건) {
+        // 무조건 판매
+        const idx3 = 등급순서.indexOf(드랍.등급);
+        유저데이터.스탯.계정.현재경험치 = Math.floor((유저데이터.스탯.계정.현재경험치 || 0) + (100 + (20 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.램프.현재골드 = Math.floor((유저데이터.스탯.램프.현재골드 || 0) + (50 + (10 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.가루 = (유저데이터.스탯.가루 || 0) + 10;
+        유저데이터.스탯.드랍 = null;
+        continue;
+      }
+
+      let 옵션조건 = true;
+      if (선택옵션목록.length > 0) {
+        const 드랍옵션목록 = Object.keys(드랍).filter(k => k !== "이름" && k !== "레벨" && k !== "등급" && k !== "HP" && k !== "공격력" && k !== "방어력" && k !== "공속");
+        if (선택옵션목록.length === 2) {
+          // 두 개 다 만족해야 함
+          옵션조건 = 선택옵션목록.every(opt => 드랍옵션목록.includes(opt));
+        } else {
+          // 하나라도 겹치면 OK
+          옵션조건 = 선택옵션목록.some(opt => 드랍옵션목록.includes(opt));
+        }
+      }
+
+      if (!옵션조건) {
+        // 무조건 판매
+        const idx3 = 등급순서.indexOf(드랍.등급);
+        유저데이터.스탯.계정.현재경험치 = Math.floor((유저데이터.스탯.계정.현재경험치 || 0) + (100 + (20 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.램프.현재골드 = Math.floor((유저데이터.스탯.램프.현재골드 || 0) + (50 + (10 * idx3)) * (0.8 + Math.random() * 0.3));
+        유저데이터.스탯.가루 = (유저데이터.스탯.가루 || 0) + 10;
+        유저데이터.스탯.드랍 = null;
+        continue;
+      }
+
+
+
+
 
       // 가짜 장착 시뮬레이션
       let 비교스탯 = JSON.parse(JSON.stringify(유저데이터.스탯));

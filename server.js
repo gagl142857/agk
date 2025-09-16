@@ -206,7 +206,7 @@ app.post("/register", async (req, res) => {
         수량: 1000,
       },
       //재화
-      다이아: 1000,
+      다이아: 0,
       낙엽: 0,
       스톤: 0,
       가루: 0,
@@ -220,6 +220,12 @@ app.post("/register", async (req, res) => {
       우편함: [
         {
           이름: "램프",
+          수량: 1000,
+          시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+          메모: "신규유저 보상",
+        },
+        {
+          이름: "다이아",
           수량: 1000,
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
@@ -329,18 +335,28 @@ app.post("/login", async (req, res) => {
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString().split(",")[0].trim();
 
+    // "2025. 9. 10. 오후 4:37:00"
+    const parts = data.스탯.생성시각.split(". ");
+    // ["2025", "9", "10", "오후 4:37:00"]
+
+    const 생성연도 = parseInt(parts[0], 10);
+    const 생성월 = parseInt(parts[1], 10) - 1; // JS 월은 0부터 시작
+    const 생성일자 = parseInt(parts[2], 10);
+
+    const 생성일 = new Date(생성연도, 생성월, 생성일자);
+    const 일수보정 = Math.floor((now - 생성일) / (1000 * 60 * 60 * 24)) + 1;
 
     if (시간차 > 0) {
       const 램프보상 = {
         이름: "램프",
-        수량: 시간차 * 40,
+        수량: 시간차 * (60 + (일수보정 - 1)),
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
         메모: `${시간차}시간 방치보상`,
       };
 
       const 다이아보상 = {
         이름: "다이아",
-        수량: 시간차 * 40,
+        수량: 시간차 * (60 + (일수보정 - 1)),
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
         메모: `${시간차}시간 방치보상`,
       };
@@ -3302,6 +3318,7 @@ const 장비목록 = [
   "조각상1", "조각상2", "조각상3", "조각상4", "조각상5", "조각상6",
   "유물",
   "직업",
+  "스킬",
 ];
 
 const 조각상리롤목록 = [
@@ -3357,6 +3374,10 @@ const 스탯목록 = [
   "스킬치명피해",
   "스킬피해",
   "스킬피해감소",
+  "동료치명",
+  "동료치명피해",
+  "동료피해",
+  "동료피해감소",
   "일반공격계수",
   "일반공격피해감소",
   "치유량",

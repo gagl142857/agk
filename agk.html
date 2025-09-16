@@ -764,16 +764,6 @@
                 다이아수량.style.display = "flex";
                 다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
 
-                // 행렬만들기(메인화면컨테이너, "메인화면컨테이너일행", 1);
-                // 메인화면컨테이너일행.style.borderBottom = "0.2px solid #dadada";
-                // const 스탯상세정보 = document.createElement("div");
-                // 스탯상세정보.style.display = "flex";
-                // 스탯상세정보.id = `스탯상세정보`;
-                // 스탯상세정보.innerHTML = `상세스탯`;
-                // 스탯상세정보.style.cursor = "pointer";
-                // 스탯상세정보.style.marginBottom = "8px";
-                // 메인화면컨테이너일행1열.append(스탯상세정보);
-
                 const 설정버튼 = document.getElementById("설정");
                 const 우편함 = 유저데이터?.스탯.우편함 || [];
                 const 기존뱃지 = document.getElementById("설정알림점");
@@ -1229,23 +1219,22 @@
                     });
                 });
 
+                const 외형박스 = document.createElement("외형박스");
+                외형박스.id = "외형";
+                외형박스.style.display = "flex";
+                외형박스.innerHTML = 비장비아이콘변환(기본날개아이콘);
+                외형박스.style.color = "black";
+                외형박스.style.cursor = "pointer";
+                외형박스.style.width = "32px";
+                외형박스.style.height = "32px";
+                외형박스.style.padding = "8px";
+                외형박스.style.marginTop = "8px";
+                외형박스.style.borderRadius = "8px";
+                외형박스.style.border = `0.2px solid #dadada`;
+                외형박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행4열").append(외형박스);
 
-                const 날개박스 = document.createElement("날개박스");
-                날개박스.id = "날개";
-                날개박스.style.display = "flex";
-                날개박스.innerHTML = 비장비아이콘변환(기본날개아이콘);
-                날개박스.style.color = "black";
-                날개박스.style.cursor = "pointer";
-                날개박스.style.width = "32px";
-                날개박스.style.height = "32px";
-                날개박스.style.padding = "8px";
-                날개박스.style.marginTop = "8px";
-                날개박스.style.borderRadius = "8px";
-                날개박스.style.border = `0.2px solid #dadada`;
-                날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행4열").append(날개박스);
-
-                날개박스.addEventListener("click", (e) => {
+                외형박스.addEventListener("click", (e) => {
                     e.stopPropagation();
                     메시지표시(`구현중입니다`);
                 });
@@ -2088,7 +2077,6 @@
                     e.stopPropagation();
 
                     메시지표시(`구현중입니다`);
-
                 });
 
 
@@ -3348,6 +3336,17 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.16<br>
+램프 방치보상이 방치시간×40에서 ➡ 방치시간×60으로<br>
+상향되었습니다<br>
+다이아 방치보상이 방치시간×40에서 ➡ 방치시간×60으로<br>
+상향되었습니다<br>
+추가로 시간에 곱해지는 60이라는 숫자에 n일차 접속일이<br>
+반영되어 더해집니다<br>
+예를들어 신규 10일차 유저가 3시간 방치후 접속했다면<br>
+3 × (60+9) 만큼 램프와 다이아가 지급됩니다<br>
+<br>
+
 25.09.15<br>
 직업이 구현되었습니다<br>
 아직 직업별 3차 스탯까지만 구현되었습니다<br>
@@ -3497,8 +3496,14 @@
  
 해야할일
 
-유물뽑기
+유물대신에 외형으로
+등급별 외형 만들고 다이아로 구매하게한다음
+강화는 가루소모
+
 스킬수집
+동료 디지몬 진화스타일
+
+유물뽑기
 동료수집
 별자리 황도12궁
 서버적용
@@ -4160,9 +4165,6 @@ nodemon server.js
                 직업 선택과 변경에는 1000다이아가 소모됩니다<br>
                 직업을 결정하게되면 필요레벨 달성시 자동으로 전직합니다<br>
             `;
-        //     `
-        //     구현중입니다<br>
-        // `;
         직업화면설명.style.textAlign = "center";
         직업화면설명.style.paddingBottom = "8px";
         직업화면.append(직업화면설명);
@@ -4182,9 +4184,6 @@ nodemon server.js
         //직업화면보여주기함수
         async function 직업화면보여주기() {
             try {
-
-                // 메시지표시(`구현중입니다`);
-                // return;
                 모든화면숨기기();
                 직업화면.style.display = "flex";
                 직업화면컨테이너.innerHTML = "";
@@ -4805,6 +4804,160 @@ nodemon server.js
             }
 
         }
+
+        const 스킬화면 = document.createElement("div");
+        스킬화면.style.position = "absolute";
+        스킬화면.className = "화면숨기기";
+        스킬화면.style.boxSizing = "border-box";
+        스킬화면.style.top = "64px";
+        스킬화면.style.width = "400px";
+        스킬화면.style.display = "none";
+        스킬화면.style.flexDirection = "column";
+        스킬화면.style.gap = "8px";
+        document.body.append(스킬화면);
+
+        const 스킬화면설명 = document.createElement("div");
+        스킬화면설명.style.boxSizing = "border-box";
+        스킬화면설명.style.borderBottom = "0.2px solid #dadada";
+        스킬화면설명.style.flex = "1";
+        스킬화면설명.style.display = "flex";
+        스킬화면설명.style.flexDirection = "column";
+        스킬화면설명.innerHTML =
+            `
+            스킬을 뽑으세요<br>
+            `;
+        스킬화면설명.style.textAlign = "center";
+        스킬화면설명.style.paddingBottom = "8px";
+        스킬화면.append(스킬화면설명);
+
+        const 스킬화면컨테이너 = document.createElement("div");
+        스킬화면컨테이너.id = "스킬화면컨테이너";
+        스킬화면컨테이너.style.boxSizing = "border-box";
+        스킬화면컨테이너.style.border = "0.2px solid #dadada";
+        스킬화면컨테이너.style.borderRadius = "8px";
+        스킬화면컨테이너.style.flex = "1";
+        스킬화면컨테이너.style.display = "flex";
+        스킬화면컨테이너.style.flexDirection = "column";
+        스킬화면컨테이너.style.padding = "8px";
+        스킬화면컨테이너.style.gap = "8px";
+        스킬화면.append(스킬화면컨테이너);
+
+        //스킬화면보여주기함수
+        async function 스킬화면보여주기() {
+            try {
+                모든화면숨기기();
+                스킬화면.style.display = "flex";
+                스킬화면컨테이너.innerHTML = "";
+
+                행렬만들기(스킬화면컨테이너, "스킬화면컨테이너일행", 3);
+                스킬화면컨테이너일행2열.style.boxSizing = "border-box";
+                스킬화면컨테이너일행2열.style.border = "0.2px solid #dadada";
+                스킬화면컨테이너일행2열.style.borderRadius = "8px";
+                스킬화면컨테이너일행2열.innerHTML = `스킬뽑기`;
+                스킬화면컨테이너일행2열.style.cursor = `pointer`;
+
+                //세라피몬
+                //홀리필드
+                //세븐헤븐
+                //스트라이크오브페디션
+                //트레이니티버스트
+
+                //오파니몬
+                //에덴즈재스터
+                //세인트홀
+                //소피아
+
+                //케루비몬
+                //헤븐즈저지먼트
+                //홀리스피어
+                //라이트오브퓨리티
+
+                //드미안젤몬
+                //도미니언저지
+
+                //클라비스엔젤몬
+                //헤븐즈게이트
+                //엑스칼리버레이
+
+                //켄타우로스몬
+                //오로라안테레스
+                //레디언트제스터
+
+                //마그나엔젤몬
+                //게이트오브데스티니
+                //홀리디스펠
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+        }
+
+        const 외형화면 = document.createElement("div");
+        외형화면.style.position = "absolute";
+        외형화면.className = "화면숨기기";
+        외형화면.style.boxSizing = "border-box";
+        외형화면.style.top = "64px";
+        외형화면.style.width = "400px";
+        외형화면.style.display = "none";
+        외형화면.style.flexDirection = "column";
+        외형화면.style.gap = "8px";
+        document.body.append(외형화면);
+
+        const 외형화면설명 = document.createElement("div");
+        외형화면설명.style.boxSizing = "border-box";
+        외형화면설명.style.borderBottom = "0.2px solid #dadada";
+        외형화면설명.style.flex = "1";
+        외형화면설명.style.display = "flex";
+        외형화면설명.style.flexDirection = "column";
+        외형화면설명.innerHTML =
+            `
+            외형을 구매하고 강화하세요<br>
+            강화에는 가루가 소모됩니다<br>
+            `;
+        외형화면설명.style.textAlign = "center";
+        외형화면설명.style.paddingBottom = "8px";
+        외형화면.append(외형화면설명);
+
+        const 외형화면컨테이너 = document.createElement("div");
+        외형화면컨테이너.id = "외형화면컨테이너";
+        외형화면컨테이너.style.boxSizing = "border-box";
+        외형화면컨테이너.style.border = "0.2px solid #dadada";
+        외형화면컨테이너.style.borderRadius = "8px";
+        외형화면컨테이너.style.flex = "1";
+        외형화면컨테이너.style.display = "flex";
+        외형화면컨테이너.style.flexDirection = "column";
+        외형화면컨테이너.style.padding = "8px";
+        외형화면컨테이너.style.gap = "8px";
+        외형화면.append(외형화면컨테이너);
+
+        //외형화면보여주기함수
+        async function 외형화면보여주기() {
+            try {
+                모든화면숨기기();
+                외형화면.style.display = "flex";
+                외형화면컨테이너.innerHTML = "";
+
+                행렬만들기(외형화면컨테이너, "외형화면컨테이너일행", 3);
+                // 외형화면컨테이너일행2열.style.boxSizing = "border-box";
+                // 외형화면컨테이너일행2열.style.border = "0.2px solid #dadada";
+                // 외형화면컨테이너일행2열.style.borderRadius = "8px";
+                // 외형화면컨테이너일행2열.innerHTML = `외형뽑기`;
+                // 외형화면컨테이너일행2열.style.cursor = `pointer`;
+                외형화면컨테이너일행1열.innerHTML = `무기`;
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+        }
+
 
         const 상점화면 = document.createElement("div");
         상점화면.style.position = "absolute";

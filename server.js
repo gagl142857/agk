@@ -378,12 +378,44 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.전장) {
       data.스탯.전장 = { 포인트: 0, 티켓: 4 };
     }
+    if (!data.스탯.무기외형) {
+      data.스탯.무기외형 = "";
+    }
+    if (!data.스탯.옷외형) {
+      data.스탯.옷외형 = "";
+    }
+    if (!data.스탯.모자외형) {
+      data.스탯.모자외형 = "";
+    }
+
+    if (data.스탯.무기외형.레벨) {
+      data.스탯.가루 = data.스탯.가루 + (data.스탯.무기외형.레벨 || 0) * 10000;
+    }
+
+    if (data.스탯.옷외형.레벨) {
+      data.스탯.가루 = data.스탯.가루 + (data.스탯.옷외형.레벨 || 0) * 10000;
+    }
+
+    if (data.스탯.모자외형.레벨) {
+      data.스탯.가루 = data.스탯.가루 + (data.스탯.모자외형.레벨 || 0) * 10000;
+    }
+
+    if (!data.스탯.외형강화) {
+      data.스탯.외형강화 =
+      {
+        레벨: 0,
+        회피무시: 0,
+        HP보너스: 0,
+        공격력보너스: 0,
+        방어력보너스: 0,
+      };
+    }
+
     for (let i = 1; i <= 6; i++) {
       if (!data.스탯[`조각상${i}`]) {
         data.스탯[`조각상${i}`] = {};
       }
     }
-
 
     if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;
@@ -832,6 +864,9 @@ app.post("/receive-all-mail", async (req, res) => {
       } else if (mail.이름 === "다이아") {
         data.스탯.다이아 += mail.수량;
 
+      } else if (mail.이름 === "가루") {
+        data.스탯.가루 += mail.수량;
+
       } else if (mail.이름 === "티켓") {
         data.스탯.전장.티켓 += mail.수량;
 
@@ -890,6 +925,10 @@ app.post("/receive-mail", async (req, res) => {
 
     } else if (data.스탯.우편함[index].이름 === "다이아") {
       data.스탯.다이아 += data.스탯.우편함[index].수량;
+      data.스탯.우편함.splice(index, 1);
+
+    } else if (data.스탯.우편함[index].이름 === "가루") {
+      data.스탯.가루 += data.스탯.우편함[index].수량;
       data.스탯.우편함.splice(index, 1);
 
     } else if (data.스탯.우편함[index].이름 === "티켓") {
@@ -1208,7 +1247,7 @@ app.post("/pump", async (req, res) => {
     data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
     data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
     data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.회피 = 4 + Math.floor((data.스탯.탈것.레벨 || 0) / 10) * 2;
+    data.스탯.탈것.회피 = 4 + Math.floor(((data.스탯.탈것.레벨 || 1) - 1) / 10) * 2;
 
     data.스탯.탈것.레벨++;
 
@@ -2689,7 +2728,8 @@ app.post("/medicine", async (req, res) => {
   }
 });
 
-app.post("/Weaponappearance", async (req, res) => {
+
+app.post("/appearance", async (req, res) => {
   try {
     const { id } = req.body;
 
@@ -2703,18 +2743,17 @@ app.post("/Weaponappearance", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (유저데이터.스탯.가루 < 10000) {
-      return res.status(404).json({ 오류: "강화에는 1만가루가 필요합니다" });
+    if (유저데이터.스탯.가루 < 20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000) {
+      return res.status(404).json({ 오류: "가루가 부족합니다" });
     }
 
-    유저데이터.스탯.가루 -= 10000;
+    유저데이터.스탯.가루 = 유저데이터.스탯.가루 - (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000);
 
-    if (!유저데이터.스탯.무기외형) {
-      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
-    }
-
-    유저데이터.스탯.무기외형.레벨 += 1;
-    유저데이터.스탯.무기외형.공격력보너스 = 유저데이터.스탯.무기외형.레벨 * 8;
+    유저데이터.스탯.외형강화.레벨 += 1;
+    유저데이터.스탯.외형강화.HP보너스 += 유저데이터.스탯.외형강화.레벨 + 1;
+    유저데이터.스탯.외형강화.공격력보너스 += 유저데이터.스탯.외형강화.레벨 + 1;
+    유저데이터.스탯.외형강화.방어력보너스 += 유저데이터.스탯.외형강화.레벨 + 1;
+    유저데이터.스탯.외형강화.회피무시 = 4 + Math.floor(((유저데이터.스탯.외형강화.레벨 || 1) - 1) / 10) * 2;
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
@@ -2733,6 +2772,65 @@ app.post("/Weaponappearance", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/appearancereset", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.가루 < 10000) {
+      return res.status(404).json({ 오류: "초기화에는 1만가루가 필요합니다" });
+    }
+
+    if (유저데이터.스탯.외형강화.레벨 < 1) {
+      return res.status(404).json({ 오류: "외형을 강화하세요" });
+    }
+
+    유저데이터.스탯.가루 -= 10000;
+
+    const 총투자비용 = 20000 * (유저데이터.스탯.외형강화.레벨 * (유저데이터.스탯.외형강화.레벨 + 1) / 2)
+      - 10000 * 유저데이터.스탯.외형강화.레벨;
+
+    유저데이터.스탯.가루 += 총투자비용;
+
+    유저데이터.스탯.외형강화 =
+    {
+      레벨: 0,
+      회피무시: 0,
+      HP보너스: 0,
+      공격력보너스: 0,
+      방어력보너스: 0,
+    };
+
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+
 
 app.post("/ChangeWeaponAppearance", async (req, res) => {
   try {
@@ -2753,10 +2851,6 @@ app.post("/ChangeWeaponAppearance", async (req, res) => {
     }
 
     유저데이터.스탯.가루 -= 2000;
-
-    if (!유저데이터.스탯.무기외형) {
-      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
-    }
 
     유저데이터.스탯.무기외형.이름 = 외형;
 
@@ -2794,56 +2888,7 @@ app.post("/WeaponAppearanceReset", async (req, res) => {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
     }
 
-    if (!유저데이터.스탯.무기외형) {
-      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
-    }
-
     유저데이터.스탯.무기외형.이름 = "";
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: 유저데이터.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      return res.status(500).json({ 오류: "업데이트 실패" });
-    }
-
-    res.json(유저데이터);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/Clothingappearance", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    const { data: 유저데이터, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !유저데이터) {
-      return res.status(404).json({ 오류: "유저 없음" });
-    }
-
-    if (유저데이터.스탯.가루 < 10000) {
-      return res.status(404).json({ 오류: "강화에는 1만가루가 필요합니다" });
-    }
-
-    유저데이터.스탯.가루 -= 10000;
-
-    if (!유저데이터.스탯.옷외형) {
-      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
-    }
-
-    유저데이터.스탯.옷외형.레벨 += 1;
-    유저데이터.스탯.옷외형.방어력보너스 = 유저데이터.스탯.옷외형.레벨 * 8;
-
-    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
     const { error: updateError } = await supabase
       .from("users")
@@ -2881,10 +2926,6 @@ app.post("/ChangeClothingAppearance", async (req, res) => {
 
     유저데이터.스탯.가루 -= 2000;
 
-    if (!유저데이터.스탯.옷외형) {
-      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
-    }
-
     유저데이터.스탯.옷외형.이름 = 외형;
 
     const { error: updateError } = await supabase
@@ -2921,56 +2962,7 @@ app.post("/ClothingAppearanceReset", async (req, res) => {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
     }
 
-    if (!유저데이터.스탯.옷외형) {
-      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
-    }
-
     유저데이터.스탯.옷외형.이름 = "";
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: 유저데이터.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      return res.status(500).json({ 오류: "업데이트 실패" });
-    }
-
-    res.json(유저데이터);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/Hatappearance", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    const { data: 유저데이터, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !유저데이터) {
-      return res.status(404).json({ 오류: "유저 없음" });
-    }
-
-    if (유저데이터.스탯.가루 < 10000) {
-      return res.status(404).json({ 오류: "강화에는 1만가루가 필요합니다" });
-    }
-
-    유저데이터.스탯.가루 -= 10000;
-
-    if (!유저데이터.스탯.모자외형) {
-      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
-    }
-
-    유저데이터.스탯.모자외형.레벨 += 1;
-    유저데이터.스탯.모자외형.HP보너스 = 유저데이터.스탯.모자외형.레벨 * 8;
-
-    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3008,10 +3000,6 @@ app.post("/ChangeHatAppearance", async (req, res) => {
 
     유저데이터.스탯.가루 -= 2000;
 
-    if (!유저데이터.스탯.모자외형) {
-      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
-    }
-
     유저데이터.스탯.모자외형.이름 = 외형;
 
     const { error: updateError } = await supabase
@@ -3046,10 +3034,6 @@ app.post("/HatAppearanceReset", async (req, res) => {
 
     if (!유저데이터.스탯.모자외형?.이름) {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
-    }
-
-    if (!유저데이터.스탯.모자외형) {
-      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
     }
 
     유저데이터.스탯.모자외형.이름 = "";
@@ -3686,9 +3670,7 @@ const 장비목록 = [
   "유물",
   "직업",
   "스킬",
-  "무기외형",
-  "옷외형",
-  "모자외형",
+  "외형강화",
 ];
 
 const 조각상리롤목록 = [

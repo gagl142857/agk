@@ -1190,7 +1190,8 @@
                         탈것회피.style.justifyContent = "space-between";
                         탈것회피.style.width = "100%";
                         탈것회피.style.borderBottom = `0.2px solid #dadada`;
-                        탈것회피.innerHTML = `<span>회피</span><span>${유저데이터.스탯.탈것.회피}</span>`;
+                        탈것회피.innerHTML =
+                            `<span>회피</span><span>${4 + Math.floor(((유저데이터.스탯.탈것.레벨) - 1) / 10) * 2}</span>`;
                         document.getElementById("탈것컨테이너일행2열").append(탈것회피);
                     }
 
@@ -1229,7 +1230,8 @@
                         탈것다음회피.style.justifyContent = "space-between";
                         탈것다음회피.style.width = "100%";
                         탈것다음회피.style.borderBottom = `0.2px solid #dadada`;
-                        탈것다음회피.innerHTML = `<span>회피</span><span>${4 + Math.floor((유저데이터.스탯.탈것.레벨 + 1 || 0) / 10) * 2}</span>`;
+                        탈것다음회피.innerHTML =
+                            `<span>회피</span><span>${4 + Math.floor(((유저데이터.스탯.탈것.레벨 + 1) - 1) / 10) * 2}</span>`;
                         document.getElementById("탈것컨테이너일행3열").append(탈것다음회피);
                     }
 
@@ -3399,6 +3401,13 @@
                 리롤 : 10, 강화 : 20부터 등급당 10씩 증가<br>
                 <br>
 
+                조각상강화확률<br>
+                기본 → D : 70% / D → C : 29.44% / C → B : 12.39%<br>
+                B → A : 5.21% / A → S : 2.19% / S → SS : 0.919%<br>
+                SS → L : 0.386% / L → LL : 0.162% / LL → U : 0.068%<br>
+                U → UU : 0.028% / UU → X : 0.012%<br>
+                <br>
+
 
                 `;
 
@@ -3460,13 +3469,15 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.18<br>
+외형강화 시스템이 리뉴얼되었습니다<br>
+외형강화에 투자됐던 가루는 재접속 시 전부 반환됩니다<br>
+<br>
+
 25.09.17<br>
 던전몬스터 최대레벨 달성시 도전이 불가능하던<br>
 버그가 수정되었습니다<br>
 메인화면 유물컨텐츠가 외형컨텐츠로 변경되었습니다<br>
-무기외형강화는 공격력보너스<br>
-옷외형강화는 방어력보너스<br>
-모자외형강화는 HP보너스를 증가시켜줍니다<br>
 전투시뮬레이션 팝업에 나와 상대의 전투력표시가 추가되었습니다<br>
 전투시뮬레이션 팝업에 총회복량(회복량)표시가 추가되었습니다<br>
 던전몬스터 지니의 레벨당 치명피해 증가량이<br>
@@ -5060,6 +5071,7 @@ nodemon server.js
             외형화면입니다. 해당부위 장비의 외형을 변경할 수 있습니다<br>
             외형 선택에는 가루가 소모됩니다<br>
             외형을 선택하지 않아도 가루를 소모하여 외형을 강화할 수 있습니다<br>
+            초기화 시 투자된 가루가 반환됩니다<br>
             `;
         외형화면설명.style.textAlign = "center";
         외형화면설명.style.paddingBottom = "8px";
@@ -5084,38 +5096,64 @@ nodemon server.js
                 외형화면.style.display = "flex";
                 외형화면컨테이너.innerHTML = "";
 
-                행렬만들기(외형화면컨테이너, "무기일행", 3);
-                무기일행.style.borderTop = `0.2px solid #dadada`;
-                무기일행2열.innerHTML = `무기`;
-                무기일행2열.style.marginTop = `8px`;
-                행렬만들기(외형화면컨테이너, "무기이행", 3);
-                무기이행1열.innerHTML = `공격력보너스 ${유저데이터.스탯.무기외형?.레벨 ? (유저데이터.스탯.무기외형?.레벨) * 8 : 0}%`;
-                무기이행2열.innerHTML = `➡`;
-                무기이행3열.innerHTML = `공격력보너스 ${유저데이터.스탯.무기외형?.레벨 ? (유저데이터.스탯.무기외형?.레벨 + 1) * 8 : 8}%`;
-                무기이행1열.style.flex = "3";
-                무기이행2열.style.flex = "1";
-                무기이행3열.style.flex = "3";
+                행렬만들기(외형화면컨테이너, "외형강화일행", 3);
+                외형강화일행.style.borderTop = `0.2px solid #dadada`;
+                외형강화일행2열.innerHTML = `외형강화 Lv${유저데이터.스탯.외형강화.레벨}`;
+                외형강화일행2열.style.marginTop = `8px`;
+                행렬만들기(외형화면컨테이너, "외형강화회피무시", 3);
+                외형강화회피무시1열.innerHTML = `회피무시 ${유저데이터.스탯.외형강화?.레벨 ? 4 + Math.floor((유저데이터.스탯.외형강화.레벨 || 0) / 10) * 2 : 0}%`;
+                외형강화회피무시2열.innerHTML = `➡`;
+                외형강화회피무시3열.innerHTML =
+                    `회피무시 ${유저데이터.스탯.외형강화?.레벨
+                        ? 4 + Math.floor(((유저데이터.스탯.외형강화.레벨 + 1) - 1) / 10) * 2
+                        : 4}%`;
+                외형강화회피무시1열.style.flex = "3";
+                외형강화회피무시2열.style.flex = "1";
+                외형강화회피무시3열.style.flex = "3";
+                행렬만들기(외형화면컨테이너, "외형강화HP", 3);
+                외형강화HP1열.innerHTML = `HP보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨) * 8 : 0}%`;
+                외형강화HP2열.innerHTML = `➡`;
+                외형강화HP3열.innerHTML = `HP보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨 + 1) * 8 : 8}%`;
+                외형강화HP1열.style.flex = "3";
+                외형강화HP2열.style.flex = "1";
+                외형강화HP3열.style.flex = "3";
+                행렬만들기(외형화면컨테이너, "외형강화공격력", 3);
+                외형강화공격력1열.innerHTML = `공격력보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨) * 8 : 0}%`;
+                외형강화공격력2열.innerHTML = `➡`;
+                외형강화공격력3열.innerHTML = `공격력보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨 + 1) * 8 : 8}%`;
+                외형강화공격력1열.style.flex = "3";
+                외형강화공격력2열.style.flex = "1";
+                외형강화공격력3열.style.flex = "3";
+                행렬만들기(외형화면컨테이너, "외형강화방어력", 3);
+                외형강화방어력1열.innerHTML = `방어력보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨) * 8 : 0}%`;
+                외형강화방어력2열.innerHTML = `➡`;
+                외형강화방어력3열.innerHTML = `방어력보너스 ${유저데이터.스탯.외형강화?.레벨 ? (유저데이터.스탯.외형강화?.레벨 + 1) * 8 : 8}%`;
+                외형강화방어력1열.style.flex = "3";
+                외형강화방어력2열.style.flex = "1";
+                외형강화방어력3열.style.flex = "3";
 
-                행렬만들기(외형화면컨테이너, "무기삼행", 3);
-                무기삼행2열.style.cursor = "pointer";
-                무기삼행2열.style.borderRadius = "8px";
-                무기삼행2열.style.padding = "3px 8px";
-                무기삼행2열.style.border = `0.2px solid #dadada`;
-                무기삼행2열.innerHTML = `무기외형강화(1만가루)`;
-                무기삼행1열.style.flex = "2";
-                무기삼행2열.style.flex = "4";
-                무기삼행3열.style.flex = "2";
+                행렬만들기(외형화면컨테이너, "외형강화삼행", 2);
+                외형강화삼행1열.style.cursor = "pointer";
+                외형강화삼행1열.style.borderRadius = "8px";
+                외형강화삼행1열.style.padding = "3px 8px";
+                외형강화삼행1열.style.border = `0.2px solid #dadada`;
+                외형강화삼행1열.innerHTML = `외형강화(${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))})`;
+                외형강화삼행2열.style.cursor = "pointer";
+                외형강화삼행2열.style.borderRadius = "8px";
+                외형강화삼행2열.style.padding = "3px 8px";
+                외형강화삼행2열.style.border = `0.2px solid #dadada`;
+                외형강화삼행2열.innerHTML = `초기화(1만가루)`;
 
-                무기삼행2열.addEventListener("click", async (e) => {
+                외형강화삼행1열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-                        if (유저데이터.스탯.가루 < 10000) {
-                            메시지표시(`강화에는 1만가루가 필요합니다`);
+                        if (유저데이터.스탯.가루 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
+                            메시지표시(`강화에는 ${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))}가루가 필요합니다`);
                             return;
                         }
 
                         화면잠금();
-                        const 응답 = await fetch("/Weaponappearance", {
+                        const 응답 = await fetch("/appearance", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -5141,7 +5179,55 @@ nodemon server.js
                     }
                 });
 
+                외형강화삼행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.가루 < 10000) {
+                            메시지표시(`초기화에는 1만가루가 필요합니다`);
+                            return;
+                        }
+
+                        if (유저데이터.스탯.외형강화.레벨 < 1) {
+                            메시지표시(`외형을 강화하세요`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/appearancereset", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+
+                        외형화면보여주기();
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
+
+
+
+
+
                 행렬만들기(외형화면컨테이너, "무기사행", 6);
+                무기사행.style.borderTop = `0.2px solid #dadada`;
+                무기사행.style.padding = `8px`;
 
                 const 쌍절곤 = document.createElement("쌍절곤");
                 쌍절곤.id = "쌍절곤";
@@ -5297,64 +5383,12 @@ nodemon server.js
 
 
 
-                행렬만들기(외형화면컨테이너, "옷일행", 3);
-                옷일행2열.innerHTML = `옷`;
-                옷일행.style.borderTop = `0.2px solid #dadada`;
-                옷일행2열.style.marginTop = `8px`;
-                행렬만들기(외형화면컨테이너, "옷이행", 3);
-                옷이행1열.innerHTML = `방어력보너스 ${유저데이터.스탯.옷외형?.레벨 ? (유저데이터.스탯.옷외형?.레벨) * 8 : 0}%`;
-                옷이행2열.innerHTML = `➡`;
-                옷이행3열.innerHTML = `방어력보너스 ${유저데이터.스탯.옷외형?.레벨 ? (유저데이터.스탯.옷외형?.레벨 + 1) * 8 : 8}%`;
-                옷이행1열.style.flex = "3";
-                옷이행2열.style.flex = "1";
-                옷이행3열.style.flex = "3";
 
-                행렬만들기(외형화면컨테이너, "옷삼행", 3);
-                옷삼행2열.style.cursor = "pointer";
-                옷삼행2열.style.borderRadius = "8px";
-                옷삼행2열.style.padding = "3px 8px";
-                옷삼행2열.style.border = `0.2px solid #dadada`;
-                옷삼행2열.innerHTML = `옷외형강화(1만가루)`;
-                옷삼행1열.style.flex = "2";
-                옷삼행2열.style.flex = "4";
-                옷삼행3열.style.flex = "2";
 
-                옷삼행2열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    try {
-                        if (유저데이터.스탯.가루 < 10000) {
-                            메시지표시(`강화에는 1만가루가 필요합니다`);
-                            return;
-                        }
-
-                        화면잠금();
-                        const 응답 = await fetch("/Clothingappearance", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: 유저데이터.id
-                            })
-                        });
-
-                        const 결과 = await 응답.json();
-
-                        if (!응답.ok) {
-                            메시지표시(결과.오류);
-                            return;
-                        }
-
-                        유저데이터 = 결과;
-
-                        외형화면보여주기();
-                    } catch (e) {
-                        메시지표시("서버요청실패");
-                        console.error(e);
-                    } finally {
-                        화면해제();
-                    }
-                });
 
                 행렬만들기(외형화면컨테이너, "옷사행", 6);
+                옷사행.style.borderTop = `0.2px solid #dadada`;
+                옷사행.style.padding = `8px`;
 
                 const 사이언수트 = document.createElement("사이언수트");
                 사이언수트.id = "사이언수트";
@@ -5507,64 +5541,17 @@ nodemon server.js
                 });
 
 
-                행렬만들기(외형화면컨테이너, "모자일행", 3);
-                모자일행2열.innerHTML = `모자`;
-                모자일행.style.borderTop = `0.2px solid #dadada`;
-                모자일행2열.style.marginTop = `8px`;
-                행렬만들기(외형화면컨테이너, "모자이행", 3);
-                모자이행1열.innerHTML = `HP보너스 ${유저데이터.스탯.모자외형?.레벨 ? (유저데이터.스탯.모자외형?.레벨) * 8 : 0}%`;
-                모자이행2열.innerHTML = `➡`;
-                모자이행3열.innerHTML = `HP보너스 ${유저데이터.스탯.모자외형?.레벨 ? (유저데이터.스탯.모자외형?.레벨 + 1) * 8 : 8}%`;
-                모자이행1열.style.flex = "3";
-                모자이행2열.style.flex = "1";
-                모자이행3열.style.flex = "3";
 
-                행렬만들기(외형화면컨테이너, "모자삼행", 3);
-                모자삼행2열.style.cursor = "pointer";
-                모자삼행2열.style.borderRadius = "8px";
-                모자삼행2열.style.padding = "3px 8px";
-                모자삼행2열.style.border = `0.2px solid #dadada`;
-                모자삼행2열.innerHTML = `모자외형강화(1만가루)`;
-                모자삼행1열.style.flex = "2";
-                모자삼행2열.style.flex = "4";
-                모자삼행3열.style.flex = "2";
 
-                모자삼행2열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    try {
-                        if (유저데이터.스탯.가루 < 10000) {
-                            메시지표시(`강화에는 1만가루가 필요합니다`);
-                            return;
-                        }
 
-                        화면잠금();
-                        const 응답 = await fetch("/Hatappearance", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: 유저데이터.id
-                            })
-                        });
 
-                        const 결과 = await 응답.json();
 
-                        if (!응답.ok) {
-                            메시지표시(결과.오류);
-                            return;
-                        }
 
-                        유저데이터 = 결과;
 
-                        외형화면보여주기();
-                    } catch (e) {
-                        메시지표시("서버요청실패");
-                        console.error(e);
-                    } finally {
-                        화면해제();
-                    }
-                });
 
                 행렬만들기(외형화면컨테이너, "모자사행", 6);
+                모자사행.style.borderTop = `0.2px solid #dadada`;
+                모자사행.style.padding = `8px`;
 
                 const 체스킹 = document.createElement("체스킹");
                 체스킹.id = "체스킹";

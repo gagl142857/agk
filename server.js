@@ -2734,88 +2734,6 @@ app.post("/Weaponappearance", async (req, res) => {
   }
 });
 
-app.post("/Nunchaku", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    const { data: 유저데이터, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !유저데이터) {
-      return res.status(404).json({ 오류: "유저 없음" });
-    }
-
-    if (유저데이터.스탯.가루 < 2000) {
-      return res.status(404).json({ 오류: "외형변경에는 2000가루가 필요합니다" });
-    }
-
-    유저데이터.스탯.가루 -= 2000;
-
-    if (!유저데이터.스탯.무기외형) {
-      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
-    }
-    유저데이터.스탯.무기외형.이름 = "쌍절곤";
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: 유저데이터.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      return res.status(500).json({ 오류: "업데이트 실패" });
-    }
-
-    res.json(유저데이터);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
-app.post("/Lightningbow", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    const { data: 유저데이터, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !유저데이터) {
-      return res.status(404).json({ 오류: "유저 없음" });
-    }
-
-    if (유저데이터.스탯.가루 < 2000) {
-      return res.status(404).json({ 오류: "외형변경에는 2000가루가 필요합니다" });
-    }
-
-    유저데이터.스탯.가루 -= 2000;
-
-    if (!유저데이터.스탯.무기외형) {
-      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
-    }
-    유저데이터.스탯.무기외형.이름 = "라이트닝보우";
-
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({ 스탯: 유저데이터.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      return res.status(500).json({ 오류: "업데이트 실패" });
-    }
-
-    res.json(유저데이터);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
-
 app.post("/ChangeWeaponAppearance", async (req, res) => {
   try {
     const { id, 외형 } = req.body;
@@ -2857,6 +2775,301 @@ app.post("/ChangeWeaponAppearance", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/WeaponAppearanceReset", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.무기외형?.이름) {
+      return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
+    }
+
+    if (!유저데이터.스탯.무기외형) {
+      유저데이터.스탯.무기외형 = { 이름: "", 레벨: 0, 공격력보너스: 0 };
+    }
+
+    유저데이터.스탯.무기외형.이름 = "";
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Clothingappearance", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.가루 < 10000) {
+      return res.status(404).json({ 오류: "강화에는 1만가루가 필요합니다" });
+    }
+
+    유저데이터.스탯.가루 -= 10000;
+
+    if (!유저데이터.스탯.옷외형) {
+      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
+    }
+
+    유저데이터.스탯.옷외형.레벨 += 1;
+    유저데이터.스탯.옷외형.방어력보너스 = 유저데이터.스탯.옷외형.레벨 * 8;
+
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/ChangeClothingAppearance", async (req, res) => {
+  try {
+    const { id, 외형 } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.가루 < 2000) {
+      return res.status(400).json({ 오류: "외형변경에는 2000가루가 필요합니다" });
+    }
+
+    유저데이터.스탯.가루 -= 2000;
+
+    if (!유저데이터.스탯.옷외형) {
+      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
+    }
+
+    유저데이터.스탯.옷외형.이름 = 외형;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/ClothingAppearanceReset", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.옷외형?.이름) {
+      return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
+    }
+
+    if (!유저데이터.스탯.옷외형) {
+      유저데이터.스탯.옷외형 = { 이름: "", 레벨: 0, 방어력보너스: 0 };
+    }
+
+    유저데이터.스탯.옷외형.이름 = "";
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Hatappearance", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.가루 < 10000) {
+      return res.status(404).json({ 오류: "강화에는 1만가루가 필요합니다" });
+    }
+
+    유저데이터.스탯.가루 -= 10000;
+
+    if (!유저데이터.스탯.모자외형) {
+      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
+    }
+
+    유저데이터.스탯.모자외형.레벨 += 1;
+    유저데이터.스탯.모자외형.HP보너스 = 유저데이터.스탯.모자외형.레벨 * 8;
+
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/ChangeHatAppearance", async (req, res) => {
+  try {
+    const { id, 외형 } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.가루 < 2000) {
+      return res.status(400).json({ 오류: "외형변경에는 2000가루가 필요합니다" });
+    }
+
+    유저데이터.스탯.가루 -= 2000;
+
+    if (!유저데이터.스탯.모자외형) {
+      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
+    }
+
+    유저데이터.스탯.모자외형.이름 = 외형;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/HatAppearanceReset", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.모자외형?.이름) {
+      return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
+    }
+
+    if (!유저데이터.스탯.모자외형) {
+      유저데이터.스탯.모자외형 = { 이름: "", 레벨: 0, HP보너스: 0 };
+    }
+
+    유저데이터.스탯.모자외형.이름 = "";
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 
 
 

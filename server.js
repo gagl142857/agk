@@ -387,16 +387,20 @@ app.post("/login", async (req, res) => {
     }
 
     if (data.스탯.무기외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + (data.스탯.무기외형.레벨 || 0) * 10000;
+      data.스탯.가루 = data.스탯.가루 + data.스탯.무기외형.레벨 * 10000;
+      delete data.스탯.무기외형.레벨;
     }
 
     if (data.스탯.옷외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + (data.스탯.옷외형.레벨 || 0) * 10000;
+      data.스탯.가루 = data.스탯.가루 + data.스탯.옷외형.레벨 * 10000;
+      delete data.스탯.옷외형.레벨;
     }
 
     if (data.스탯.모자외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + (data.스탯.모자외형.레벨 || 0) * 10000;
+      data.스탯.가루 = data.스탯.가루 + data.스탯.모자외형.레벨 * 10000;
+      delete data.스탯.모자외형.레벨;
     }
+
 
     if (!data.스탯.외형강화) {
       data.스탯.외형강화 =

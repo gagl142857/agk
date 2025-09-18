@@ -1184,16 +1184,17 @@
                     현재레벨.innerHTML = `현재Lv ${유저데이터.스탯.탈것.레벨}`;
                     document.getElementById("탈것컨테이너일행2열").append(현재레벨);
 
-                    if (유저데이터.스탯.탈것.회피) {
-                        const 탈것회피 = document.createElement("div");
-                        탈것회피.style.display = "flex";
-                        탈것회피.style.justifyContent = "space-between";
-                        탈것회피.style.width = "100%";
-                        탈것회피.style.borderBottom = `0.2px solid #dadada`;
-                        탈것회피.innerHTML =
-                            `<span>회피</span><span>${4 + Math.floor(((유저데이터.스탯.탈것.레벨) - 1) / 10) * 2}</span>`;
-                        document.getElementById("탈것컨테이너일행2열").append(탈것회피);
-                    }
+                    const 탈것회피 = document.createElement("div");
+                    탈것회피.style.display = "flex";
+                    탈것회피.style.justifyContent = "space-between";
+                    탈것회피.style.width = "100%";
+                    탈것회피.style.borderBottom = `0.2px solid #dadada`;
+                    탈것회피.innerHTML =
+                        `<span>회피</span><span>${유저데이터.스탯.탈것.레벨 === 0
+                            ? 0
+                            : 4 + Math.floor((유저데이터.스탯.탈것.레벨 - 1) / 10) * 2
+                        }</span>`;
+                    document.getElementById("탈것컨테이너일행2열").append(탈것회피);
 
                     const 탈것HP보너스 = document.createElement("div");
                     탈것HP보너스.style.display = "flex";
@@ -1224,16 +1225,14 @@
                     다음레벨.innerHTML = `다음Lv ${유저데이터.스탯.탈것.레벨 + 1}`;
                     document.getElementById("탈것컨테이너일행3열").append(다음레벨);
 
-                    if (유저데이터.스탯.탈것.회피) {
-                        const 탈것다음회피 = document.createElement("div");
-                        탈것다음회피.style.display = "flex";
-                        탈것다음회피.style.justifyContent = "space-between";
-                        탈것다음회피.style.width = "100%";
-                        탈것다음회피.style.borderBottom = `0.2px solid #dadada`;
-                        탈것다음회피.innerHTML =
-                            `<span>회피</span><span>${4 + Math.floor(((유저데이터.스탯.탈것.레벨 + 1) - 1) / 10) * 2}</span>`;
-                        document.getElementById("탈것컨테이너일행3열").append(탈것다음회피);
-                    }
+                    const 탈것다음회피 = document.createElement("div");
+                    탈것다음회피.style.display = "flex";
+                    탈것다음회피.style.justifyContent = "space-between";
+                    탈것다음회피.style.width = "100%";
+                    탈것다음회피.style.borderBottom = `0.2px solid #dadada`;
+                    탈것다음회피.innerHTML =
+                        `<span>회피</span><span>${4 + Math.floor(((유저데이터.스탯.탈것.레벨 + 1) - 1) / 10) * 2}</span>`;
+                    document.getElementById("탈것컨테이너일행3열").append(탈것다음회피);
 
                     const 탈것HP다음보너스 = document.createElement("div");
                     탈것HP다음보너스.style.display = "flex";
@@ -1363,7 +1362,7 @@
                 const 가루량 = 유저데이터.스탯.가루;
                 const 기존외형뱃지 = document.getElementById("외형알림점");
 
-                if (외형버튼 && 가루량 > 10000 && !기존외형뱃지) {
+                if (외형버튼 && 가루량 > (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000) && !기존외형뱃지) {
                     const 뱃지 = document.createElement("div");
                     뱃지.id = "외형알림점";
                     뱃지.style.position = "absolute";
@@ -1375,7 +1374,7 @@
                     뱃지.style.right = "-3px";
                     외형버튼.style.position = "relative";
                     외형버튼.appendChild(뱃지);
-                } else if (기존외형뱃지 && 가루량 < 10000) {
+                } else if (기존외형뱃지 && 가루량 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
                     기존외형뱃지.remove();
                 }
 
@@ -3472,6 +3471,7 @@
 25.09.18<br>
 외형강화 시스템이 리뉴얼되었습니다<br>
 외형강화에 투자됐던 가루는 재접속 시 전부 반환됩니다<br>
+외형화면 서버오류가 해결되었습니다<br>
 <br>
 
 25.09.17<br>
@@ -3646,6 +3646,8 @@
  
 해야할일
 
+길드만들자
+
 스킬수집
 동료 디지몬 진화스타일
 
@@ -3654,7 +3656,6 @@
 별자리 황도12궁
 서버적용
 민원신청
-길드마스터한테 가입신청
 장비스킨시스템
 날개진화
 길드만들기

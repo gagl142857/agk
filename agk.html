@@ -3356,7 +3356,7 @@
                 시간×40(최대24시간)<br>
                 <br>
 
-                다이아방치보상<br>
+                다이아오프보상<br>
                 시간×40(최대24시간)<br>
                 <br>
 
@@ -3473,6 +3473,7 @@
 외형강화에 투자됐던 가루는 재접속 시 전부 반환됩니다<br>
 외형화면 서버오류가 해결되었습니다<br>
 던전몬스터들의 최대Lv 제한이 해제되었습니다<br>
+용어변경. 방치 ➡ 오프 변경했습니다<br>
 <br>
 
 25.09.17<br>
@@ -3488,13 +3489,13 @@
 <br>
 
 25.09.16<br>
-램프 방치보상이 방치시간×40에서 ➡ 방치시간×60으로<br>
+램프 오프보상이 오프시간×40에서 ➡ 오프시간×60으로<br>
 상향되었습니다<br>
-다이아 방치보상이 방치시간×40에서 ➡ 방치시간×60으로<br>
+다이아 오프보상이 오프시간×40에서 ➡ 오프시간×60으로<br>
 상향되었습니다<br>
 추가로 시간에 곱해지는 60이라는 숫자에 n일차 접속일이<br>
 반영되어 더해집니다<br>
-예를들어 신규 10일차 유저가 3시간 방치후 접속했다면<br>
+예를들어 신규 10일차 유저가 3시간 오프후 접속했다면<br>
 3 × (60+9) 만큼 램프와 다이아가 지급됩니다<br>
 <br>
 
@@ -3567,8 +3568,8 @@
 <br>
 
 25.09.09<br>
-램프 방치보상 계산식이 시간×램프레벨×20 ➡ 시간×40으로<br>
-다이아 방치보상 계산식이 시간×계정레벨×10 ➡ 시간×40으로<br>
+램프 오프보상 계산식이 시간×램프레벨×20 ➡ 시간×40으로<br>
+다이아 오프보상 계산식이 시간×계정레벨×10 ➡ 시간×40으로<br>
 변경되었습니다<br>
 무기 옷 모자 장비의 일부등급 외형이 변경되었습니다<br>
 신규 던전몬스터 '락골렘'이 구현되었습니다<br>
@@ -3590,7 +3591,7 @@
 신규장비, 탈것이 구현되었습니다<br>
 로쿠규로부터 획득한 재화, 낙엽을 이용해서 탈것에 연료를 주입해<br>
 탈것을 레벨업시킬 수 있습니다<br>
-이제 램프와 다이아의 방치보상이 우편함으로 지급됩니다<br>
+이제 램프와 다이아의 오프보상이 우편함으로 지급됩니다<br>
 <br>
 
 25.09.07<br>
@@ -3615,7 +3616,7 @@
 장착장비 클릭시 장착장비 상세정보 표시 구현<br>
 드랍장비 Lv 계정레벨 ±1 ➡ 계정레벨 ±5로 변경<br>
 유료재화 다이아 구현<br>
-다이아는 방치보상으로도 획득 가능합니다<br>
+다이아는 오프보상으로도 획득 가능합니다<br>
 재화 '가루'가 구현되었습니다<br>
 가루는 램프로 드랍된 장비를 판매시 10개씩 고정으로 획득됩니다<br>
 가루 사용처는 미구현입니다<br>
@@ -6165,7 +6166,95 @@ nodemon server.js
 
 
 
+        const 길드화면 = document.createElement("div");
+        길드화면.style.position = "absolute";
+        길드화면.className = "화면숨기기";
+        길드화면.style.boxSizing = "border-box";
+        길드화면.style.top = "64px";
+        길드화면.style.width = "400px";
+        길드화면.style.display = "none";
+        길드화면.style.flexDirection = "column";
+        길드화면.style.gap = "8px";
+        document.body.append(길드화면);
 
+        const 길드화면설명 = document.createElement("div");
+        길드화면설명.style.boxSizing = "border-box";
+        길드화면설명.style.borderBottom = "0.2px solid #dadada";
+        길드화면설명.style.flex = "1";
+        길드화면설명.style.display = "flex";
+        길드화면설명.style.flexDirection = "column";
+        길드화면설명.innerHTML =
+            `
+길드화면입니다<br>
+길드생성에는 1000다이아가 소모됩니다<br>
+길드가입신청 후 길드마스터의 승인이 필요합니다<br>
+            `;
+        길드화면설명.style.textAlign = "center";
+        길드화면설명.style.paddingBottom = "8px";
+        길드화면.append(길드화면설명);
+
+        const 길드화면컨테이너 = document.createElement("div");
+        길드화면컨테이너.id = "길드화면컨테이너";
+        길드화면컨테이너.style.boxSizing = "border-box";
+        길드화면컨테이너.style.border = "0.2px solid #dadada";
+        길드화면컨테이너.style.borderRadius = "8px";
+        길드화면컨테이너.style.flex = "1";
+        길드화면컨테이너.style.display = "flex";
+        길드화면컨테이너.style.flexDirection = "column";
+        길드화면컨테이너.style.padding = "8px";
+        길드화면컨테이너.style.gap = "8px";
+        길드화면.append(길드화면컨테이너);
+
+        //길드화면보여주기함수
+        async function 길드화면보여주기() {
+            try {
+                모든화면숨기기();
+                길드화면.style.display = "flex";
+                길드화면컨테이너.innerHTML = "";
+
+                행렬만들기(길드화면컨테이너, "길드생성일행", 3);
+                행렬만들기(길드화면컨테이너, "길드생성이행", 3);
+                길드생성일행2열.innerHTML = "길드생성";
+
+                const 길드명입력창 = document.createElement("input");
+                길드명입력창.type = "text";
+                길드명입력창.maxLength = 6;
+                길드명입력창.placeholder = "길드명";
+                길드명입력창.style.background = "white";
+                길드명입력창.style.color = "black";
+                길드명입력창.size = 10;
+                길드명입력창.style.outline = "none";
+                길드명입력창.value = "";
+                길드명입력창.focus();
+                길드생성이행2열.append(길드명입력창);
+
+                길드명입력창.addEventListener("input", () => {
+                    if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/.test(길드명입력창.value)) {
+                        메시지표시("한글과 영어만 가능합니다");
+                        길드명입력창.value = 길드명입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/g, "");
+                    }
+
+                    if (길드명입력창.value.length > 6) {
+                        메시지표시("길드명은 최대 6글자까지 가능합니다");
+                        길드명입력창.value = 길드명입력창.value.slice(0, 6);
+                    }
+                });
+
+                행렬만들기(길드화면컨테이너, "길드생성삼행", 3);
+                길드생성삼행2열.innerHTML = `생성(1000다이아)`;
+                길드생성삼행2열.style.boxSizing = "border-box";
+                길드생성삼행2열.style.border = "0.2px solid #dadada";
+                길드생성삼행2열.style.borderRadius = "8px";
+                길드생성삼행2열.style.cursor = "pointer";
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+        }
 
 
 
@@ -6523,15 +6612,7 @@ nodemon server.js
             }
 
             if (e.target.matches("#길드")) {
-                try {
-                    화면잠금();
-                    메시지표시(`구현중입니다`);
-                } catch (e) {
-                    메시지표시("서버요청실패");
-                    console.error(e);
-                } finally {
-                    화면해제();
-                }
+                길드화면보여주기();
             }
 
             if (e.target.matches("#타이틀과아이디")) {
@@ -6543,10 +6624,10 @@ nodemon server.js
 
                     const 입력창 = document.createElement("input");
                     입력창.type = "text";
-                    입력창.maxLength = 7;
+                    입력창.maxLength = 6;
                     입력창.placeholder = "새 아이디 입력";
-                    입력창.style.background = "black";
-                    입력창.style.color = "white";
+                    입력창.style.background = "white";
+                    입력창.style.color = "black";
                     입력창.size = 10;
                     입력창.style.outline = "none";
                     입력창.value = "";
@@ -7244,6 +7325,113 @@ nodemon server.js
             결과 = 결과.replace(/width:\s*\d+px;/, `width: 16px;`);
             return 결과;
         }
+
+
+
+
+
+
+
+
+
+
+
+        // const 화면설정포맷 = document.createElement("div");
+        // 화면설정포맷.style.position = "absolute";
+        // 화면설정포맷.className = "화면숨기기";
+        // 화면설정포맷.style.boxSizing = "border-box";
+        // 화면설정포맷.style.top = "64px";
+        // 화면설정포맷.style.width = "400px";
+        // 화면설정포맷.style.display = "none";
+        // 화면설정포맷.style.flexDirection = "column";
+        // 화면설정포맷.style.gap = "8px";
+        // document.body.append(화면설정포맷);
+
+        // const 화면설정포맷설명 = document.createElement("div");
+        // 화면설정포맷설명.style.boxSizing = "border-box";
+        // 화면설정포맷설명.style.borderBottom = "0.2px solid #dadada";
+        // 화면설정포맷설명.style.flex = "1";
+        // 화면설정포맷설명.style.display = "flex";
+        // 화면설정포맷설명.style.flexDirection = "column";
+        // 화면설정포맷설명.innerHTML =
+        //     `
+
+        //     `;
+        // 화면설정포맷설명.style.textAlign = "center";
+        // 화면설정포맷설명.style.paddingBottom = "8px";
+        // 화면설정포맷.append(화면설정포맷설명);
+
+        // const 화면설정포맷컨테이너 = document.createElement("div");
+        // 화면설정포맷컨테이너.id = "화면설정포맷컨테이너";
+        // 화면설정포맷컨테이너.style.boxSizing = "border-box";
+        // 화면설정포맷컨테이너.style.border = "0.2px solid #dadada";
+        // 화면설정포맷컨테이너.style.borderRadius = "8px";
+        // 화면설정포맷컨테이너.style.flex = "1";
+        // 화면설정포맷컨테이너.style.display = "flex";
+        // 화면설정포맷컨테이너.style.flexDirection = "column";
+        // 화면설정포맷컨테이너.style.padding = "8px";
+        // 화면설정포맷컨테이너.style.gap = "8px";
+        // 화면설정포맷.append(화면설정포맷컨테이너);
+
+        // //화면설정포맷보여주기함수
+        // async function 화면설정포맷보여주기() {
+        //     try {
+        //         모든화면숨기기();
+        //         화면설정포맷.style.display = "flex";
+        //         화면설정포맷컨테이너.innerHTML = "";
+
+        //         행렬만들기(화면설정포맷컨테이너, "외형강화일행", 3);
+        //         외형강화일행.style.borderTop = `0.2px solid #dadada`;
+        //         외형강화일행2열.innerHTML = `외형강화 Lv${유저데이터.스탯.외형강화.레벨}`;
+        //         외형강화일행2열.style.marginTop = `8px`;
+
+        //         외형강화삼행1열.addEventListener("click", async (e) => {
+        //             e.stopPropagation();
+        //             try {
+        //                 if (유저데이터.스탯.가루 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
+        //                     메시지표시(`강화에는 ${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))}가루가 필요합니다`);
+        //                     return;
+        //                 }
+
+        //                 화면잠금();
+        //                 const 응답 = await fetch("/ㅁㅁㅁㅁ", {
+        //                     method: "POST",
+        //                     headers: { "Content-Type": "application/json" },
+        //                     body: JSON.stringify({
+        //                         id: 유저데이터.id
+        //                     })
+        //                 });
+
+        //                 const 결과 = await 응답.json();
+
+        //                 if (!응답.ok) {
+        //                     메시지표시(결과.오류);
+        //                     return;
+        //                 }
+
+        //                 유저데이터 = 결과;
+
+        //                 화면설정포맷보여주기();
+        //             } catch (e) {
+        //                 메시지표시("서버요청실패");
+        //                 console.error(e);
+        //             } finally {
+        //                 화면해제();
+        //             }
+        //         });
+
+
+
+
+        //     } catch (e) {
+        //         메시지표시("서버요청실패");
+        //         console.error(e);
+        //     } finally {
+        //         화면해제();
+        //     }
+
+        // }
+
 
     </script>
 

@@ -31,6 +31,52 @@
             align-items: center;
             flex-direction: column;
         }
+
+        .네온박스 {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99999;
+
+            width: 320px;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: #c653ff;
+            border-radius: 10px;
+
+            background-color: black;
+            background-image: linear-gradient(to right, rgba(198, 83, 255, 0.15), rgba(255, 0, 150, 0.15));
+            background-blend-mode: overlay;
+
+            box-shadow:
+                0 0 8px 0px rgba(198, 83, 255, 0.5),
+                0 0 14px 0px rgba(255, 0, 150, 0.4),
+                inset 0 0 4px #000;
+
+            animation: 네온펄스 1.5s ease-in-out infinite alternate;
+        }
+
+
+        @keyframes 네온펄스 {
+            0% {
+                box-shadow:
+                    0 0 15px 5px rgba(198, 83, 255, 0.3),
+                    0 0 30px 5px rgba(255, 0, 150, 0.2),
+                    inset 0 0 6px #000;
+                color: #b366ff;
+            }
+
+            100% {
+                box-shadow:
+                    0 0 10px 10px rgba(198, 83, 255, 0.5),
+                    0 0 50px 10px rgba(255, 0, 150, 0.4),
+                    inset 0 0 10px #000;
+                color: #ff99ff;
+            }
+        }
     </style>
 </head>
 
@@ -51,6 +97,8 @@
         ];
 
         const 등급순서 = ["D", "C", "B", "A", "S", "SS", "L", "LL", "U", "UU", "X"];
+
+        const 스킬등급순서 = ["기본", "D", "C", "B", "A", "S", "SS", "L", "LL", "U", "UU", "X"];
 
         const 등급색상 = {
             기본: { 좌: "#e0e0e0", 우: "##ffffff" },
@@ -417,6 +465,12 @@
         타이틀과아이디.style.margin = "4px 8px";
         타이틀과아이디.style.cursor = "pointer";
         타이틀과아이디.innerHTML = `엔젤키우기(agk)`;
+
+        const 네온박스 = document.createElement("div");
+        네온박스.className = "네온박스";
+        네온박스.id = "네온박스";
+        네온박스.style.display = "none";
+        document.body.append(네온박스);
 
         const 다이아표시 = document.createElement("div");
         다이아표시.id = "다이아표시";
@@ -2175,12 +2229,10 @@
                     직업화면보여주기();
                 });
 
-
-                //스킬화면보여주기
                 const 스킬박스 = document.createElement("스킬박스");
                 스킬박스.id = "스킬";
                 스킬박스.style.display = "flex";
-                스킬박스.innerHTML = `미정`;
+                스킬박스.innerHTML = `스킬`;
                 스킬박스.style.textAlign = "center";
                 스킬박스.style.color = "#dadada";
                 // 스킬박스.style.fontSize = "14px";
@@ -2201,8 +2253,35 @@
                 스킬박스.addEventListener("click", (e) => {
                     e.stopPropagation();
 
-                    메시지표시(`구현중입니다`);
+                    스킬화면보여주기();
                 });
+
+                let 합성가능 = false;
+                for (let i = 1; i <= 10; i++) {
+                    if ((유저데이터.스탯.스킬[i] || 0) >= 3) {
+                        합성가능 = true;
+                        break;
+                    }
+                }
+
+                const 스킬버튼 = document.getElementById("스킬");
+                const 기존스킬뱃지 = document.getElementById("스킬알림점");
+
+                if (스킬버튼 && 합성가능 && !기존스킬뱃지) {
+                    const 뱃지 = document.createElement("div");
+                    뱃지.id = "스킬알림점";
+                    뱃지.style.position = "absolute";
+                    뱃지.style.width = "7px";
+                    뱃지.style.height = "7px";
+                    뱃지.style.backgroundColor = "red";
+                    뱃지.style.borderRadius = "50%";
+                    뱃지.style.top = "-3px";
+                    뱃지.style.right = "-3px";
+                    스킬버튼.style.position = "relative";
+                    스킬버튼.appendChild(뱃지);
+                } else if (기존스킬뱃지 && !합성가능) {
+                    기존스킬뱃지.remove();
+                }
 
 
                 //동료화면보여주기
@@ -2390,7 +2469,8 @@
                     자동뽑기.style.padding = "3px 8px";
                     자동뽑기.style.border = "0.2px solid #dadada";
                     자동뽑기.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너삼행1열").append(자동뽑기);
+                    // document.getElementById("램프설정컨테이너삼행1열").append(자동뽑기);
+                    document.getElementById("램프설정컨테이너삼행3열").append(자동뽑기);
 
                     document.getElementById("자동뽑기").addEventListener("click", async (e) => {
                         e.stopPropagation();
@@ -2432,93 +2512,100 @@
                     });
 
 
-                    const 풀자동 = document.createElement("div");
-                    풀자동.id = "풀자동";
-                    풀자동.innerHTML = `풀자동`;
-                    풀자동.style.cursor = "pointer";
-                    풀자동.style.padding = "3px 8px";
-                    풀자동.style.border = "0.2px solid #dadada";
-                    풀자동.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너삼행3열").append(풀자동);
+                    // const 풀자동 = document.createElement("div");
+                    // 풀자동.id = "풀자동";
+                    // 풀자동.innerHTML = `풀자동`;
+                    // 풀자동.style.cursor = "pointer";
+                    // 풀자동.style.padding = "3px 8px";
+                    // 풀자동.style.border = "0.2px solid #dadada";
+                    // 풀자동.style.borderRadius = "8px";
+                    // document.getElementById("램프설정컨테이너삼행3열").append(풀자동);
 
-                    document.getElementById("풀자동").addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            화면잠금();
+                    // document.getElementById("풀자동").addEventListener("click", async (e) => {
+                    //     e.stopPropagation();
+                    //     try {
+                    //         화면잠금();
 
-                            풀자동플래그 = true;
-                            자동뽑기플래그 = true;
-                            선택최소등급 = 최소등급선택.value;
-                            선택옵션목록 = Array.from(모든체크박스)
-                                .filter(c => c.checked)
-                                .map(c => c.value);
+                    //         풀자동플래그 = true;
+                    //         자동뽑기플래그 = true;
+                    //         선택최소등급 = 최소등급선택.value;
+                    //         선택옵션목록 = Array.from(모든체크박스)
+                    //             .filter(c => c.checked)
+                    //             .map(c => c.value);
 
-                            램프설정컨테이너.style.display = "none";
+                    //         램프설정컨테이너.style.display = "none";
 
-                            document.querySelector("#램프").click();
+                    //         document.querySelector("#램프").click();
 
-                        } catch (e) {
-                            메시지표시("");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
+                    //     } catch (e) {
+                    //         메시지표시("");
+                    //         console.error(e);
+                    //     } finally {
+                    //         화면해제();
+                    //     }
+                    // });
 
-                    행렬만들기(램프설정컨테이너, "램프설정컨테이너사행", 3);
 
-                    const 램프원샷 = document.createElement("div");
-                    램프원샷.id = "램프원샷";
-                    램프원샷.style.display = "flex";
-                    램프원샷.innerHTML = `램프원샷`;
-                    램프원샷.style.cursor = "pointer";
-                    램프원샷.style.padding = "3px 8px";
-                    램프원샷.style.border = "0.2px solid #dadada";
-                    램프원샷.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너사행3열").append(램프원샷);
+                    if (유저데이터.스탯.주인장인가 === 1) {
 
-                    램프원샷.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        if (유저데이터.스탯.램프.수량 < 1) {
-                            메시지표시("램프가 부족합니다");
-                            return;
-                        }
+                        행렬만들기(램프설정컨테이너, "램프설정컨테이너사행", 3);
 
-                        const 확인 = await 팝업("모든램프를 한번에 터시겠습니까?<br>모든수량을 한번에 처리하는데 시간이 걸리니<br>화면을 건들지 말고 기다려주세요");
-                        if (!확인) return;
-                        try {
+                        const 램프원샷 = document.createElement("div");
+                        램프원샷.id = "램프원샷";
+                        램프원샷.style.display = "flex";
+                        램프원샷.innerHTML = `램프원샷`;
+                        램프원샷.style.cursor = "pointer";
+                        램프원샷.style.padding = "3px 8px";
+                        램프원샷.style.border = "0.2px solid #dadada";
+                        램프원샷.style.borderRadius = "8px";
+                        document.getElementById("램프설정컨테이너사행3열").append(램프원샷);
 
-                            화면잠금();
-                            const 응답 = await fetch("/lamponeshot", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id,
-                                    선택최소등급: 최소등급선택.value,
-                                    선택옵션목록: Array.from(모든체크박스)
-                                        .filter(c => c.checked)
-                                        .map(c => c.value)
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
+                        램프원샷.addEventListener("click", async (e) => {
+                            e.stopPropagation();
+                            if (유저데이터.스탯.램프.수량 < 1) {
+                                메시지표시("램프가 부족합니다");
                                 return;
                             }
 
-                            유저데이터 = 결과;
-                            램프설정컨테이너.style.display = "none";
-                            메인화면보여주기();
-                            메시지표시(`램프원샷성공`);
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
+                            const 확인 = await 팝업("모든램프를 한번에 터시겠습니까?<br>모든수량을 한번에 처리하는데 시간이 걸리니<br>화면을 건들지 말고 기다려주세요");
+                            if (!확인) return;
+                            try {
+
+                                화면잠금();
+                                const 응답 = await fetch("/lamponeshot", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        id: 유저데이터.id,
+                                        선택최소등급: 최소등급선택.value,
+                                        선택옵션목록: Array.from(모든체크박스)
+                                            .filter(c => c.checked)
+                                            .map(c => c.value)
+                                    })
+                                });
+
+                                const 결과 = await 응답.json();
+
+                                if (!응답.ok) {
+                                    메시지표시(결과.오류);
+                                    return;
+                                }
+
+                                유저데이터 = 결과;
+                                램프설정컨테이너.style.display = "none";
+                                메인화면보여주기();
+                                메시지표시(`램프원샷성공`);
+                            } catch (e) {
+                                메시지표시("서버요청실패");
+                                console.error(e);
+                            } finally {
+                                화면해제();
+                            }
+                        });
+
+                    }
+
+
                 });
 
 
@@ -3407,6 +3494,12 @@
                 U → UU : 0.028% / UU → X : 0.012%<br>
                 <br>
 
+                스킬드랍확률<br>
+                1급 : 1.3% / 2급 : 0.169%<br>
+                3급 : 0.2197% / 4급 : 0.0028%<br>
+                상위등급은 합성으로만 획득됩니다<br>
+                <br>
+
 
                 `;
 
@@ -3467,6 +3560,18 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.09.20<br>
+시스템적으로 여러가지 업데이트가 있었습니다<br>
+설명할수 있는 부분들만 기재하겠습니다<br>
+풀자동과 램프원샷 기능이 삭제되었습니다<br>
+스킬시스템이 구현되었습니다<br>
+스킬은 램프를 문지를때마다 일정확률로 드랍됩니다<br>
+확률은 agk사전을 참고하세요<br>
+스킬화면의 단축키는 k입니다<br>
+전투시뮬레이션에 스킬데미지가 추가되었습니다<br>
+전투로그에 스킬데미지 표시가 추가되었습니다<br>
+<br>
 
 25.09.18<br>
 외형강화 시스템이 리뉴얼되었습니다<br>
@@ -3647,12 +3752,12 @@
                 /*
  
 해야할일
-
+ 
 길드만들자
-
+ 
 스킬수집
 동료 디지몬 진화스타일
-
+ 
 외형뽑기
 동료수집
 별자리 황도12궁
@@ -3662,7 +3767,7 @@
 날개진화
 길드만들기
 채팅창
-
+ 
 git add . && git commit -m "배포" && git push origin main
  
 nodemon server.js
@@ -4252,16 +4357,21 @@ nodemon server.js
 
                         await 팝업(
                             `
-                            내전투력(${단위변환함수(전투결과.나전투력)}) vs 상대전투력(${단위변환함수(전투결과.상대전투력)})<br>
-                            상대 ${전투결과.상대}<br>
-             ${전투결과.결과}<br>
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
              내 남은HP ${단위변환함수(전투결과.나HP)}<br>
              내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
              적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
              상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
              내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
              적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-             진행된 턴수 ${전투결과.턴수}`, false);
+             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+             진행된 턴수 ${전투결과.턴수}
+             `, false);
+
                     } catch (e) {
                         메시지표시("서버요청실패");
                         console.error(e);
@@ -4980,7 +5090,9 @@ nodemon server.js
         스킬화면설명.style.flexDirection = "column";
         스킬화면설명.innerHTML =
             `
-            스킬을 뽑으세요<br>
+            스킬은 최하위 1급부터 시작해서 급이 높아질수록<br>
+            능력치가 강해지고, 가장 강한 스킬이 자동장착됩니다<br>
+            하위스킬 3개를 상위스킬 1개로 합성할 수 있습니다<br>
             `;
         스킬화면설명.style.textAlign = "center";
         스킬화면설명.style.paddingBottom = "8px";
@@ -5005,43 +5117,141 @@ nodemon server.js
                 스킬화면.style.display = "flex";
                 스킬화면컨테이너.innerHTML = "";
 
-                행렬만들기(스킬화면컨테이너, "스킬화면컨테이너일행", 3);
-                스킬화면컨테이너일행2열.style.boxSizing = "border-box";
-                스킬화면컨테이너일행2열.style.border = "0.2px solid #dadada";
-                스킬화면컨테이너일행2열.style.borderRadius = "8px";
-                스킬화면컨테이너일행2열.innerHTML = `스킬뽑기`;
-                스킬화면컨테이너일행2열.style.cursor = `pointer`;
+                행렬만들기(스킬화면컨테이너, `장착스킬스탯표시`, 1);
+                장착스킬스탯표시1열.innerHTML = `장착스킬스탯`;
 
-                //세라피몬
-                //홀리필드
-                //세븐헤븐
-                //스트라이크오브페디션
-                //트레이니티버스트
+                행렬만들기(스킬화면컨테이너, `장착스킬스탯`, 2);
+                장착스킬스탯1열.style.display = "flex";
+                장착스킬스탯1열.style.justifyContent = "space-between";
+                장착스킬스탯1열.style.flexDirection = "row";
+                장착스킬스탯1열.style.width = "100%";
+                장착스킬스탯1열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯1열.innerHTML = `<span>스킬치명</span><span>${유저데이터.스탯.스킬.스킬치명}%</span>`;
+                장착스킬스탯2열.style.display = "flex";
+                장착스킬스탯2열.style.justifyContent = "space-between";
+                장착스킬스탯2열.style.flexDirection = "row";
+                장착스킬스탯2열.style.width = "100%";
+                장착스킬스탯2열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯2열.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.스킬.HP보너스}%</span>`;
 
-                //오파니몬
-                //에덴즈재스터
-                //세인트홀
-                //소피아
+                행렬만들기(스킬화면컨테이너, `장착스킬스탯이행`, 2);
+                장착스킬스탯이행1열.style.display = "flex";
+                장착스킬스탯이행1열.style.justifyContent = "space-between";
+                장착스킬스탯이행1열.style.flexDirection = "row";
+                장착스킬스탯이행1열.style.width = "100%";
+                장착스킬스탯이행1열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯이행1열.innerHTML = `<span>스킬치명피해</span><span>${유저데이터.스탯.스킬.스킬치명피해}%</span>`;
+                장착스킬스탯이행2열.style.display = "flex";
+                장착스킬스탯이행2열.style.justifyContent = "space-between";
+                장착스킬스탯이행2열.style.flexDirection = "row";
+                장착스킬스탯이행2열.style.width = "100%";
+                장착스킬스탯이행2열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯이행2열.innerHTML = `<span>공격력보너스</span><span>${유저데이터.스탯.스킬.공격력보너스}%</span>`;
 
-                //케루비몬
-                //헤븐즈저지먼트
-                //홀리스피어
-                //라이트오브퓨리티
+                행렬만들기(스킬화면컨테이너, `장착스킬스탯삼행`, 2);
+                장착스킬스탯삼행1열.style.display = "flex";
+                장착스킬스탯삼행1열.style.justifyContent = "space-between";
+                장착스킬스탯삼행1열.style.flexDirection = "row";
+                장착스킬스탯삼행1열.style.width = "100%";
+                장착스킬스탯삼행1열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯삼행1열.innerHTML = `<span>스킬피해</span><span>${유저데이터.스탯.스킬.스킬피해}%</span>`;
+                장착스킬스탯삼행2열.style.display = "flex";
+                장착스킬스탯삼행2열.style.justifyContent = "space-between";
+                장착스킬스탯삼행2열.style.flexDirection = "row";
+                장착스킬스탯삼행2열.style.width = "100%";
+                장착스킬스탯삼행2열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯삼행2열.innerHTML = `<span>방어력보너스</span><span>${유저데이터.스탯.스킬.방어력보너스}%</span>`;
 
-                //드미안젤몬
-                //도미니언저지
+                행렬만들기(스킬화면컨테이너, `장착스킬스탯사행`, 2);
+                장착스킬스탯사행1열.style.display = "flex";
+                장착스킬스탯사행1열.style.justifyContent = "space-between";
+                장착스킬스탯사행1열.style.flexDirection = "row";
+                장착스킬스탯사행1열.style.width = "100%";
+                장착스킬스탯사행1열.style.borderBottom = `0.2px solid #dadada`;
+                장착스킬스탯사행1열.innerHTML = `<span>스킬피해감소</span><span>${유저데이터.스탯.스킬.스킬피해감소}%</span>`;
 
-                //클라비스엔젤몬
-                //헤븐즈게이트
-                //엑스칼리버레이
 
-                //켄타우로스몬
-                //오로라안테레스
-                //레디언트제스터
+                행렬만들기(스킬화면컨테이너, `자동합성일행`, 2);
+                const 자동합성 = document.createElement("div");
+                자동합성.id = "자동합성";
+                자동합성.style.boxSizing = "border-box";
+                자동합성.style.border = "0.2px solid #dadada";
+                자동합성.style.borderRadius = "8px";
+                자동합성.style.display = "flex";
+                자동합성.innerHTML = `자동합성`;
+                자동합성.style.padding = "3px 8px";
+                자동합성.style.cursor = "pointer";
+                document.getElementById(`자동합성일행2열`).append(자동합성);
 
-                //마그나엔젤몬
-                //게이트오브데스티니
-                //홀리디스펠
+
+                for (let i = 1; i <= 11; i++) {
+                    // if ((유저데이터.스탯.스킬[i] || 0) > 0) {
+                    if ((유저데이터.스탯.스킬[i] || 0) >= 0) {
+                        행렬만들기(스킬화면컨테이너, `스킬화면컨테이너${i}행`, 3);
+
+                        document.getElementById(`스킬화면컨테이너${i}행1열`).innerHTML = `${i}급`;
+                        document.getElementById(`스킬화면컨테이너${i}행2열`).innerHTML = 등급스킬명(i);
+                        document.getElementById(`스킬화면컨테이너${i}행3열`).innerHTML = `x${유저데이터.스탯.스킬[i]}`;
+                        document.getElementById(`스킬화면컨테이너${i}행`).style.boxSizing = "border-box";
+                        document.getElementById(`스킬화면컨테이너${i}행`).style.border = "0.2px solid #dadada";
+                        document.getElementById(`스킬화면컨테이너${i}행`).style.borderRadius = "8px";
+                        document.getElementById(`스킬화면컨테이너${i}행`).style.padding = "3px 8px";
+                        document.getElementById(`스킬화면컨테이너${i}행1열`).style.flex = "3";
+                        document.getElementById(`스킬화면컨테이너${i}행2열`).style.flex = "4";
+                        document.getElementById(`스킬화면컨테이너${i}행3열`).style.flex = "3";
+
+                        document.getElementById(`스킬화면컨테이너${i}행1열`).style.color = `${등급색상[스킬등급순서[i]].좌}`;
+
+                        if (유저데이터.스탯.스킬.최고등급 === i) {
+                            document.getElementById(`스킬화면컨테이너${i}행`).style.border = "3px solid #dadada";
+
+                        }
+                    }
+                }
+
+
+                자동합성.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        let 합성가능 = false;
+                        for (let i = 1; i <= 10; i++) {
+                            if ((유저데이터.스탯.스킬[i] || 0) >= 3) {
+                                합성가능 = true;
+                                break;
+                            }
+                        }
+                        if (!합성가능) {
+                            메시지표시("합성 가능한 스킬이 없습니다");
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/skillautosynthesis", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+
+                        스킬화면보여주기();
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -6417,17 +6627,21 @@ nodemon server.js
 
                     const 확인 = await 팝업(
                         `
-                        내전투력(${단위변환함수(전투결과.나전투력)}) vs 상대전투력(${단위변환함수(전투결과.상대전투력)})<br>
-                        ${전투결과.결과}<br>
-                             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [지니]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
+             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
              내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
              적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
              상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
              내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
              적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}
-                        `
-                        , false);
+             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+             진행된 턴수 ${전투결과.턴수}
+             `, false);
+
 
                     메시지표시(`램프  ${(유저데이터.스탯.던전.지니.레벨 - 1) * 10}개 획득`);
 
@@ -6493,17 +6707,21 @@ nodemon server.js
 
                     const 확인 = await 팝업(
                         `
-                        내전투력(${단위변환함수(전투결과.나전투력)}) vs 상대전투력(${단위변환함수(전투결과.상대전투력)})<br>
-                        ${전투결과.결과}<br>
-                           내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [로쿠규]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
+             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
              내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
              적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
              상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
              내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
              적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}
-                        `
-                        , false);
+             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+             진행된 턴수 ${전투결과.턴수}
+             `, false);
+
 
                     메시지표시(`낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 - 1) * 1}개 획득`);
 
@@ -6569,17 +6787,21 @@ nodemon server.js
 
                     const 확인 = await 팝업(
                         `
-                내전투력(${단위변환함수(전투결과.나전투력)}) vs 상대전투력(${단위변환함수(전투결과.상대전투력)})<br>
-                        ${전투결과.결과}<br>
-                            내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [락골렘]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
+             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
              내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
              적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
              상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
              내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
              적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-                        진행된 턴수 ${전투결과.턴수}<br>
-                        `
-                        , false);
+             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+             진행된 턴수 ${전투결과.턴수}
+             `, false);
+
 
                     메시지표시(`스톤 ${(유저데이터.스탯.던전.락골렘.레벨 - 1) * 10}개 획득`);
 
@@ -6941,6 +7163,19 @@ nodemon server.js
 
                     메인화면보여주기();
 
+                    if (유저데이터.드랍스킬등급) {
+                        네온박스.style.display = "none";
+
+                        if (window.네온타이머) clearTimeout(window.네온타이머);
+
+                        네온박스.innerText = `${유저데이터.드랍스킬등급}급 스킬 ${등급스킬명(유저데이터.드랍스킬등급)} 드랍!`;
+                        네온박스.style.display = "block";
+
+                        window.네온타이머 = setTimeout(() => {
+                            네온박스.style.display = "none";
+                        }, 3000);
+                    }
+
                 } catch (err) {
                     console.error(err);
                     메시지표시("로그인 오류 발생");
@@ -7116,6 +7351,9 @@ nodemon server.js
                         break;
                     case "l":
                         document.querySelector("#외형")?.click();
+                        break;
+                    case "k":
+                        document.querySelector("#스킬")?.click();
                         break;
                 }
 
@@ -7326,7 +7564,27 @@ nodemon server.js
             return 결과;
         }
 
+        //스킬명함수
+        function 등급스킬명(등급) {
+            if (!등급) return "";
 
+            const 스킬목록 = [
+                null, // 0번 자리 채우기 (등급 1부터 시작하려고)
+                "버블 블로우",
+                "에어 샷",
+                "헤븐즈 너클",
+                "세븐 헤븐",
+                "게이트 오브 데스티니",
+                "소울 배니쉬",
+                "홀리 디스인펙션",
+                "디바인 브레이커",
+                "헤븐즈 킥",
+                "홀리 선샤인",
+                "테스티먼트"
+            ];
+
+            return 스킬목록[등급] || "";
+        }
 
 
 

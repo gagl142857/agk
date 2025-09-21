@@ -77,6 +77,23 @@
                 color: #ff99ff;
             }
         }
+
+        .마법의팔레트주인장 {
+            background: linear-gradient(90deg, #ff6ec4, #7873f5, #4adede, #4adede, #ff6ec4);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
+        }
+
+        @keyframes 무지개흐름 {
+            to {
+                background-position: 200% center;
+            }
+        }
     </style>
 </head>
 
@@ -602,6 +619,13 @@
         상점노트.innerHTML = "상점";
         상점노트.style.cursor = "pointer";
         설정툴팁.append(상점노트);
+
+        const 채팅 = document.createElement("div");
+        채팅.id = "채팅";
+        채팅.style.boxSizing = "border-box";
+        채팅.innerHTML = "채팅";
+        채팅.style.cursor = "pointer";
+        설정툴팁.append(채팅);
 
         document.addEventListener("mouseover", (e) => {
             if (!설정.contains(e.target) && !설정툴팁.contains(e.target)) {
@@ -3561,6 +3585,17 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.21<br>
+채팅화면이 구현되었습니다<br>
+서로 예의를 지키며 사용해주시면 감사하겠습니다<br>
+전장시스템에 대해 고민이 많습니다<br>
+전장티켓 최대수량이 삭제되었습니다<br>
+이제 하루에 티켓을 네장 소모하지않아도<br>
+매일 4개씩 충전됩니다<br>
+포인트 초기화는 주 단위가 될 것 같습니다<br>
+더 고민해보겠습니다<br>
+<br>
+
 25.09.20<br>
 시스템적으로 여러가지 업데이트가 있었습니다<br>
 설명할수 있는 부분들만 기재하겠습니다<br>
@@ -6467,6 +6502,166 @@ ${전투결과.결과}<br>
         }
 
 
+        const 채팅화면 = document.createElement("div");
+        채팅화면.style.position = "absolute";
+        채팅화면.className = "화면숨기기";
+        채팅화면.style.boxSizing = "border-box";
+        채팅화면.style.top = "64px";
+        채팅화면.style.width = "400px";
+        채팅화면.style.display = "none";
+        채팅화면.style.flexDirection = "column";
+        채팅화면.style.gap = "8px";
+        document.body.append(채팅화면);
+
+        const 채팅화면설명 = document.createElement("div");
+        채팅화면설명.style.boxSizing = "border-box";
+        채팅화면설명.style.borderBottom = "0.2px solid #dadada";
+        채팅화면설명.style.flex = "1";
+        채팅화면설명.style.display = "flex";
+        채팅화면설명.style.flexDirection = "column";
+        채팅화면설명.innerHTML =
+            `
+수다를 떨어주세요<br>
+채팅쓰고 엔터 누르시면 입력됩니다<br>
+도배나 부적절한 언행은 시원하게 벤하겠습니다<br>
+            `;
+        채팅화면설명.style.textAlign = "center";
+        채팅화면설명.style.paddingBottom = "8px";
+        채팅화면.append(채팅화면설명);
+
+        const 채팅화면컨테이너 = document.createElement("div");
+        채팅화면컨테이너.id = "채팅화면컨테이너";
+        채팅화면컨테이너.style.boxSizing = "border-box";
+        채팅화면컨테이너.style.border = "0.2px solid #dadada";
+        채팅화면컨테이너.style.borderRadius = "8px";
+        채팅화면컨테이너.style.flex = "1";
+        채팅화면컨테이너.style.display = "flex";
+        채팅화면컨테이너.style.flexDirection = "column";
+        채팅화면컨테이너.style.padding = "8px";
+        채팅화면컨테이너.style.gap = "8px";
+        채팅화면.append(채팅화면컨테이너);
+
+        //채팅화면보여주기함수
+        async function 채팅화면보여주기() {
+            모든화면숨기기();
+            채팅화면.style.display = "flex";
+            채팅화면컨테이너.innerHTML = "";
+
+            const 채팅입력 = document.createElement("input");
+            채팅입력.type = "text";
+            채팅입력.maxLength = 100;
+            채팅입력.style.textAlign = "center";
+            채팅입력.placeholder = "수다를 입력하세요";
+            채팅입력.style.flex = "1";
+            채팅입력.style.marginTop = "8px";
+            채팅입력.style.border = "0.2px solid #dadada";
+            채팅입력.style.borderRadius = "8px";
+            document.getElementById("채팅화면컨테이너").append(채팅입력);
+
+            채팅입력.addEventListener("input", () => {
+                if (채팅입력.value.length > 100) {
+                    메시지표시("채팅은 100자 이내로 작성하세요");
+                    채팅입력.value = 채팅입력.value.slice(0, 100);
+                }
+            });
+
+            채팅입력.addEventListener("keydown", async (ev) => {
+                if (ev.key === "Enter") {
+                    ev.preventDefault();
+                    const 채팅내용 = 채팅입력.value.trim();
+
+                    try {
+                        화면잠금();
+                        const 응답 = await fetch("/chatting", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id,
+                                채팅내용: 채팅내용,
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        채팅화면보여주기();
+
+                        메시지표시(`채팅이 입력되었습니다`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+
+                }
+            });
+
+            try {
+                화면잠금();
+                const 응답 = await fetch("/Chatlist", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: 유저데이터.id
+                    })
+                });
+
+                const 결과 = await 응답.json();
+
+                if (!응답.ok) {
+                    메시지표시(결과.오류);
+                    return;
+                }
+
+                // 채팅목록 표시
+                for (const 항목 of 결과.data) {
+                    const 박스 = document.createElement("div");
+                    박스.style.display = "flex";
+                    박스.style.flexDirection = "column";
+                    박스.style.borderBottom = "0.2px solid #dadada";
+                    박스.style.padding = "4px";
+
+                    const 첫줄 = document.createElement("div");
+
+                    const d = new Date(항목.시간);
+                    const 날짜 = d.toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit"
+                    });
+                    const 시각 = d.toLocaleTimeString("ko-KR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true
+                    });
+
+                    첫줄.innerText = `${날짜} ${시각} / ${항목.유저닉네임}`;
+                    const 둘째줄 = document.createElement("div");
+                    둘째줄.style.fontSize = "14px";
+                    둘째줄.innerText = 항목.내용;
+
+                    박스.append(첫줄);
+                    박스.append(둘째줄);
+                    채팅화면컨테이너.append(박스);
+                }
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+
+
+        }
+
 
 
 
@@ -6831,6 +7026,10 @@ ${전투결과.결과}<br>
 
             if (e.target.matches("#상점")) {
                 상점화면보여주기();
+            }
+
+            if (e.target.matches("#채팅")) {
+                채팅화면보여주기();
             }
 
             if (e.target.matches("#길드")) {
@@ -7354,6 +7553,9 @@ ${전투결과.결과}<br>
                         break;
                     case "k":
                         document.querySelector("#스킬")?.click();
+                        break;
+                    case "c":
+                        document.querySelector("#채팅")?.click();
                         break;
                 }
 

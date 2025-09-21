@@ -315,20 +315,20 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
       if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
-      if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
+      data.스탯.전장.티켓 += 4;
 
-      if (data.스탯.전장.포인트 != 0) {
-        const 전장보상 = {
-          이름: "다이아",
-          수량: data.스탯.전장.포인트,
-          시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-          메모: `전장 포인트별 일일보상`,
-        };
+      // if (data.스탯.전장.포인트 != 0) {
+      //   const 전장보상 = {
+      //     이름: "다이아",
+      //     수량: data.스탯.전장.포인트,
+      //     시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      //     메모: `전장 포인트별 일일보상`,
+      //   };
 
-        if (!data.스탯.우편함) data.스탯.우편함 = [];
-        data.스탯.우편함.unshift(전장보상);
+      //   if (!data.스탯.우편함) data.스탯.우편함 = [];
+      //   data.스탯.우편함.unshift(전장보상);
 
-      }
+      // }
 
     }
 
@@ -3175,8 +3175,80 @@ app.post("/skillautosynthesis", async (req, res) => {
   }
 });
 
+app.post("/chatting", async (req, res) => {
+  try {
+    const { id, 채팅내용 } = req.body;
+    if (!id || !채팅내용) {
+      return res.status(400).json({ 오류: "id와 채팅내용 필요" });
+    }
+
+    const { data: 유저데이터, error: 유저에러 } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (유저에러 || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    const { error: 저장에러 } = await supabase
+      .from("채팅")
+      .insert({
+        스탯: 유저데이터.스탯,
+        유저아이디: 유저데이터.스탯.계정.유저아이디,
+        유저닉네임: 유저데이터.스탯.계정.유저닉네임,
+        내용: 채팅내용
+      });
+
+    if (저장에러) {
+      return res.status(500).json({ 오류: "채팅 저장 실패" });
+    }
+
+    return res.json({ 성공: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ 오류: "서버 에러" });
+  }
+});
 
 
+app.post("/Chatlist", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    // 유저 검증 (선택사항)
+    const { data: 유저데이터, error: 유저에러 } = await supabase
+      .from("users")
+      .select("id")
+      .eq("id", id)
+      .single();
+
+    if (유저에러 || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    // 채팅 테이블에서 최신 100개 불러오기
+    const { data: 채팅목록, error } = await supabase
+      .from("채팅")
+      .select("유저닉네임, 내용, 시간")
+      .order("시간", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      return res.status(500).json({ 오류: "채팅 불러오기 실패" });
+    }
+
+    // 시간 오름차순 정렬해서 반환 (읽기 편하게)
+    // 채팅목록.reverse();
+
+    return res.json({ data: 채팅목록 });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ 오류: "서버 에러" });
+  }
+});
 
 
 
@@ -3390,7 +3462,7 @@ function 전투시뮬레이션(나, 상대) {
       if (상대.스탯.최종HP <= 0) break;
 
 
-      if (Math.random() < 0.2) {
+      if (Math.random() * 100 < 20) {
         if (Math.random() * 100 < 상대.스탯.스킬치명) {
           최종데미지 = 상대.스탯.최종공격력 * (상대.스탯.스킬치명피해 / 100) * (상대.스탯.스킬피해 / 100) * ((Math.max(0, 100 - 나.스탯.스킬피해감소)) / 100);
         } else {

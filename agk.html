@@ -87,9 +87,67 @@
             -webkit-text-fill-color: transparent;
             font-weight: bold;
             animation: 무지개흐름 3s linear infinite;
+            filter: brightness(1.2);
         }
 
         @keyframes 무지개흐름 {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* 1위 전용 : 황금 팔레트 */
+        .마법의팔레트1위 {
+            background: linear-gradient(90deg, #ffd700, #ffb400, #fff176, #ffb400, #ffd700);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 금빛흐름 3s linear infinite;
+            filter: brightness(1.2);
+        }
+
+        @keyframes 금빛흐름 {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* 2위 전용 : 은빛 팔레트 */
+        .마법의팔레트2위 {
+            background: linear-gradient(90deg, #cfd8dc, #b0bec5, #eceff1, #b0bec5, #cfd8dc);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 은빛흐름 3s linear infinite;
+            filter: brightness(1.2);
+        }
+
+        @keyframes 은빛흐름 {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* 3위 전용 : 동빛 팔레트 */
+        .마법의팔레트3위 {
+            background: linear-gradient(90deg, #cd7f32, #b87333, #e07b39, #b87333, #cd7f32);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 동빛흐름 3s linear infinite;
+            filter: brightness(1.2);
+        }
+
+        @keyframes 동빛흐름 {
             to {
                 background-position: 200% center;
             }
@@ -3791,7 +3849,6 @@
  
 길드만들자
  
-스킬수집
 동료 디지몬 진화스타일
  
 외형뽑기
@@ -4459,7 +4516,24 @@ ${전투결과.결과}<br>
                     }
 
                     document.getElementById(`${i}번째유저2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
-                    document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
+
+
+                    // document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
+                    let 닉네임 = 유저.스탯.계정.유저닉네임 || 유저.id;
+                    if (순위 === 1) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML =
+                            `<span class="마법의팔레트1위">${닉네임}</span>`;
+                    } else if (순위 === 2) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML =
+                            `<span class="마법의팔레트2위">${닉네임}</span>`;
+                    } else if (순위 === 3) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML =
+                            `<span class="마법의팔레트3위">${닉네임}</span>`;
+                    } else {
+                        document.getElementById(`${i}번째유저3열`).innerText = 닉네임;
+                    }
+
+
                     document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
                 }
 
@@ -6671,7 +6745,17 @@ ${전투결과.결과}<br>
                         hour12: true
                     });
 
-                    첫줄.innerText = `${날짜} ${시각} / ${항목.유저닉네임}`;
+                    let 닉네임HTML = 항목.유저닉네임;
+                    if (
+                        항목.유저닉네임 === 유저데이터.스탯.계정.유저닉네임 &&
+                        유저데이터.스탯.주인장인가 === 1
+                    ) {
+                        닉네임HTML = `<span class="마법의팔레트주인장">${항목.유저닉네임}</span>`;
+                    }
+
+                    첫줄.innerHTML = `${날짜} ${시각} / ${닉네임HTML}`;
+                    // 첫줄.innerText = `${날짜} ${시각} / ${항목.유저닉네임}`;
+
                     const 둘째줄 = document.createElement("div");
                     둘째줄.style.fontSize = "14px";
                     둘째줄.innerText = 항목.내용;

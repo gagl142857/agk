@@ -3482,6 +3482,7 @@
                 D : 던전화면<br>
                 A : 직업화면<br>
                 S : 상점화면<br>
+                C : 채팅화면<br>
                 <br>
 
                 닉네임변경<br>
@@ -4423,16 +4424,44 @@ ${전투결과.결과}<br>
 
                 for (let i = 0; i < 전장정렬.length; i++) {
                     const 유저 = 전장정렬[i];
+                    const 순위 = 순위맵[유저.스탯.계정.유저닉네임];
 
                     행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
 
                     document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #dadada";
-                    document.getElementById(`${i}번째유저1열`).innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`; // 동점 순위
+
+                    if (순위 === 1) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="gold" stroke="gold" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+                    } else if (순위 === 2) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="silver" stroke="silver" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+                    } else if (순위 === 3) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="#cd7f32" stroke="#cd7f32" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+                    } else {
+                        document.getElementById(`${i}번째유저1열`).innerText = `${순위}위`;
+                    }
+
                     document.getElementById(`${i}번째유저2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                     document.getElementById(`${i}번째유저3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
                     document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
                 }
-
 
             } catch (e) {
                 메시지표시("서버요청실패");

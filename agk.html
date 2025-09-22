@@ -2415,8 +2415,7 @@
                 동료박스.addEventListener("click", (e) => {
                     e.stopPropagation();
 
-                    메시지표시(`구현중입니다`);
-
+                    동료화면보여주기();
                 });
 
 
@@ -6957,6 +6956,7 @@ ${전투결과.결과}<br>
             채팅입력.style.marginTop = "8px";
             채팅입력.style.border = "0.2px solid #dadada";
             채팅입력.style.borderRadius = "8px";
+            채팅입력.style.padding = "8px 8px";
             document.getElementById("채팅화면컨테이너").append(채팅입력);
 
             채팅입력.addEventListener("input", () => {
@@ -7071,6 +7071,115 @@ ${전투결과.결과}<br>
 
 
         }
+
+
+        const 동료화면 = document.createElement("div");
+        동료화면.style.position = "absolute";
+        동료화면.className = "화면숨기기";
+        동료화면.style.boxSizing = "border-box";
+        동료화면.style.top = "64px";
+        동료화면.style.width = "400px";
+        동료화면.style.display = "none";
+        동료화면.style.flexDirection = "column";
+        동료화면.style.gap = "8px";
+        document.body.append(동료화면);
+
+        const 동료화면설명 = document.createElement("div");
+        동료화면설명.style.boxSizing = "border-box";
+        동료화면설명.style.borderBottom = "0.2px solid #dadada";
+        동료화면설명.style.flex = "1";
+        동료화면설명.style.display = "flex";
+        동료화면설명.style.flexDirection = "column";
+        동료화면설명.innerHTML =
+            `
+동료화면입니다<br>
+            `;
+        동료화면설명.style.textAlign = "center";
+        동료화면설명.style.paddingBottom = "8px";
+        동료화면.append(동료화면설명);
+
+        const 동료화면컨테이너 = document.createElement("div");
+        동료화면컨테이너.id = "동료화면컨테이너";
+        동료화면컨테이너.style.boxSizing = "border-box";
+        동료화면컨테이너.style.border = "0.2px solid #dadada";
+        동료화면컨테이너.style.borderRadius = "8px";
+        동료화면컨테이너.style.flex = "1";
+        동료화면컨테이너.style.display = "flex";
+        동료화면컨테이너.style.flexDirection = "column";
+        동료화면컨테이너.style.padding = "8px";
+        동료화면컨테이너.style.gap = "8px";
+        동료화면.append(동료화면컨테이너);
+
+        //동료화면보여주기함수
+        async function 동료화면보여주기() {
+            try {
+                모든화면숨기기();
+                동료화면.style.display = "flex";
+                동료화면컨테이너.innerHTML = "";
+
+                행렬만들기(동료화면컨테이너, "동료일행", 3);
+                동료일행1열.innerHTML = `첫번째 동료`;
+                동료일행1열.style.boxSizing = "border-box";
+                동료일행1열.style.border = "0.2px solid #dadada";
+                동료일행1열.style.borderRadius = "8px";
+                동료일행1열.style.padding = "8px";
+                동료일행2열.innerHTML = `Lv50 개방`;
+                동료일행2열.style.boxSizing = "border-box";
+                동료일행2열.style.border = "0.2px solid #dadada";
+                동료일행2열.style.borderRadius = "8px";
+                동료일행2열.style.padding = "8px";
+                동료일행3열.innerHTML = `Lv100 개방`;
+                동료일행3열.style.boxSizing = "border-box";
+                동료일행3열.style.border = "0.2px solid #dadada";
+                동료일행3열.style.borderRadius = "8px";
+                동료일행3열.style.padding = "8px";
+
+                //뽀요몬 → 토코몬 → 파피몬 → 엔젤몬 → 홀리엔젤몬 → 세라피몬
+                // 외형강화삼행1열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     try {
+                //         if (유저데이터.스탯.가루 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
+                //             메시지표시(`강화에는 ${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))}가루가 필요합니다`);
+                //             return;
+                //         }
+
+                //         화면잠금();
+                //         const 응답 = await fetch("/ㅁㅁㅁㅁ", {
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json" },
+                //             body: JSON.stringify({
+                //                 id: 유저데이터.id
+                //             })
+                //         });
+
+                //         const 결과 = await 응답.json();
+
+                //         if (!응답.ok) {
+                //             메시지표시(결과.오류);
+                //             return;
+                //         }
+
+                //         유저데이터 = 결과;
+
+                //         동료화면보여주기();
+                //     } catch (e) {
+                //         메시지표시("서버요청실패");
+                //         console.error(e);
+                //     } finally {
+                //         화면해제();
+                //     }
+                // });
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
+
+
+
+
 
 
 
@@ -8040,6 +8149,9 @@ ${전투결과.결과}<br>
                     case "c":
                         document.querySelector("#채팅")?.click();
                         break;
+                    case "f":
+                        document.querySelector("#동료")?.click();
+                        break;
                 }
 
             }
@@ -8362,17 +8474,12 @@ ${전투결과.결과}<br>
         //                 화면해제();
         //             }
         //         });
-
-
-
-
         //     } catch (e) {
         //         메시지표시("서버요청실패");
         //         console.error(e);
         //     } finally {
         //         화면해제();
         //     }
-
         // }
 
 

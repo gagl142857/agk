@@ -650,17 +650,6 @@ app.post("/lamponeshot", async (req, res) => {
 
     if (error) return res.status(500).json({ 오류: "조회 실패" });
 
-    await supabase.from("로그기록").insert({
-      스탯: 유저데이터.스탯,
-      유저아이디: 유저데이터.스탯.계정.유저아이디,
-      유저닉네임: 유저데이터.스탯.계정.유저닉네임,
-      내용: `불법 기능 시도`
-    });
-
-    if (유저데이터.스탯.주인장인가 !== 1) {
-      return res.status(400).json({ 오류: "주인장 전용기능입니다" });
-    }
-
     if (유저데이터.스탯?.드랍 && Object.keys(유저데이터.스탯.드랍).length > 0) {
       return res.status(400).json({ 오류: "드랍장비 있음" });
     }

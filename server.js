@@ -173,7 +173,6 @@ app.post("/register", async (req, res) => {
       .trim();
 
 
-    //신규유저
     const 기본스탯 = {
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
       생성요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
@@ -252,6 +251,7 @@ app.post("/register", async (req, res) => {
         티켓: 4,
       }
     };
+    //신규유저
 
     const { error: dbError } = await supabase
       .from("users")
@@ -442,6 +442,10 @@ app.post("/login", async (req, res) => {
         스킬피해: 0,
         스킬피해감소: 0,
       };
+    }
+
+    if (!data.스탯.램프원샷) {
+      data.스탯.램프원샷 = 0;
     }
 
     //기존유저
@@ -1781,7 +1785,7 @@ app.post("/reroll1", async (req, res) => {
       return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
-    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
 
     data.스탯.조각상1 = {};
     data.스탯.조각상1[랜덤스탯] = 0;
@@ -1893,7 +1897,7 @@ app.post("/reroll2", async (req, res) => {
       return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
-    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
 
     data.스탯.조각상2 = {};
     data.스탯.조각상2[랜덤스탯] = 0;
@@ -2009,7 +2013,7 @@ app.post("/reroll3", async (req, res) => {
       return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
-    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
 
     data.스탯.조각상3 = {};
     data.스탯.조각상3[랜덤스탯] = 0;
@@ -2129,7 +2133,7 @@ app.post("/reroll4", async (req, res) => {
       return res.status(404).json({ 오류: "스톤이 부족합니다" });
     }
 
-    const 랜덤스탯 = 조각상리롤목록[Math.floor(Math.random() * 조각상리롤목록.length)];
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
 
     data.스탯.조각상4 = {};
     data.스탯.조각상4[랜덤스탯] = 0;
@@ -2615,6 +2619,83 @@ app.post("/StoreTicket10", async (req, res) => {
   }
 });
 
+
+
+app.post("/digieggkey1", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
+
+    유저데이터.스탯.던전.디지에그.열쇠 += 1;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/digieggkey10", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 10000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
+
+    유저데이터.스탯.던전.디지에그.열쇠 += 10;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 app.post("/swordart", async (req, res) => {
   try {
@@ -3319,7 +3400,7 @@ app.post("/Chatlist", async (req, res) => {
     // 채팅 테이블에서 최신 100개 불러오기
     const { data: 채팅목록, error } = await supabase
       .from("채팅")
-      .select("유저닉네임, 내용, 시간")
+      .select("*")
       .order("시간", { ascending: false })
       .limit(100);
 
@@ -3982,7 +4063,7 @@ const 장비목록 = [
   "외형강화",
 ];
 
-const 조각상리롤목록 = [
+const 조각상스탯목록 = [
   "공격력보너스",
   "방어력보너스",
   "HP보너스",
@@ -3991,6 +4072,7 @@ const 조각상리롤목록 = [
   "콤보계수",
   "반격계수",
   "스킬피해",
+  "동료피해",
 ];
 // 12단계 확률 (기본→D ~ UU→X)
 const 조각상강화확률표 = [
@@ -4096,15 +4178,15 @@ function 던전스탯생성(레벨) {
       막기: 0 + 1 * 레벨,
       막기무시: 0 + 1 * 레벨,
       피해감소: 0 + 1 * 레벨,
-      최종HP: 15000 * 레벨,
-      최종공격력: 900 * 레벨,
-      최종방어력: 300 * 레벨,
-      최종공속: 1 + 0.1 * 레벨,
+      최종HP: 15000 * 레벨 * 2,
+      최종공격력: 900 * 레벨 * 2,
+      최종방어력: 300 * 레벨 * 2,
+      최종공속: 1 + 0.1 * 레벨 * 2,
       전투력:
-        (15000 * 레벨) * 0.05 +
-        (900 * 레벨) +
-        (300 * 레벨) * 2 +
-        (1 + 0.2 * 레벨) * 50,
+        (15000 * 레벨 * 2) * 0.05 +
+        (900 * 레벨 * 2) +
+        (300 * 레벨 * 2) * 2 +
+        (1 + 0.2 * 레벨 * 2) * 50,
     }
   };
 }

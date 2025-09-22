@@ -938,7 +938,7 @@
         조각상컨테이너.style.zIndex = "99";
         document.body.append(조각상컨테이너);
 
-        let 자동뽑기플래그 = false;
+        let 반자동플래그 = false;
         let 선택최소등급 = "D";
         let 선택옵션목록 = [];
         let 풀자동플래그 = false;
@@ -1293,7 +1293,7 @@
 
                     const 탈것장비박스 = document.createElement("div");
                     탈것장비박스.style.display = "flex";
-                    탈것장비박스.innerHTML = `탈것장비`;
+                    탈것장비박스.innerHTML = `탈것`;
                     document.getElementById("탈것컨테이너일행1열").append(탈것장비박스);
 
                     const 탈것장비아이콘변환박스 = document.createElement("div");
@@ -2476,8 +2476,8 @@
 
                 document.getElementById("램프설정").addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    if (유저데이터.스탯.램프.레벨 < 1) {
-                        return 메시지표시(`램프Lv 2 이상부터 자동드랍 가능합니다`);
+                    if (유저데이터.스탯.램프.레벨 < 2) {
+                        return 메시지표시(`램프Lv 2 이상부터 사용 가능합니다`);
                     }
 
                     램프설정컨테이너.style.display = "flex";
@@ -2489,12 +2489,12 @@
                     램프설정컨테이너일행.style.justifyContent = "center";
                     램프설정컨테이너일행.innerHTML =
                         `
-                     랜덤옵션은 0개, 1개, 2개 선택가능하며<br>
-                     반자동 시 조건을 만족하는 아이템에서 멈춥니다<br>
-                     풀자동 시 조건을 만족하는 아이템을 장착하며<br>
-                     드랍이 무한히 지속됩니다<br>
-                     드랍을 멈추려면 화면을 아무곳이나 클릭하면됩니다<br>
+                     랜덤옵션은 0개, 1개, 2개까지 선택가능하며<br>
+                     자동 시 조건을 만족하는 아이템에서 멈춥니다<br>
                      `;
+                    //  풀자동 시 조건을 만족하는 아이템을 장착하며<br>
+                    //  드랍이 무한히 지속됩니다<br>
+                    //  드랍을 멈추려면 화면을 아무곳이나 클릭하면됩니다<br>
 
                     행렬만들기(램프설정컨테이너, "램프설정컨테이너이행", 3);
                     램프설정컨테이너이행.style.borderBottom = `0.2px solid #dadada`;
@@ -2568,23 +2568,37 @@
 
                     행렬만들기(램프설정컨테이너, "램프설정컨테이너삼행", 3);
 
-                    const 자동뽑기 = document.createElement("div");
-                    자동뽑기.id = "자동뽑기";
-                    자동뽑기.innerHTML = `자동`;
-                    자동뽑기.style.cursor = "pointer";
-                    자동뽑기.style.padding = "3px 8px";
-                    자동뽑기.style.border = "0.2px solid #dadada";
-                    자동뽑기.style.borderRadius = "8px";
-                    // document.getElementById("램프설정컨테이너삼행1열").append(자동뽑기);
-                    document.getElementById("램프설정컨테이너삼행3열").append(자동뽑기);
+                    const 램프설정컨테이너닫기 = document.createElement("div");
+                    램프설정컨테이너닫기.id = "램프설정컨테이너닫기";
+                    램프설정컨테이너닫기.innerHTML = `취소`;
+                    램프설정컨테이너닫기.style.cursor = "pointer";
+                    램프설정컨테이너닫기.style.padding = "3px 8px";
+                    램프설정컨테이너닫기.style.border = "0.2px solid #dadada";
+                    램프설정컨테이너닫기.style.borderRadius = "8px";
+                    document.getElementById("램프설정컨테이너삼행1열").append(램프설정컨테이너닫기);
 
-                    document.getElementById("자동뽑기").addEventListener("click", async (e) => {
+                    document.getElementById("램프설정컨테이너닫기").addEventListener("click", () => {
+                        const 컨테이너 = document.getElementById("램프설정컨테이너");
+                        컨테이너.style.display = "none";
+                    });
+
+
+                    const 반자동 = document.createElement("div");
+                    반자동.id = "반자동";
+                    반자동.innerHTML = `자동`;
+                    반자동.style.cursor = "pointer";
+                    반자동.style.padding = "3px 8px";
+                    반자동.style.border = "0.2px solid #dadada";
+                    반자동.style.borderRadius = "8px";
+                    document.getElementById("램프설정컨테이너삼행2열").append(반자동);
+
+                    document.getElementById("반자동").addEventListener("click", async (e) => {
                         e.stopPropagation();
                         try {
                             화면잠금();
 
 
-                            자동뽑기플래그 = true;
+                            반자동플래그 = true;
                             선택최소등급 = 최소등급선택.value;
                             선택옵션목록 = Array.from(모든체크박스)
                                 .filter(c => c.checked)
@@ -2602,22 +2616,6 @@
                         }
                     });
 
-
-                    const 램프설정컨테이너닫기 = document.createElement("div");
-                    램프설정컨테이너닫기.id = "램프설정컨테이너닫기";
-                    램프설정컨테이너닫기.innerHTML = `취소`;
-                    램프설정컨테이너닫기.style.cursor = "pointer";
-                    램프설정컨테이너닫기.style.padding = "3px 8px";
-                    램프설정컨테이너닫기.style.border = "0.2px solid #dadada";
-                    램프설정컨테이너닫기.style.borderRadius = "8px";
-                    document.getElementById("램프설정컨테이너삼행2열").append(램프설정컨테이너닫기);
-
-                    document.getElementById("램프설정컨테이너닫기").addEventListener("click", () => {
-                        const 컨테이너 = document.getElementById("램프설정컨테이너");
-                        컨테이너.style.display = "none";
-                    });
-
-
                     // const 풀자동 = document.createElement("div");
                     // 풀자동.id = "풀자동";
                     // 풀자동.innerHTML = `풀자동`;
@@ -2631,9 +2629,13 @@
                     //     e.stopPropagation();
                     //     try {
                     //         화면잠금();
+                    //         if (유저데이터.스탯.풀자동 !== 1) {
+                    //             메시지표시("상점에서 구매가 필요한 기능입니다");
+                    //             return;
+                    //         }
 
                     //         풀자동플래그 = true;
-                    //         자동뽑기플래그 = true;
+                    //         반자동플래그 = true;
                     //         선택최소등급 = 최소등급선택.value;
                     //         선택옵션목록 = Array.from(모든체크박스)
                     //             .filter(c => c.checked)
@@ -2816,7 +2818,7 @@
 
                 if (유저데이터.스탯.드랍?.이름) {
                     드랍장비보여주기();
-                } else if (자동뽑기플래그) {
+                } else if (반자동플래그) {
                     document.querySelector("#램프").click();
                 }
 
@@ -3083,7 +3085,7 @@
                     등급순서.indexOf(드랍.등급) < 등급순서.indexOf(선택최소등급) ||
                     (선택옵션목록.length > 0 && !선택옵션목록.every(opt => 드랍[opt]));
 
-                if (자동뽑기플래그 && 드랍조건미달) {
+                if (반자동플래그 && 드랍조건미달) {
                     document.querySelector("#판매하기").click();
                 } else if (풀자동플래그) {
                     if (유저데이터.전투력차이 > 0) {
@@ -3601,6 +3603,11 @@
                 상위등급은 합성으로만 획득됩니다<br>
                 <br>
 
+                램프원샷<br>
+                램프원샷은 조건에 맞는 장비를 자동장착하며<br>
+                모든 램프를 한번에 소진함<br>
+                <br>
+
 
                 `;
 
@@ -3661,6 +3668,11 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.09.22<br>
+던전몬스터들의 스탯이 100% 상향되었습니다<br>
+
+<br>
 
 25.09.21<br>
 채팅화면이 구현되었습니다<br>
@@ -3868,6 +3880,7 @@
  
 해야할일
  
+
 길드만들자
  
 동료 디지몬 진화스타일
@@ -3982,10 +3995,10 @@ nodemon server.js
                 첫번째몬스터전투력.style.boxSizing = "border-box";
                 첫번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.지니.레벨) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.지니.레벨) +
-                        (300 * 유저데이터.스탯.던전.지니.레벨) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨) * 50
+                        (15000 * 유저데이터.스탯.던전.지니.레벨 * 2) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.지니.레벨 * 2) +
+                        (300 * 유저데이터.스탯.던전.지니.레벨 * 2) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨 * 2) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터전투력);
 
@@ -4083,10 +4096,10 @@ nodemon server.js
                 두번째몬스터전투력.style.boxSizing = "border-box";
                 두번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.로쿠규.레벨) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.로쿠규.레벨) +
-                        (300 * 유저데이터.스탯.던전.로쿠규.레벨) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.로쿠규.레벨) * 50
+                        (15000 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) +
+                        (300 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너이행2열").append(두번째몬스터전투력);
 
@@ -4181,10 +4194,10 @@ nodemon server.js
                 세번째몬스터전투력.style.boxSizing = "border-box";
                 세번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.락골렘.레벨) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.락골렘.레벨) +
-                        (300 * 유저데이터.스탯.던전.락골렘.레벨) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.락골렘.레벨) * 50
+                        (15000 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.락골렘.레벨 * 2) +
+                        (300 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너삼행2열").append(세번째몬스터전투력);
 
@@ -4283,10 +4296,10 @@ nodemon server.js
                 네번째몬스터전투력.style.boxSizing = "border-box";
                 네번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.디지에그.레벨) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.디지에그.레벨) +
-                        (300 * 유저데이터.스탯.던전.디지에그.레벨) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.디지에그.레벨) * 50
+                        (15000 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.디지에그.레벨 * 2) +
+                        (300 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너사행2열").append(네번째몬스터전투력);
 
@@ -4555,11 +4568,10 @@ ${전투결과.결과}<br>
                     행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
 
                     document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #dadada";
-
                     if (순위 === 1) {
                         document.getElementById(`${i}번째유저1열`).innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="gold" stroke="gold" stroke-width="2"
+            viewBox="0 0 24 24"  stroke="gold" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
             <path d="M5 21h14"/>
@@ -4567,7 +4579,7 @@ ${전투결과.결과}<br>
                     } else if (순위 === 2) {
                         document.getElementById(`${i}번째유저1열`).innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="silver" stroke="silver" stroke-width="2"
+            viewBox="0 0 24 24"  stroke="silver" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
             <path d="M5 21h14"/>
@@ -4575,7 +4587,7 @@ ${전투결과.결과}<br>
                     } else if (순위 === 3) {
                         document.getElementById(`${i}번째유저1열`).innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24" fill="#cd7f32" stroke="#cd7f32" stroke-width="2"
+            viewBox="0 0 24 24" stroke="#cd7f32" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
             <path d="M5 21h14"/>
@@ -5557,7 +5569,7 @@ ${전투결과.결과}<br>
                 외형강화삼행1열.style.borderRadius = "8px";
                 외형강화삼행1열.style.padding = "3px 8px";
                 외형강화삼행1열.style.border = `0.2px solid #dadada`;
-                외형강화삼행1열.innerHTML = `외형강화(${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))})`;
+                외형강화삼행1열.innerHTML = `외형강화(${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))}가루)`;
                 외형강화삼행2열.style.cursor = "pointer";
                 외형강화삼행2열.style.borderRadius = "8px";
                 외형강화삼행2열.style.padding = "3px 8px";
@@ -6194,7 +6206,6 @@ ${전투결과.결과}<br>
         상점화면설명.innerHTML =
             `
             상점입니다<br>
-            구매제한은 없습니다<br>
         `;
         상점화면설명.style.textAlign = "center";
         상점화면설명.style.paddingBottom = "8px";
@@ -6223,32 +6234,65 @@ ${전투결과.결과}<br>
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너일행", 3);
                 상점화면컨테이너일행1열.innerHTML = `1000 다이아 충전`;
                 상점화면컨테이너일행1열.style.cursor = `pointer`;
+                상점화면컨테이너일행1열.style.boxSizing = "border-box";
+                상점화면컨테이너일행1열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너일행1열.style.borderRadius = "8px";
+                상점화면컨테이너일행1열.style.padding = "8px";
                 상점화면컨테이너일행2열.innerHTML = `11000 다이아 충전`;
                 상점화면컨테이너일행2열.style.cursor = `pointer`;
+                상점화면컨테이너일행2열.style.boxSizing = "border-box";
+                상점화면컨테이너일행2열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너일행2열.style.borderRadius = "8px";
                 상점화면컨테이너일행3열.innerHTML = `37000 다이아 충전`;
                 상점화면컨테이너일행3열.style.cursor = `pointer`;
+                상점화면컨테이너일행3열.style.boxSizing = "border-box";
+                상점화면컨테이너일행3열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너일행3열.style.borderRadius = "8px";
+
+                행렬만들기(상점화면컨테이너, "주인장연결", 1);
+                주인장연결1열.innerHTML = `결제후 이곳을클릭하여 문의하시면 우편을 보내드립니다<br>404 Not Found가 뜬다면 이곳을 클릭하여 문의하세요`;
+                주인장연결1열.style.cursor = `pointer`;
+                주인장연결1열.style.boxSizing = "border-box";
+                주인장연결1열.style.border = "0.2px solid #dadada";
+                주인장연결1열.style.borderRadius = "8px";
+                주인장연결1열.style.padding = "3px 8px";
+                //수정중
 
                 상점화면컨테이너일행1열.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                    메시지표시(`오픈후 활성`);
+                    return;
+                    window.open("https://qr.kakaopay.com/FSk2jJzvp138803772", "_blank");
                 });
 
                 상점화면컨테이너일행2열.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                    메시지표시(`오픈후 활성`);
+                    return;
+                    window.open("https://qr.kakaopay.com/FSk2jJzvpc35000923", "_blank");
                 });
 
                 상점화면컨테이너일행3열.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`정식오픈 후 활성화될 예정입니다`);
+                    메시지표시(`오픈후 활성`);
+                    return;
+                    window.open("https://qr.kakaopay.com/FSk2jJzvp249f009967", "_blank");
                 });
+
+
+                주인장연결1열.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    메시지표시(`오픈후 활성`);
+                    return;
+                    window.open("https://open.kakao.com/o/s7LlXeTh", "_blank");
+                });
+
+
 
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록일행", 3);
                 상점화면컨테이너상품목록일행.style.borderTop = "0.2px solid #dadada";
                 상점화면컨테이너상품목록일행.style.padding = "8px 0px";
-
-
-
 
 
                 상점화면컨테이너상품목록일행1열.innerHTML = `지니열쇠<br>×1<br>1000다이아`;
@@ -6408,6 +6452,89 @@ ${전투결과.결과}<br>
                         유저데이터 = 결과;
                         다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
                         메시지표시(`전장티켓를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                상점화면컨테이너상품목록이행2열.innerHTML = `디지에그열쇠<br>×1<br>1000다이아`;
+                상점화면컨테이너상품목록이행2열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록이행2열.style.textAlign = `center`;
+                상점화면컨테이너상품목록이행2열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록이행2열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록이행2열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록이행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 1000) {
+                            메시지표시(`1000다이아가 필요합니다`);
+                            return;
+                        }
+                        화면잠금();
+                        const 응답 = await fetch("/digieggkey", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`디지에그열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                행렬만들기(상점화면컨테이너, "시스템", 3);
+
+                시스템1열.innerHTML = `램프원샷<br>(agk사전참고)<br>3000다이아`;
+                시스템1열.style.cursor = `pointer`;
+                시스템1열.style.textAlign = `center`;
+                시스템1열.style.boxSizing = "border-box";
+                시스템1열.style.border = "0.2px solid #dadada";
+                시스템1열.style.borderRadius = "8px";
+                시스템1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 30000) {
+                            메시지표시(`30000다이아가 필요합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/lamponeshotsystem", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`램프원샷를 구매했습니다`);
                     } catch (e) {
                         메시지표시("서버요청실패");
                         console.error(e);
@@ -6584,6 +6711,95 @@ ${전투결과.결과}<br>
                         화면해제();
                     }
                 });
+
+                상점화면컨테이너상품목록사행2열.innerHTML = `디지에그열쇠<br>×10<br>10000다이아`;
+                상점화면컨테이너상품목록사행2열.style.cursor = `pointer`;
+                상점화면컨테이너상품목록사행2열.style.textAlign = `center`;
+                상점화면컨테이너상품목록사행2열.style.boxSizing = "border-box";
+                상점화면컨테이너상품목록사행2열.style.border = "0.2px solid #dadada";
+                상점화면컨테이너상품목록사행2열.style.borderRadius = "8px";
+                상점화면컨테이너상품목록사행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 10000) {
+                            메시지표시(`10000다이아가 필요합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/digiegg10", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`디지에그열쇠를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                // 행렬만들기(상점화면컨테이너, "상점상품기능", 3);
+                // 상점상품기능.style.borderTop = "0.2px solid #dadada";
+                // 상점상품기능.style.padding = "8px 0px";
+
+
+                // 상점상품기능1열.innerHTML = `풀자동<br>×1<br>5000다이아`;
+                // 상점상품기능1열.style.cursor = `pointer`;
+                // 상점상품기능1열.style.textAlign = `center`;
+                // 상점상품기능1열.style.boxSizing = "border-box";
+                // 상점상품기능1열.style.border = "0.2px solid #dadada";
+                // 상점상품기능1열.style.borderRadius = "8px";
+                // 상점상품기능1열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     try {
+                //         if (유저데이터.스탯.다이아 < 1000) {
+                //             메시지표시(`1000다이아가 필요합니다`);
+                //             return;
+                //         }
+                //         화면잠금();
+                //         const 응답 = await fetch("/StoreGeniekey1", {
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json" },
+                //             body: JSON.stringify({
+                //                 id: 유저데이터.id
+                //             })
+                //         });
+
+                //         const 결과 = await 응답.json();
+
+                //         if (!응답.ok) {
+                //             메시지표시(결과.오류);
+                //             return;
+                //         }
+
+                //         유저데이터 = 결과;
+                //         다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                //         메시지표시(`지니열쇠를 구매했습니다`);
+                //     } catch (e) {
+                //         메시지표시("서버요청실패");
+                //         console.error(e);
+                //     } finally {
+                //         화면해제();
+                //     }
+
+                // });
+
+
 
 
             } catch (e) {
@@ -6830,8 +7046,7 @@ ${전투결과.결과}<br>
 
                     let 닉네임HTML = 항목.유저닉네임;
                     if (
-                        항목.유저닉네임 === 유저데이터.스탯.계정.유저닉네임 &&
-                        유저데이터.스탯.주인장인가 === 1
+                        항목.스탯.주인장인가 === 1
                     ) {
                         닉네임HTML = `<span class="마법의팔레트주인장">${항목.유저닉네임}</span>`;
                     }
@@ -6959,7 +7174,7 @@ ${전투결과.결과}<br>
                 (!document.querySelector("#판매하기") || !document.querySelector("#판매하기").contains(e.target)) &&
                 (!document.querySelector("#장착하기") || !document.querySelector("#장착하기").contains(e.target))
             ) {
-                자동뽑기플래그 = false;
+                반자동플래그 = false;
                 풀자동플래그 = false;
             }
 
@@ -7606,7 +7821,7 @@ ${전투결과.결과}<br>
             if (e.target.closest("#램프")) {
                 if (유저데이터.스탯.램프.수량 < 1) {
                     메시지표시("램프가 부족합니다");
-                    자동뽑기플래그 = false;
+                    반자동플래그 = false;
                     return;
                 }
 

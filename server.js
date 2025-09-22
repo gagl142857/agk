@@ -3418,8 +3418,44 @@ app.post("/Chatlist", async (req, res) => {
   }
 });
 
+app.post("/lamponeshotsystem", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 3000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 3000;
+
+    유저데이터.스탯.램프원샷 = 1;
 
 
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
@@ -4292,4 +4328,4 @@ app.use(express.static(__dirname));
 
 //오픈적용
 //서버적용
-//던전몬스터들 전투력 상향
+//상점수정

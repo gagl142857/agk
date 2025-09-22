@@ -2654,9 +2654,9 @@
                     // });
 
 
-                    if (유저데이터.스탯.주인장인가 === 1) {
+                    if (유저데이터.스탯.램프원샷 === 1) {
 
-                        행렬만들기(램프설정컨테이너, "램프설정컨테이너사행", 3);
+                        행렬만들기(램프설정컨테이너, "램프설정컨테이너삼행", 3);
 
                         const 램프원샷 = document.createElement("div");
                         램프원샷.id = "램프원샷";
@@ -2666,7 +2666,7 @@
                         램프원샷.style.padding = "3px 8px";
                         램프원샷.style.border = "0.2px solid #dadada";
                         램프원샷.style.borderRadius = "8px";
-                        document.getElementById("램프설정컨테이너사행3열").append(램프원샷);
+                        document.getElementById("램프설정컨테이너삼행3열").append(램프원샷);
 
                         램프원샷.addEventListener("click", async (e) => {
                             e.stopPropagation();
@@ -3671,7 +3671,7 @@
 
 25.09.22<br>
 던전몬스터들의 스탯이 100% 상향되었습니다<br>
-
+상점에 램프원샷기능이 추가되었습니다<br>
 <br>
 
 25.09.21<br>
@@ -3880,7 +3880,6 @@
  
 해야할일
  
-
 길드만들자
  
 동료 디지몬 진화스타일
@@ -6511,8 +6510,8 @@ ${전투결과.결과}<br>
                 시스템1열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-                        if (유저데이터.스탯.다이아 < 30000) {
-                            메시지표시(`30000다이아가 필요합니다`);
+                        if (유저데이터.스탯.다이아 < 3000) {
+                            메시지표시(`3000다이아가 필요합니다`);
                             return;
                         }
 

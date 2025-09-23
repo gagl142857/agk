@@ -63,6 +63,26 @@ app.use(async (req, res, next) => {
   //   console.error("오류:", err);
   // }
 
+  try {
+    const { data: 전체유저, error } = await supabase
+      .from("users")
+      .select("id, 스탯");
+
+    if (전체유저 && 전체유저.length > 0) {
+      for (let i = 0; i < 전체유저.length; i++) {
+        if (전체유저[i].스탯?.동료3) {
+          delete 전체유저[i].스탯.동료3;
+
+          await supabase
+            .from("users")
+            .update({ 스탯: 전체유저[i].스탯 })
+            .eq("id", 전체유저[i].id);
+        }
+      }
+    }
+  } catch (err) {
+    console.error("오류:", err);
+  }
 
 
 
@@ -458,6 +478,7 @@ app.post("/login", async (req, res) => {
       data.스탯.동료1 =
       {
         이름: `뽀요몬`,
+        동행: 0,
         레벨: 1,
         HP보너스: 1,
         공격력보너스: 1,
@@ -474,6 +495,7 @@ app.post("/login", async (req, res) => {
       {
         이름: `유라몬`,
         레벨: 1,
+        동행: 0,
         HP보너스: 1,
         공격력보너스: 1,
         방어력보너스: 1,
@@ -489,6 +511,7 @@ app.post("/login", async (req, res) => {
       {
         이름: `푸니몬`,
         레벨: 1,
+        동행: 0,
         HP보너스: 1,
         공격력보너스: 1,
         방어력보너스: 1,

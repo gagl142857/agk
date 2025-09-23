@@ -3954,20 +3954,14 @@
 해야할일
 
 동료화면만드는중
-
 상대정보
 전투시뮬레이션에 총데미지
- 
-길드만들자
- 
-외형뽑기
-동료수집
+ 길드만들자
+ 동료수집
 별자리 황도12궁
 서버적용
-장비스킨시스템
 날개진화
 길드만들기
-채팅창
  
 git add . && git commit -m "배포" && git push origin main
  
@@ -7203,7 +7197,9 @@ ${전투결과.결과}<br>
                 동료일행1열.style.border = "0.2px solid #dadada";
                 동료일행1열.style.borderRadius = "8px";
                 동료일행1열.style.padding = "8px";
-                동료일행2열.innerHTML = `Lv50 개방`;
+
+                동료일행2열.innerHTML = 유저데이터.스탯.계정.레벨 > 49 ? `두번째 동료` : `Lv50 개방`;
+
                 동료일행2열.style.boxSizing = "border-box";
                 동료일행2열.style.border = "0.2px solid #dadada";
                 동료일행2열.style.borderRadius = "8px";
@@ -7223,10 +7219,12 @@ ${전투결과.결과}<br>
 
                 const 동료1일번스탯 = document.createElement("div");
                 동료1일번스탯.style.display = "flex";
-                동료1일번스탯.style.padding = "3px 8px";
-                동료1일번스탯.style.flex = "1";
-                동료1일번스탯.innerHTML = `HP보너스 ${유저데이터.스탯.동료1.HP보너스}`;
+                동료1일번스탯.style.justifyContent = "space-between";
+                동료1일번스탯.style.width = "100%";
+                동료1일번스탯.style.borderBottom = `0.2px solid #dadada`;
+                동료1일번스탯.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.동료1.HP보너스}</span>`;
                 디지몬스탯1열.append(동료1일번스탯);
+
 
                 const 동료1먹이주기 = document.createElement("div");
                 동료1먹이주기.id = "동료1먹이주기";

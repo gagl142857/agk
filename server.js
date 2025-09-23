@@ -63,26 +63,26 @@ app.use(async (req, res, next) => {
   //   console.error("오류:", err);
   // }
 
-  try {
-    const { data: 전체유저, error } = await supabase
-      .from("users")
-      .select("id, 스탯");
+  // try {
+  //   const { data: 전체유저, error } = await supabase
+  //     .from("users")
+  //     .select("id, 스탯");
 
-    if (전체유저 && 전체유저.length > 0) {
-      for (let i = 0; i < 전체유저.length; i++) {
-        if (전체유저[i].스탯?.동료3) {
-          delete 전체유저[i].스탯.동료3;
+  //   if (전체유저 && 전체유저.length > 0) {
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       if (전체유저[i].스탯?.동료3) {
+  //         delete 전체유저[i].스탯.동료3;
 
-          await supabase
-            .from("users")
-            .update({ 스탯: 전체유저[i].스탯 })
-            .eq("id", 전체유저[i].id);
-        }
-      }
-    }
-  } catch (err) {
-    console.error("오류:", err);
-  }
+  //         await supabase
+  //           .from("users")
+  //           .update({ 스탯: 전체유저[i].스탯 })
+  //           .eq("id", 전체유저[i].id);
+  //       }
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.error("오류:", err);
+  // }
 
 
 
@@ -197,6 +197,14 @@ app.post("/register", async (req, res) => {
       .split(",")[0]
       .trim();
 
+    const { count, error: countError } = await supabase
+      .from("users")
+      .select("id", { count: "exact", head: true });
+
+    let 신규포인트 = 0;
+    if (!countError && typeof count === "number") {
+      신규포인트 = 10000000 - (1000 * count);
+    }
 
     const 기본스탯 = {
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
@@ -272,11 +280,12 @@ app.post("/register", async (req, res) => {
         레벨: 0,
       },
       전장: {
-        포인트: 0,
+        포인트: 신규포인트,
         티켓: 4,
       }
     };
     //신규유저
+
 
     const { error: dbError } = await supabase
       .from("users")
@@ -2347,7 +2356,7 @@ app.post("/arenachallenge", async (req, res) => {
     );
 
     if (전투결과.결과 === "승리") {
-      me.스탯.전장.포인트 = (상대.스탯.전장.포인트 || 0) + 1;
+      me.스탯.전장.포인트 = (상대.스탯.전장.포인트 || 0) + 7;
     }
 
     me.스탯.전장.티켓 = (me.스탯.전장.티켓 || 0) - 1;

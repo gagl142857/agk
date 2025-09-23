@@ -78,6 +78,55 @@
             }
         }
 
+        .황금박스 {
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+
+            width: 320px;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: #ffd700;
+            /* 골드 */
+
+            border-radius: 10px;
+
+            background-color: black;
+            background-image: linear-gradient(to right, rgba(255, 215, 0, 0.15), rgba(255, 255, 255, 0.1));
+            background-blend-mode: overlay;
+
+            box-shadow:
+                0 0 10px 0px rgba(255, 215, 0, 0.5),
+                0 0 16px 0px rgba(255, 255, 255, 0.4),
+                inset 0 0 4px #000;
+
+            animation: 황금펄스 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes 황금펄스 {
+            0% {
+                box-shadow:
+                    0 0 18px 6px rgba(255, 215, 0, 0.4),
+                    0 0 30px 6px rgba(255, 255, 255, 0.2),
+                    inset 0 0 6px #000;
+                color: #ffe066;
+                /* 밝은 골드 */
+            }
+
+            100% {
+                box-shadow:
+                    0 0 14px 10px rgba(255, 215, 0, 0.6),
+                    0 0 40px 12px rgba(255, 255, 255, 0.5),
+                    inset 0 0 10px #000;
+                color: #ffffff;
+                /* 하얀색 */
+            }
+        }
+
         .마법의팔레트주인장 {
             background: linear-gradient(90deg, #ff6ec4, #7873f5, #4adede, #4adede, #ff6ec4);
             background-size: 200% auto;
@@ -556,6 +605,12 @@
         네온박스.id = "네온박스";
         네온박스.style.display = "none";
         document.body.append(네온박스);
+
+        const 황금박스 = document.createElement("div");
+        황금박스.className = "황금박스";
+        황금박스.id = "황금박스";
+        황금박스.style.display = "none";
+        document.body.append(황금박스);
 
         const 다이아표시 = document.createElement("div");
         다이아표시.id = "다이아표시";
@@ -2513,7 +2568,7 @@
                     document.getElementById("램프설정컨테이너이행1열").append(최소등급선택텍스트);
 
                     const 랜덤옵션목록일 = ["치명", "회피", "회복", "콤보", "반격",];
-                    const 랜덤옵션목록이 = ["스턴", "스킬치명", "동료콤보", "동료치명"];
+                    const 랜덤옵션목록이 = ["스턴", "스킬치명", "스킬피해", "동료치명", "동료피해"];
 
                     for (let 옵션 of 랜덤옵션목록일) {
                         const 박스 = document.createElement("div");
@@ -2792,6 +2847,10 @@
                     "스킬치명피해",
                     "스킬피해",
                     "스킬피해감소",
+                    "동료치명",
+                    "동료치명피해",
+                    "동료피해",
+                    "동료피해감소",
                     "치유량",
                     "관통",
                     "관통무시",
@@ -3540,12 +3599,12 @@
                 최종HP×0.05 + 최종공격력 + 최종방어력×2 + 최종공속×50<br>
                 <br>
 
-                램프충전량<br>
-                시간×40(최대24시간)<br>
+                램프방치&오프보상<br>
+                시간×(60+n일차)(최대24시간)<br>
                 <br>
 
-                다이아오프보상<br>
-                시간×40(최대24시간)<br>
+                다이아방치&오프보상<br>
+                시간×(60+n일차)(최대24시간)<br>
                 <br>
 
                 단축키<br>
@@ -3560,6 +3619,9 @@
                 A : 직업화면<br>
                 S : 상점화면<br>
                 C : 채팅화면<br>
+                L : 외형화면<br>
+                K : 스킬화면<br>
+                F : 동료화면<br>
                 <br>
 
                 닉네임변경<br>
@@ -3576,13 +3638,13 @@
                 치명, 치명무시, 치명저항, 일반공격계수, 일반공격피해감소<br>
                 콤보, 콤보무시, 콤보피해감소, 스턴, 에어본, 스턴무시<br>
                 회피, 회피무시, 반격, 반격무시, 반격피해감소, 회복, 회복무시<br>
-                관통, 관통무시<br>
-                이상이고 개발에 따라 추가될 예정<br>
+                관통, 관통무시, 스킬치명, 스킬치명피해, 스킬피해, 스킬피해감소<br>
+                동료치명, 동료치명피해, 동료피해, 동료피해감소<br>
                 <br>
 
                 조각상리롤목록<br>
                 HP보너스, 공격력보너스, 방어력보너스, 치명피해, 치명저항<br>
-                반격계수, 콤보계수, 스킬피해<br>
+                반격계수, 콤보계수, 스킬피해, 동료피해<br>
                 <br>
 
                 조각상스톤소모량<br>
@@ -3668,9 +3730,21 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.23<br>
+방치라는 용어를 방치&오프로 수정해서 사용해보겠습니다<br>
+디지에그열쇠가 정상적으로 충전됩니다<br>
+전장시스템이 리뉴얼되었습니다<br>
+원하는 상대와 대결할 수 있고, 대결 승리 시 상대의<br>
+순위를 빼앗으며 밑의 모든 유저들은 한순위씩 밀려납니다<br>
+하위 유저들에게도 도전할수있고, 그렇게되면 순위가 하위로<br>
+밀리게 되는데, 일부러 밑으로 가실분은 안계시겠쬬?<br>
+이대로 지켜보겠습니다<br>
+<br>
+
 25.09.22<br>
 던전몬스터들의 스탯이 100% 상향되었습니다<br>
 상점에 램프원샷기능이 추가되었습니다<br>
+채팅화면 입력시간이 정상적으로 표시됩니다<br>
 <br>
 
 25.09.21<br>
@@ -3878,10 +3952,13 @@
                 /*
  
 해야할일
+
+동료화면만드는중
+
+상대정보
+전투시뮬레이션에 총데미지
  
 길드만들자
- 
-동료 디지몬 진화스타일
  
 외형뽑기
 동료수집
@@ -4466,94 +4543,34 @@ nodemon server.js
                     순위맵[유저.스탯.계정.유저닉네임] = 현재순위;
                 }
 
-                // 내 전투력 위치 찾기
-                const 내인덱스 = 전투력정렬.findIndex(u => u.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임);
+                const 내인덱스 = 전투력정렬.findIndex(
+                    u => u.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임
+                );
 
                 if (내인덱스 !== -1) {
-                    const 시작 = Math.max(0, 내인덱스 - 3);
-                    const 끝 = Math.min(전투력정렬.length, 내인덱스 + 4);
-                    const 주변유저들 = 전투력정렬.slice(시작, 끝);
+                    const 유저 = 전투력정렬[내인덱스];
 
-                    for (let i = 0; i < 주변유저들.length; i++) {
-                        const 유저 = 주변유저들[i];
+                    행렬만들기(전장화면컨테이너, "내정보", 4);
 
-                        행렬만들기(전장화면컨테이너, `주변유저${i}`, 4);
+                    const 줄 = document.getElementById("내정보");
+                    줄.style.borderBottom = "0.2px solid #dadada";
 
-                        const 줄 = document.getElementById(`주변유저${i}`);
-                        줄.style.borderBottom = "0.2px solid #dadada";
+                    document.getElementById("내정보1열").innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`;
+                    document.getElementById("내정보2열").innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
+                    document.getElementById("내정보3열").innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
+                    document.getElementById("내정보4열").innerHTML = `티켓${유저.스탯.전장.티켓}`;
+                    document.getElementById(`내정보1열`).style.flex = "2";
+                    document.getElementById(`내정보2열`).style.flex = "3";
+                    document.getElementById(`내정보3열`).style.flex = "3";
+                    document.getElementById(`내정보4열`).style.flex = "1";
+                    document.getElementById(`내정보4열`).style.padding = "3px 8px";
 
-                        document.getElementById(`주변유저${i}1열`).innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`; // 동점 순위
-                        document.getElementById(`주변유저${i}2열`).innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
-                        document.getElementById(`주변유저${i}3열`).innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
-                        document.getElementById(`주변유저${i}4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
-
-                        if (유저.스탯.계정.유저닉네임 === 유저데이터.스탯.계정.유저닉네임) {
-                            줄.style.backgroundColor = "#303030";
-                            줄.style.paddingTop = "8px";
-                        }
-                    }
+                    줄.style.backgroundColor = "#303030";
+                    줄.style.paddingTop = "8px";
                 }
 
-                행렬만들기(전장화면컨테이너, "전장화면도전", 5);
-                document.getElementById(`전장화면도전3열`).innerHTML = `도전`;
-                document.getElementById(`전장화면도전3열`).style.cursor = "pointer";
-                document.getElementById(`전장화면도전3열`).style.padding = "3px 8px";
-                document.getElementById(`전장화면도전3열`).style.border = "0.2px solid #dadada";
-                document.getElementById(`전장화면도전3열`).style.borderRadius = "8px";
 
-                document.getElementById(`전장화면도전4열`).innerHTML = `티켓 : ${유저데이터.스탯.전장.티켓}장`;
-                document.getElementById(`전장화면도전4열`).style.padding = "3px 8px";
 
-                전장화면도전3열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    try {
-                        if (유저데이터.스탯.전장.티켓 < 1) {
-                            메시지표시(`티켓이 부족합니다`);
-                            return;
-                        }
-                        화면잠금();
-                        const 응답 = await fetch("/arenachallenge", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ id: 유저데이터.id })
-                        });
-
-                        const 결과 = await 응답.json();
-                        if (!응답.ok) {
-                            메시지표시(결과.오류);
-                            return;
-                        }
-
-                        유저데이터 = 결과.me;
-                        const 전투결과 = 결과.전투결과;
-                        전장화면보여주기();
-
-                        await 팝업(
-                            `
-${전투결과.결과}<br>
-<br>
-내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
-<br>
-             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
-             내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
-             적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
-             상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
-             내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
-             적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
-             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
-             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
-             진행된 턴수 ${전투결과.턴수}
-             `, false);
-
-                    } catch (e) {
-                        메시지표시("서버요청실패");
-                        console.error(e);
-                    } finally {
-                        화면해제();
-                    }
-                });
-
-                // 순위표 전체 출력
                 const 구분선 = document.createElement("div");
                 구분선.style.borderTop = "2px solid #000";
                 구분선.style.margin = "12px 0";
@@ -4612,8 +4629,66 @@ ${전투결과.결과}<br>
                         document.getElementById(`${i}번째유저3열`).innerText = 닉네임;
                     }
 
+                    document.getElementById(`${i}번째유저1열`).style.flex = "2";
+                    document.getElementById(`${i}번째유저2열`).style.flex = "3";
+                    document.getElementById(`${i}번째유저3열`).style.flex = "3";
+                    document.getElementById(`${i}번째유저4열`).style.flex = "1";
 
-                    document.getElementById(`${i}번째유저4열`).innerHTML = `${유저.스탯.전장.포인트}포인트`;
+                    document.getElementById(`${i}번째유저4열`).innerHTML = `도전`;
+                    document.getElementById(`${i}번째유저4열`).style.cursor = "pointer";
+                    document.getElementById(`${i}번째유저4열`).style.padding = "3px 8px";
+                    document.getElementById(`${i}번째유저4열`).style.border = "0.2px solid #dadada";
+                    document.getElementById(`${i}번째유저4열`).style.borderRadius = "8px";
+
+                    document.getElementById(`${i}번째유저4열`).addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (유저데이터.스탯.전장.티켓 < 1) {
+                                메시지표시(`티켓이 부족합니다`);
+                                return;
+                            }
+                            화면잠금();
+                            const 응답 = await fetch("/arenachallenge", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: 유저데이터.id, 상대닉네임: 닉네임 })
+                            });
+
+                            const 결과 = await 응답.json();
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과.me;
+                            const 전투결과 = 결과.전투결과;
+                            전장화면보여주기();
+
+                            await 팝업(
+                                `
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
+             내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+             내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
+             적 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+             상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
+             내최고데미지 ${단위변환함수(전투결과.나순간최고데미지)}<br>
+             적최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)}<br>
+             내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+             상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+             진행된 턴수 ${전투결과.턴수}
+             `, false);
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
                 }
 
             } catch (e) {
@@ -7030,13 +7105,15 @@ ${전투결과.결과}<br>
 
                     const 첫줄 = document.createElement("div");
 
-                    const d = new Date(항목.시간);
-                    const 날짜 = d.toLocaleDateString("ko-KR", {
+                    const 원본 = 항목.시간.substring(0, 19).replace("T", " ");
+                    // "2025-09-22 19:11:06" 형태
+
+                    const d = new Date(원본);
+
+                    const 표시 = d.toLocaleString("ko-KR", {
                         year: "numeric",
                         month: "2-digit",
-                        day: "2-digit"
-                    });
-                    const 시각 = d.toLocaleTimeString("ko-KR", {
+                        day: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
@@ -7050,8 +7127,7 @@ ${전투결과.결과}<br>
                         닉네임HTML = `<span class="마법의팔레트주인장">${항목.유저닉네임}</span>`;
                     }
 
-                    첫줄.innerHTML = `${날짜} ${시각} / ${닉네임HTML}`;
-                    // 첫줄.innerText = `${날짜} ${시각} / ${항목.유저닉네임}`;
+                    첫줄.innerHTML = `${표시} / ${닉네임HTML}`;
 
                     const 둘째줄 = document.createElement("div");
                     둘째줄.style.fontSize = "14px";
@@ -7117,7 +7193,13 @@ ${전투결과.결과}<br>
                 동료화면.style.display = "flex";
                 동료화면컨테이너.innerHTML = "";
 
+                행렬만들기(동료화면컨테이너, "디지에그표시", 1);
+                // 디지에그표시.style.borderTop = `0.2px solid #dadada`;
+                디지에그표시1열.innerHTML = `보유 디지에그 ${유저데이터.스탯.디지에그}`;
+                디지에그표시1열.style.marginTop = `8px`;
+
                 행렬만들기(동료화면컨테이너, "동료일행", 3);
+                동료일행.style.borderBottom = "0.2px solid #dadada";
                 동료일행1열.innerHTML = `첫번째 동료`;
                 동료일행1열.style.boxSizing = "border-box";
                 동료일행1열.style.border = "0.2px solid #dadada";
@@ -7134,7 +7216,63 @@ ${전투결과.결과}<br>
                 동료일행3열.style.borderRadius = "8px";
                 동료일행3열.style.padding = "8px";
 
+                행렬만들기(동료화면컨테이너, "디지몬스탯", 3);
+                디지몬스탯1열.innerHTML = `${유저데이터.스탯.동료1.이름} Lv${유저데이터.스탯.동료1.레벨}`;
+                디지몬스탯1열.style.borderRight = "0.2px solid #dadada";
+                디지몬스탯2열.innerHTML = `${유저데이터.스탯.동료2.이름} Lv${유저데이터.스탯.동료2.레벨}`;
+                디지몬스탯2열.style.borderRight = "0.2px solid #dadada";
+                디지몬스탯3열.innerHTML = `${유저데이터.스탯.동료3.이름} Lv${유저데이터.스탯.동료3.레벨}`;
+
+                const 동료1일번스탯 = document.createElement("div");
+                동료1일번스탯.style.display = "flex";
+                동료1일번스탯.style.padding = "3px 8px";
+                동료1일번스탯.style.flex = "1";
+                동료1일번스탯.innerHTML = `HP보너스 ${유저데이터.스탯.동료1.HP보너스}`;
+                디지몬스탯1열.append(동료1일번스탯);
+
+                const 동료1먹이주기 = document.createElement("div");
+                동료1먹이주기.id = "동료1먹이주기";
+                동료1먹이주기.style.boxSizing = "border-box";
+                동료1먹이주기.style.border = "0.2px solid #dadada";
+                동료1먹이주기.style.borderRadius = "8px";
+                동료1먹이주기.style.flex = "1";
+                동료1먹이주기.style.display = "flex";
+                동료1먹이주기.style.flexDirection = "column";
+                동료1먹이주기.style.padding = "3px 8px";
+                동료1먹이주기.innerHTML = `먹이주기`;
+                동료1먹이주기.style.cursor = "pointer";
+                디지몬스탯1열.append(동료1먹이주기);
+
+                const 동료2먹이주기 = document.createElement("div");
+                동료2먹이주기.id = "동료2먹이주기";
+                동료2먹이주기.style.boxSizing = "border-box";
+                동료2먹이주기.style.border = "0.2px solid #dadada";
+                동료2먹이주기.style.borderRadius = "8px";
+                동료2먹이주기.style.flex = "1";
+                동료2먹이주기.style.display = "flex";
+                동료2먹이주기.style.flexDirection = "column";
+                동료2먹이주기.style.padding = "3px 8px";
+                동료2먹이주기.innerHTML = `먹이주기`;
+                동료2먹이주기.style.cursor = "pointer";
+                디지몬스탯2열.append(동료2먹이주기);
+
+                const 동료3먹이주기 = document.createElement("div");
+                동료3먹이주기.id = "동료3먹이주기";
+                동료3먹이주기.style.boxSizing = "border-box";
+                동료3먹이주기.style.border = "0.2px solid #dadada";
+                동료3먹이주기.style.borderRadius = "8px";
+                동료3먹이주기.style.flex = "1";
+                동료3먹이주기.style.display = "flex";
+                동료3먹이주기.style.flexDirection = "column";
+                동료3먹이주기.style.padding = "3px 8px";
+                동료3먹이주기.innerHTML = `먹이주기`;
+                동료3먹이주기.style.cursor = "pointer";
+                디지몬스탯3열.append(동료3먹이주기);
+
+
                 //뽀요몬 → 토코몬 → 파피몬 → 엔젤몬 → 홀리엔젤몬 → 세라피몬
+                //유라몬 → 나타몬 → 프로트몬 → 가트몬 → 엔젤우몬 → 오파니몬
+                //푸니몬 → 츠나몬 → 루나몬 → 레프리몬 → 렉시몬 → 케루비몬
                 // 외형강화삼행1열.addEventListener("click", async (e) => {
                 //     e.stopPropagation();
                 //     try {
@@ -8007,7 +8145,7 @@ ${전투결과.결과}<br>
                     메시지표시(`로그인 되었습니다`);
                     메인화면보여주기();
 
-                    if (유저데이터.스탯.서버점검 === 1) {
+                    if (유저데이터.스탯.서버점검 === 1 && 유저데이터.스탯.주인장인가 !== 1) {
                         document.body.innerHTML = "";
                         const 점검메시지 = document.createElement("div");
                         점검메시지.innerHTML = "서버점검중>.<";
@@ -8064,7 +8202,7 @@ ${전투결과.결과}<br>
                 메시지표시(`자동로그인 되었습니다`);
                 메인화면보여주기();
 
-                if (유저데이터.스탯.서버점검 === 1) {
+                if (유저데이터.스탯.서버점검 === 1 && 유저데이터.스탯.주인장인가 !== 1) {
                     document.body.innerHTML = "";
                     const 점검메시지 = document.createElement("div");
                     점검메시지.innerHTML = "서버점검중>.<";

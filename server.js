@@ -42,20 +42,25 @@ app.use(async (req, res, next) => {
   //     .from("users")
   //     .select("id, 스탯");
 
-  //   if (!error && 전체유저) {
-  //     for (let i = 0; i < 전체유저.length; i++) {
-  //       if (!전체유저[i].스탯.전장) {
-  //         전체유저[i].스탯.전장 = { 포인트: 0, 티켓: 4 };
+  //   if (error) throw error;
 
-  //         await supabase
-  //           .from("users")
-  //           .update({ 스탯: 전체유저[i].스탯 })
-  //           .eq("id", 전체유저[i].id);
-  //       }
+  //   if (전체유저 && 전체유저.length > 0) {
+  //     let 시작포인트 = 10000000;
+
+  //     for (let i = 0; i < 전체유저.length; i++) {
+  //       전체유저[i].스탯.전장 = {
+  //         포인트: 시작포인트 - (i * 1000),
+  //         티켓: 4
+  //       };
+
+  //       await supabase
+  //         .from("users")
+  //         .update({ 스탯: 전체유저[i].스탯 })
+  //         .eq("id", 전체유저[i].id);
   //     }
   //   }
   // } catch (err) {
-  //   console.error("던전 로쿠규 셋팅 오류:", err);
+  //   console.error("오류:", err);
   // }
 
 
@@ -315,6 +320,7 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
       if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
+      if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
       data.스탯.전장.티켓 += 4;
 
       // if (data.스탯.전장.포인트 != 0) {
@@ -351,14 +357,14 @@ app.post("/login", async (req, res) => {
         이름: "램프",
         수량: 시간차 * (60 + (일수보정 - 1)),
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-        메모: `${시간차}시간 오프보상`,
+        메모: `${시간차}시간 방치&오프보상`,
       };
 
       const 다이아보상 = {
         이름: "다이아",
         수량: 시간차 * (60 + (일수보정 - 1)),
         시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-        메모: `${시간차}시간 오프보상`,
+        메모: `${시간차}시간 방치&오프보상`,
       };
 
       if (!data.스탯.우편함) data.스탯.우편함 = [];
@@ -448,6 +454,55 @@ app.post("/login", async (req, res) => {
       data.스탯.램프원샷 = 0;
     }
 
+    if (!data.스탯.동료1) {
+      data.스탯.동료1 =
+      {
+        이름: `뽀요몬`,
+        레벨: 1,
+        HP보너스: 1,
+        공격력보너스: 1,
+        방어력보너스: 1,
+        동료치명: 1,
+        동료치명피해: 1,
+        동료피해: 1,
+        동료피해감소: 1,
+        치명피해: 1,
+      };
+    }
+    if (!data.스탯.동료2) {
+      data.스탯.동료2 =
+      {
+        이름: `유라몬`,
+        레벨: 1,
+        HP보너스: 1,
+        공격력보너스: 1,
+        방어력보너스: 1,
+        동료치명: 1,
+        동료치명피해: 1,
+        동료피해: 1,
+        동료피해감소: 1,
+        콤보계수: 1,
+      };
+    }
+    if (!data.스탯.동료3) {
+      data.스탯.동료3 =
+      {
+        이름: `푸니몬`,
+        레벨: 1,
+        HP보너스: 1,
+        공격력보너스: 1,
+        방어력보너스: 1,
+        동료치명: 1,
+        동료치명피해: 1,
+        동료피해: 1,
+        동료피해감소: 1,
+        반격계수: 1,
+      };
+    }
+
+    if (!data.스탯.마지막접속시각) {
+      data.스탯.마지막접속시각 = now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+    }
     //기존유저
 
     if (!data.스탯.길드) {
@@ -2241,12 +2296,12 @@ app.post("/arenalist", async (req, res) => {
 
 app.post("/arenachallenge", async (req, res) => {
   try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
+    const { id, 상대닉네임 } = req.body;
+    if (!id || !상대닉네임) return res.status(400).json({ 오류: "id, 상대닉네임 필요" });
 
     const { data, error } = await supabase
       .from("users")
-      .select("*")
+      .select("*");
 
     if (error || !data) return res.status(500).json({ 오류: "유저 조회 실패" });
 
@@ -2258,32 +2313,18 @@ app.post("/arenachallenge", async (req, res) => {
       return res.status(400).json({ 오류: "티켓 부족" });
     }
 
-    // 전투력순 정렬
-    const 전투력정렬 = [...data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
-    const 내인덱스 = 전투력정렬.findIndex(u => u.id === id);
+    // 상대 데이터 (닉네임으로 찾기)
+    const 상대 = data.find(u => u.스탯?.계정?.유저닉네임 === 상대닉네임);
+    if (!상대) return res.status(404).json({ 오류: "상대 없음" });
 
-    if (내인덱스 === -1) return res.status(404).json({ 오류: "순위 없음" });
-
-    // 내 주변 7명 (나 포함)
-    const 시작 = Math.max(0, 내인덱스 - 3);
-    const 끝 = Math.min(전투력정렬.length, 내인덱스 + 4);
-    const 주변 = 전투력정렬.slice(시작, 끝);
-
-    // 상대 랜덤 선택 (나 제외)
-    const 후보 = 주변.filter(u => u.id !== id);
-    if (후보.length === 0) return res.status(400).json({ 오류: "상대 없음" });
-
-    const 상대 = 후보[Math.floor(Math.random() * 후보.length)];
-
+    // 전투 시뮬레이션
     const 전투결과 = 전투시뮬레이션(
       JSON.parse(JSON.stringify(me)),
       JSON.parse(JSON.stringify(상대))
     );
 
     if (전투결과.결과 === "승리") {
-      me.스탯.전장.포인트 = (me.스탯.전장.포인트 || 0) + 10;
-    } else {
-      me.스탯.전장.포인트 = (me.스탯.전장.포인트 || 0) + 3;
+      me.스탯.전장.포인트 = (상대.스탯.전장.포인트 || 0) + 1;
     }
 
     me.스탯.전장.티켓 = (me.스탯.전장.티켓 || 0) - 1;
@@ -4060,7 +4101,7 @@ const 드랍장비이름 = [
 
 
 const 특수옵션 = [
-  "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명",
+  "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "스킬피해", "동료치명", "동료피해",
 ];
 
 const 특수옵션범위 = {
@@ -4086,6 +4127,9 @@ const 장비목록 = [
   "직업",
   "스킬",
   "외형강화",
+  "동료1",
+  "동료2",
+  "동료3",
 ];
 
 const 조각상스탯목록 = [
@@ -4197,6 +4241,10 @@ function 던전스탯생성(레벨) {
       스킬치명피해: 150 + 10 * 레벨,
       스킬피해: 10 * 레벨,
       스킬피해감소: 1 * 레벨,
+      동료치명: 10 * 레벨,
+      동료치명피해: 150 + 10 * 레벨,
+      동료피해: 10 * 레벨,
+      동료피해감소: 1 * 레벨,
       치유량: 0.2 + 0.002 * 레벨,
       관통: 0 + 1 * 레벨,
       관통무시: 0 + 1 * 레벨,
@@ -4236,6 +4284,7 @@ function 최종스탯계산(스탯) {
     스탯.계정.반격계수 = 100 + 1 * 스탯.계정.레벨;
     스탯.계정.스킬치명피해 = 150 + 1.5 * 스탯.계정.레벨;
     스탯.계정.스킬피해 = 100 + 1 * 스탯.계정.레벨;
+    스탯.계정.동료치명피해 = 150 + 1.5 * 스탯.계정.레벨;
     스탯.계정.동료피해 = 100 + 1 * 스탯.계정.레벨;
     스탯.계정.치유량 = 0.2 + 0.002 * 스탯.계정.레벨;
   }

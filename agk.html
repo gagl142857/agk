@@ -217,7 +217,7 @@
         }
 
         const 특수옵션 = [
-            "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "동료콤보", "동료치명",
+            "치명", "회피", "회복", "콤보", "반격", "스턴", "스킬치명", "스킬피해", "동료치명", "동료피해",
         ];
 
         const 등급순서 = ["D", "C", "B", "A", "S", "SS", "L", "LL", "U", "UU", "X"];
@@ -972,27 +972,6 @@
         탈것컨테이너.style.zIndex = "99";
         document.body.append(탈것컨테이너);
 
-        const 조각상컨테이너 = document.createElement("div");
-        조각상컨테이너.id = "조각상컨테이너";
-        조각상컨테이너.className = "화면숨기기";
-        조각상컨테이너.style.position = "absolute";
-        조각상컨테이너.style.width = "300px";
-        조각상컨테이너.style.left = "50%";
-        조각상컨테이너.style.top = "50%";
-        조각상컨테이너.style.transform = "translate(-50%, -50%)";
-        조각상컨테이너.style.zIndex = "99";
-        조각상컨테이너.style.background = "black";
-        조각상컨테이너.style.border = "0.2px solid #dadada";
-        조각상컨테이너.style.borderRadius = "8px";
-        조각상컨테이너.style.alignItems = "center";
-        조각상컨테이너.style.flexDirection = "column";
-        조각상컨테이너.style.justifyContent = "center";
-        조각상컨테이너.style.display = "none";
-        조각상컨테이너.style.padding = "8px";
-        조각상컨테이너.style.gap = "8px";
-        조각상컨테이너.style.zIndex = "99";
-        document.body.append(조각상컨테이너);
-
         let 반자동플래그 = false;
         let 선택최소등급 = "D";
         let 선택옵션목록 = [];
@@ -1338,7 +1317,6 @@
 
                     탈것컨테이너.style.display = "flex";
                     탈것컨테이너.innerHTML = "";
-                    조각상컨테이너.style.display = "none";
 
                     행렬만들기(탈것컨테이너, "탈것컨테이너일행", 3);
                     탈것컨테이너일행.style.borderBottom = `0.2px solid #dadada`;
@@ -1640,706 +1618,7 @@
                 조각상박스.addEventListener("click", (e) => {
                     e.stopPropagation();
 
-                    조각상컨테이너.style.display = "flex";
-                    조각상컨테이너.innerHTML = "";
-
-                    탈것컨테이너.style.display = `none`;
-
-                    행렬만들기(조각상컨테이너, "조각상컨테이너일행", 1);
-                    조각상컨테이너일행.style.borderBottom = `0.2px solid #dadada`;
-                    조각상컨테이너일행.style.alignItems = `flex-start`;
-                    조각상컨테이너일행.style.padding = `8px 0px`;
-                    조각상컨테이너일행1열.style.gap = ``;
-
-                    const 조각상장비박스 = document.createElement("div");
-                    조각상장비박스.style.display = "flex";
-                    조각상장비박스.style.textAlign = "center";
-                    // 조각상장비박스.style.marginBottom = "8px";
-                    조각상장비박스.innerHTML =
-                        `
-                    한 줄 씩 원하는 옵션을 파밍하세요<br>
-                    원하는 옵션이 등장했다면 강화하세요<br>
-                    옵션 리롤 시 강화수치가 초기화됩니다<br>
-                    등장하는 리롤목록은 agk사전을 참고하세요<br>
-                    `;
-                    document.getElementById("조각상컨테이너일행1열").append(조각상장비박스);
-
-                    const 조각상장비아이콘변환박스 = document.createElement("div");
-                    // 조각상장비아이콘변환박스.style.borderTop = `0.2px solid #dadada`;
-                    조각상장비아이콘변환박스.style.display = "flex";
-                    조각상장비아이콘변환박스.style.flex = "1";
-                    조각상장비아이콘변환박스.innerHTML = 비장비아이콘변환(기본조각상아이콘);
-                    document.getElementById("조각상컨테이너일행1열").append(조각상장비아이콘변환박스);
-
-                    행렬만들기(조각상컨테이너, "조각상컨테이너일번스탯", 6);
-                    조각상컨테이너일번스탯.style.padding = "3px 8px";
-                    조각상컨테이너일번스탯.style.borderRadius = "8px";
-                    조각상컨테이너일번스탯.style.border = `0.2px solid #dadada`;
-                    조각상컨테이너일번스탯.style.boxSizing = "border-box";
-                    // document.getElementById("조각상컨테이너일번스탯2열").style.borderLeft = `0.2px solid #dadada`;
-                    document.getElementById("조각상컨테이너일번스탯1열").style.flex = "1";   // 10%
-                    document.getElementById("조각상컨테이너일번스탯2열").style.flex = "3";   // 50%
-                    document.getElementById("조각상컨테이너일번스탯3열").style.flex = "1.5";   // 20%
-                    document.getElementById("조각상컨테이너일번스탯4열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너일번스탯5열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너일번스탯6열").style.flex = "1.2";   // 20%
-
-                    const 조각상일번스탯등급 = document.createElement("div");
-                    조각상일번스탯등급.style.display = "flex";
-                    조각상일번스탯등급.innerHTML = 유저데이터.스탯.조각상1.등급 || "등급";
-                    조각상일번스탯등급.style.color = 유저데이터.스탯.조각상1.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상1.등급]?.좌;
-                    조각상일번스탯등급.style.fontWeight = "bold";
-                    document.getElementById("조각상컨테이너일번스탯1열").append(조각상일번스탯등급);
-
-                    const 조각상일번스탯옵션 = document.createElement("div");
-                    조각상일번스탯옵션.style.display = "flex";
-                    조각상일번스탯옵션.style.width = "100%";
-                    const 조각상1번옵션 = Object.keys(유저데이터.스탯.조각상1).find(k => k !== "등급");
-                    조각상일번스탯옵션.innerHTML = 조각상1번옵션 || "옵션";
-                    document.getElementById("조각상컨테이너일번스탯2열").append(조각상일번스탯옵션);
-
-                    const 조각상일번스탯값 = document.createElement("div");
-                    조각상일번스탯값.style.display = "flex";
-                    조각상일번스탯값.style.width = "100%";
-                    조각상일번스탯값.innerHTML = `+${유저데이터.스탯.조각상1[조각상1번옵션] || 0}%`;
-                    document.getElementById("조각상컨테이너일번스탯3열").append(조각상일번스탯값);
-
-                    const 조각상일번스탯리롤 = document.createElement("div");
-                    조각상일번스탯리롤.style.display = "flex";
-                    조각상일번스탯리롤.style.width = "100%";
-                    조각상일번스탯리롤.innerHTML = `리롤`;
-                    조각상일번스탯리롤.style.cursor = "pointer";
-                    조각상일번스탯리롤.style.borderRadius = "8px";
-                    조각상일번스탯리롤.style.border = `0.2px solid #dadada`;
-                    조각상일번스탯리롤.style.boxSizing = "border-box";
-                    조각상일번스탯리롤.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너일번스탯4열").append(조각상일번스탯리롤);
-
-                    const 조각상일번스탯강화 = document.createElement("div");
-                    조각상일번스탯강화.style.display = "flex";
-                    조각상일번스탯강화.style.width = "100%";
-                    조각상일번스탯강화.innerHTML = `강화`;
-                    조각상일번스탯강화.style.cursor = "pointer";
-                    조각상일번스탯강화.style.borderRadius = "8px";
-                    조각상일번스탯강화.style.border = `0.2px solid #dadada`;
-                    조각상일번스탯강화.style.boxSizing = "border-box";
-                    조각상일번스탯강화.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너일번스탯5열").append(조각상일번스탯강화);
-
-                    const 조각상일번스탯자동 = document.createElement("div");
-                    조각상일번스탯자동.style.display = "flex";
-                    조각상일번스탯자동.style.width = "100%";
-                    조각상일번스탯자동.innerHTML = `자동`;
-                    조각상일번스탯자동.style.cursor = "pointer";
-                    조각상일번스탯자동.style.borderRadius = "8px";
-                    조각상일번스탯자동.style.border = `0.2px solid #dadada`;
-                    조각상일번스탯자동.style.boxSizing = "border-box";
-                    조각상일번스탯자동.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너일번스탯6열").append(조각상일번스탯자동);
-
-                    조각상일번스탯리롤.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-
-                            if (유저데이터.스탯.스톤 < 10) {
-                                메시지표시(`스톤이 부족합니다`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/reroll1", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상일번스탯강화.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (!Object.keys(유저데이터.스탯.조각상1 || {}).find(k => k !== "등급")) {
-                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
-                                return;
-                            }
-
-                            const 현재등급 = 유저데이터.스탯.조각상1.등급 || "기본";
-                            let 현재인덱스 = -1;
-
-                            if (현재등급 !== "기본") {
-                                현재인덱스 = 등급순서.indexOf(현재등급);
-                            }
-
-                            const 필요스톤 = 현재등급 === "기본"
-                                ? 20
-                                : (현재인덱스 + 3) * 10;
-
-                            if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
-                                메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/Enhance1", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            if (현재등급 != 유저데이터.스탯.조각상1.등급) {
-                                메시지표시(`강화성공`);
-                            } else 메시지표시(`강화실패`);
-
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상일번스탯자동.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        메시지표시(`구현중입니다`);
-                    });
-
-                    행렬만들기(조각상컨테이너, "조각상컨테이너이번스탯", 6);
-                    조각상컨테이너이번스탯.style.padding = "3px 8px";
-                    조각상컨테이너이번스탯.style.borderRadius = "8px";
-                    조각상컨테이너이번스탯.style.border = `0.2px solid #dadada`;
-                    조각상컨테이너이번스탯.style.boxSizing = "border-box";
-                    // document.getElementById("조각상컨테이너이번스탯2열").style.borderLeft = `0.2px solid #dadada`;
-                    document.getElementById("조각상컨테이너이번스탯1열").style.flex = "1";   // 10%
-                    document.getElementById("조각상컨테이너이번스탯2열").style.flex = "3";   // 50%
-                    document.getElementById("조각상컨테이너이번스탯3열").style.flex = "1.5";   // 20%
-                    document.getElementById("조각상컨테이너이번스탯4열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너이번스탯5열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너이번스탯6열").style.flex = "1.2";   // 20%
-
-                    const 조각상이번스탯등급 = document.createElement("div");
-                    조각상이번스탯등급.style.display = "flex";
-                    조각상이번스탯등급.innerHTML = 유저데이터.스탯.조각상2.등급 || "등급";
-                    조각상이번스탯등급.style.color = 유저데이터.스탯.조각상2.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상2.등급]?.좌;
-                    조각상이번스탯등급.style.fontWeight = "bold";
-                    document.getElementById("조각상컨테이너이번스탯1열").append(조각상이번스탯등급);
-
-                    const 조각상이번스탯옵션 = document.createElement("div");
-                    조각상이번스탯옵션.style.display = "flex";
-                    조각상이번스탯옵션.style.width = "100%";
-                    const 조각상2번옵션 = Object.keys(유저데이터.스탯.조각상2).find(k => k !== "등급");
-                    조각상이번스탯옵션.innerHTML = 조각상2번옵션 || "옵션";
-                    document.getElementById("조각상컨테이너이번스탯2열").append(조각상이번스탯옵션);
-
-                    const 조각상이번스탯값 = document.createElement("div");
-                    조각상이번스탯값.style.display = "flex";
-                    조각상이번스탯값.style.width = "100%";
-                    조각상이번스탯값.innerHTML = `+${유저데이터.스탯.조각상2[조각상2번옵션] || 0}%`;
-                    document.getElementById("조각상컨테이너이번스탯3열").append(조각상이번스탯값);
-
-                    const 조각상이번스탯리롤 = document.createElement("div");
-                    조각상이번스탯리롤.style.display = "flex";
-                    조각상이번스탯리롤.style.width = "100%";
-                    조각상이번스탯리롤.innerHTML = `리롤`;
-                    조각상이번스탯리롤.style.cursor = "pointer";
-                    조각상이번스탯리롤.style.borderRadius = "8px";
-                    조각상이번스탯리롤.style.border = `0.2px solid #dadada`;
-                    조각상이번스탯리롤.style.boxSizing = "border-box";
-                    조각상이번스탯리롤.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너이번스탯4열").append(조각상이번스탯리롤);
-
-                    const 조각상이번스탯강화 = document.createElement("div");
-                    조각상이번스탯강화.style.display = "flex";
-                    조각상이번스탯강화.style.width = "100%";
-                    조각상이번스탯강화.innerHTML = `강화`;
-                    조각상이번스탯강화.style.cursor = "pointer";
-                    조각상이번스탯강화.style.borderRadius = "8px";
-                    조각상이번스탯강화.style.border = `0.2px solid #dadada`;
-                    조각상이번스탯강화.style.boxSizing = "border-box";
-                    조각상이번스탯강화.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너이번스탯5열").append(조각상이번스탯강화);
-
-                    const 조각상이번스탯자동 = document.createElement("div");
-                    조각상이번스탯자동.style.display = "flex";
-                    조각상이번스탯자동.style.width = "100%";
-                    조각상이번스탯자동.innerHTML = `자동`;
-                    조각상이번스탯자동.style.cursor = "pointer";
-                    조각상이번스탯자동.style.borderRadius = "8px";
-                    조각상이번스탯자동.style.border = `0.2px solid #dadada`;
-                    조각상이번스탯자동.style.boxSizing = "border-box";
-                    조각상이번스탯자동.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너이번스탯6열").append(조각상이번스탯자동);
-
-                    조각상이번스탯리롤.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-
-                            if (유저데이터.스탯.스톤 < 10) {
-                                메시지표시(`스톤이 부족합니다`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/reroll2", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상이번스탯강화.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (!Object.keys(유저데이터.스탯.조각상2 || {}).find(k => k !== "등급")) {
-                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
-                                return;
-                            }
-
-                            const 현재등급 = 유저데이터.스탯.조각상2.등급 || "기본";
-                            let 현재인덱스 = -1;
-
-                            if (현재등급 !== "기본") {
-                                현재인덱스 = 등급순서.indexOf(현재등급);
-                            }
-
-                            const 필요스톤 = 현재등급 === "기본"
-                                ? 20
-                                : (현재인덱스 + 3) * 10;
-
-                            if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
-                                메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/Enhance2", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                            if (현재등급 != 유저데이터.스탯.조각상2.등급) {
-                                메시지표시(`강화성공`);
-                            } else 메시지표시(`강화실패`);
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상이번스탯자동.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        메시지표시(`구현중입니다`);
-                    });
-
-                    행렬만들기(조각상컨테이너, "조각상컨테이너삼번스탯", 6);
-                    조각상컨테이너삼번스탯.style.padding = "3px 8px";
-                    조각상컨테이너삼번스탯.style.borderRadius = "8px";
-                    조각상컨테이너삼번스탯.style.border = `0.2px solid #dadada`;
-                    조각상컨테이너삼번스탯.style.boxSizing = "border-box";
-                    // document.getElementById("조각상컨테이너삼번스탯2열").style.borderLeft = `0.2px solid #dadada`;
-                    document.getElementById("조각상컨테이너삼번스탯1열").style.flex = "1";   // 10%
-                    document.getElementById("조각상컨테이너삼번스탯2열").style.flex = "3";   // 50%
-                    document.getElementById("조각상컨테이너삼번스탯3열").style.flex = "1.5";   // 20%
-                    document.getElementById("조각상컨테이너삼번스탯4열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너삼번스탯5열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너삼번스탯6열").style.flex = "1.2";   // 20%
-
-                    const 조각상삼번스탯등급 = document.createElement("div");
-                    조각상삼번스탯등급.style.display = "flex";
-                    조각상삼번스탯등급.innerHTML = 유저데이터.스탯.조각상3.등급 || "등급";
-                    조각상삼번스탯등급.style.color = 유저데이터.스탯.조각상3.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상3.등급]?.좌;
-                    조각상삼번스탯등급.style.fontWeight = "bold";
-                    document.getElementById("조각상컨테이너삼번스탯1열").append(조각상삼번스탯등급);
-
-                    const 조각상삼번스탯옵션 = document.createElement("div");
-                    조각상삼번스탯옵션.style.display = "flex";
-                    조각상삼번스탯옵션.style.width = "100%";
-                    const 조각상3번옵션 = Object.keys(유저데이터.스탯.조각상3).find(k => k !== "등급");
-                    조각상삼번스탯옵션.innerHTML = 조각상3번옵션 || "옵션";
-                    document.getElementById("조각상컨테이너삼번스탯2열").append(조각상삼번스탯옵션);
-
-                    const 조각상삼번스탯값 = document.createElement("div");
-                    조각상삼번스탯값.style.display = "flex";
-                    조각상삼번스탯값.style.width = "100%";
-                    조각상삼번스탯값.innerHTML = `+${유저데이터.스탯.조각상3[조각상3번옵션] || 0}%`;
-                    document.getElementById("조각상컨테이너삼번스탯3열").append(조각상삼번스탯값);
-
-                    const 조각상삼번스탯리롤 = document.createElement("div");
-                    조각상삼번스탯리롤.style.display = "flex";
-                    조각상삼번스탯리롤.style.width = "100%";
-                    조각상삼번스탯리롤.innerHTML = `리롤`;
-                    조각상삼번스탯리롤.style.cursor = "pointer";
-                    조각상삼번스탯리롤.style.borderRadius = "8px";
-                    조각상삼번스탯리롤.style.border = `0.2px solid #dadada`;
-                    조각상삼번스탯리롤.style.boxSizing = "border-box";
-                    조각상삼번스탯리롤.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너삼번스탯4열").append(조각상삼번스탯리롤);
-
-                    const 조각상삼번스탯강화 = document.createElement("div");
-                    조각상삼번스탯강화.style.display = "flex";
-                    조각상삼번스탯강화.style.width = "100%";
-                    조각상삼번스탯강화.innerHTML = `강화`;
-                    조각상삼번스탯강화.style.cursor = "pointer";
-                    조각상삼번스탯강화.style.borderRadius = "8px";
-                    조각상삼번스탯강화.style.border = `0.2px solid #dadada`;
-                    조각상삼번스탯강화.style.boxSizing = "border-box";
-                    조각상삼번스탯강화.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너삼번스탯5열").append(조각상삼번스탯강화);
-
-                    const 조각상삼번스탯자동 = document.createElement("div");
-                    조각상삼번스탯자동.style.display = "flex";
-                    조각상삼번스탯자동.style.width = "100%";
-                    조각상삼번스탯자동.innerHTML = `자동`;
-                    조각상삼번스탯자동.style.cursor = "pointer";
-                    조각상삼번스탯자동.style.borderRadius = "8px";
-                    조각상삼번스탯자동.style.border = `0.2px solid #dadada`;
-                    조각상삼번스탯자동.style.boxSizing = "border-box";
-                    조각상삼번스탯자동.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너삼번스탯6열").append(조각상삼번스탯자동);
-
-                    조각상삼번스탯리롤.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (유저데이터.스탯.계정.레벨 < 15) {
-                                메시지표시(`계정 15레벨 이상부터 가능합니다`);
-                                return;
-                            }
-                            if (유저데이터.스탯.스톤 < 10) {
-                                메시지표시(`스톤이 부족합니다`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/reroll3", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상삼번스탯강화.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (유저데이터.스탯.계정.레벨 < 15) {
-                                메시지표시(`계정 15레벨 이상부터 가능합니다`);
-                                return;
-                            }
-                            if (!Object.keys(유저데이터.스탯.조각상3 || {}).find(k => k !== "등급")) {
-                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
-                                return;
-                            }
-
-                            const 현재등급 = 유저데이터.스탯.조각상3.등급 || "기본";
-                            let 현재인덱스 = -1;
-
-                            if (현재등급 !== "기본") {
-                                현재인덱스 = 등급순서.indexOf(현재등급);
-                            }
-
-                            const 필요스톤 = 현재등급 === "기본"
-                                ? 20
-                                : (현재인덱스 + 3) * 10;
-
-                            if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
-                                메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/Enhance3", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                            if (현재등급 != 유저데이터.스탯.조각상3.등급) {
-                                메시지표시(`강화성공`);
-                            } else 메시지표시(`강화실패`);
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상삼번스탯자동.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        메시지표시(`구현중입니다`);
-                    });
-
-                    행렬만들기(조각상컨테이너, "조각상컨테이너사번스탯", 6);
-                    조각상컨테이너사번스탯.style.padding = "3px 8px";
-                    조각상컨테이너사번스탯.style.borderRadius = "8px";
-                    조각상컨테이너사번스탯.style.border = `0.2px solid #dadada`;
-                    조각상컨테이너사번스탯.style.boxSizing = "border-box";
-                    // document.getElementById("조각상컨테이너사번스탯2열").style.borderLeft = `0.2px solid #dadada`;
-                    document.getElementById("조각상컨테이너사번스탯1열").style.flex = "1";   // 10%
-                    document.getElementById("조각상컨테이너사번스탯2열").style.flex = "3";   // 50%
-                    document.getElementById("조각상컨테이너사번스탯3열").style.flex = "1.5";   // 20%
-                    document.getElementById("조각상컨테이너사번스탯4열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너사번스탯5열").style.flex = "1.2";   // 20%
-                    document.getElementById("조각상컨테이너사번스탯6열").style.flex = "1.2";   // 20%
-
-                    const 조각상사번스탯등급 = document.createElement("div");
-                    조각상사번스탯등급.style.display = "flex";
-                    조각상사번스탯등급.innerHTML = 유저데이터.스탯.조각상4.등급 || "등급";
-                    조각상사번스탯등급.style.color = 유저데이터.스탯.조각상4.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상4.등급]?.좌;
-                    조각상사번스탯등급.style.fontWeight = "bold";
-                    document.getElementById("조각상컨테이너사번스탯1열").append(조각상사번스탯등급);
-
-                    const 조각상사번스탯옵션 = document.createElement("div");
-                    조각상사번스탯옵션.style.display = "flex";
-                    조각상사번스탯옵션.style.width = "100%";
-                    const 조각상4번옵션 = Object.keys(유저데이터.스탯.조각상4).find(k => k !== "등급");
-                    조각상사번스탯옵션.innerHTML = 조각상4번옵션 || "옵션";
-                    document.getElementById("조각상컨테이너사번스탯2열").append(조각상사번스탯옵션);
-
-                    const 조각상사번스탯값 = document.createElement("div");
-                    조각상사번스탯값.style.display = "flex";
-                    조각상사번스탯값.style.width = "100%";
-                    조각상사번스탯값.innerHTML = `+${유저데이터.스탯.조각상4[조각상4번옵션] || 0}%`;
-                    document.getElementById("조각상컨테이너사번스탯3열").append(조각상사번스탯값);
-
-                    const 조각상사번스탯리롤 = document.createElement("div");
-                    조각상사번스탯리롤.style.display = "flex";
-                    조각상사번스탯리롤.style.width = "100%";
-                    조각상사번스탯리롤.innerHTML = `리롤`;
-                    조각상사번스탯리롤.style.cursor = "pointer";
-                    조각상사번스탯리롤.style.borderRadius = "8px";
-                    조각상사번스탯리롤.style.border = `0.2px solid #dadada`;
-                    조각상사번스탯리롤.style.boxSizing = "border-box";
-                    조각상사번스탯리롤.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너사번스탯4열").append(조각상사번스탯리롤);
-
-                    const 조각상사번스탯강화 = document.createElement("div");
-                    조각상사번스탯강화.style.display = "flex";
-                    조각상사번스탯강화.style.width = "100%";
-                    조각상사번스탯강화.innerHTML = `강화`;
-                    조각상사번스탯강화.style.cursor = "pointer";
-                    조각상사번스탯강화.style.borderRadius = "8px";
-                    조각상사번스탯강화.style.border = `0.2px solid #dadada`;
-                    조각상사번스탯강화.style.boxSizing = "border-box";
-                    조각상사번스탯강화.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너사번스탯5열").append(조각상사번스탯강화);
-
-                    const 조각상사번스탯자동 = document.createElement("div");
-                    조각상사번스탯자동.style.display = "flex";
-                    조각상사번스탯자동.style.width = "100%";
-                    조각상사번스탯자동.innerHTML = `자동`;
-                    조각상사번스탯자동.style.cursor = "pointer";
-                    조각상사번스탯자동.style.borderRadius = "8px";
-                    조각상사번스탯자동.style.border = `0.2px solid #dadada`;
-                    조각상사번스탯자동.style.boxSizing = "border-box";
-                    조각상사번스탯자동.style.justifyContent = "center";
-                    document.getElementById("조각상컨테이너사번스탯6열").append(조각상사번스탯자동);
-
-                    조각상사번스탯리롤.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (유저데이터.스탯.계정.레벨 < 30) {
-                                메시지표시(`계정 30레벨 이상부터 가능합니다`);
-                                return;
-                            }
-                            if (유저데이터.스탯.스톤 < 10) {
-                                메시지표시(`스톤이 부족합니다`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/reroll4", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상사번스탯강화.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        try {
-                            if (유저데이터.스탯.계정.레벨 < 30) {
-                                메시지표시(`계정 30레벨 이상부터 가능합니다`);
-                                return;
-                            }
-                            if (!Object.keys(유저데이터.스탯.조각상4 || {}).find(k => k !== "등급")) {
-                                메시지표시(`먼저 리롤로 옵션을 획득하세요`);
-                                return;
-                            }
-
-                            const 현재등급 = 유저데이터.스탯.조각상4.등급 || "기본";
-                            let 현재인덱스 = -1;
-
-                            if (현재등급 !== "기본") {
-                                현재인덱스 = 등급순서.indexOf(현재등급);
-                            }
-
-                            const 필요스톤 = 현재등급 === "기본"
-                                ? 20
-                                : (현재인덱스 + 3) * 10;
-
-                            if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
-                                메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
-                                return;
-                            }
-
-                            화면잠금();
-                            const 응답 = await fetch("/Enhance4", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: 유저데이터.id
-                                })
-                            });
-
-                            const 결과 = await 응답.json();
-
-                            if (!응답.ok) {
-                                메시지표시(결과.오류);
-                                return;
-                            }
-
-                            유저데이터 = 결과;
-                            메인화면보여주기();
-                            document.querySelector("#조각상")?.click();
-
-                            if (현재등급 != 유저데이터.스탯.조각상4.등급) {
-                                메시지표시(`강화성공`);
-                            } else 메시지표시(`강화실패`);
-
-                        } catch (e) {
-                            메시지표시("서버요청실패");
-                            console.error(e);
-                        } finally {
-                            화면해제();
-                        }
-                    });
-
-                    조각상사번스탯자동.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        메시지표시(`구현중입니다`);
-                    });
+                    조각상화면보여주기();
 
                 });
 
@@ -3730,6 +3009,17 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.24<br>
+드랍장비의 특수옵션이 정상적으로 2개로 표시됩니다<br>
+던전몬스터들의 스탯이 500% 상향조정되었습니다<br>
+던전몬스터들의 최대레벨이 20으로 제한됩니다<br>
+상점에서 디지에그열쇠 구매실패오류가 수정되었습니다<br>
+동료컨텐츠가 구현되었습니다. 단축키는 F입니다<br>
+조각상컨텐츠 박스가 조각상화면으로 독립되었습니다<br>
+리롤이나 강화에 소모되는 필요스톤량 표시는 구상중입니다<br>
+조각상 자동강화 시스템도 추후 구현예정입니다<br>
+<br>
+
 25.09.23<br>
 방치라는 용어를 방치&오프로 수정해서 사용해보겠습니다<br>
 디지에그열쇠가 정상적으로 충전됩니다<br>
@@ -3739,6 +3029,7 @@
 하위 유저들에게도 도전할수있고, 그렇게되면 순위가 하위로<br>
 밀리게 되는데, 일부러 밑으로 가실분은 안계시겠쬬?<br>
 이대로 지켜보겠습니다<br>
+전장티켓도 하루최대 4장 충전되게 돌려놨습니다<br>
 <br>
 
 25.09.22<br>
@@ -4011,6 +3302,7 @@ nodemon server.js
         던전화면컨테이너.style.gap = "8px";
         던전화면.append(던전화면컨테이너);
 
+        //던전화면보여주기함수
         async function 던전화면보여주기() {
             try {
                 화면잠금();
@@ -4064,10 +3356,10 @@ nodemon server.js
                 첫번째몬스터전투력.style.boxSizing = "border-box";
                 첫번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.지니.레벨 * 2) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.지니.레벨 * 2) +
-                        (300 * 유저데이터.스탯.던전.지니.레벨 * 2) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨 * 2) * 50
+                        (15000 * 유저데이터.스탯.던전.지니.레벨 * 10) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.지니.레벨 * 10) +
+                        (300 * 유저데이터.스탯.던전.지니.레벨 * 10) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.지니.레벨 * 10) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너일행2열").append(첫번째몬스터전투력);
 
@@ -4084,10 +3376,10 @@ nodemon server.js
                 첫번째몬스터다음보상.style.display = "flex";
                 첫번째몬스터다음보상.style.width = "100%";
                 첫번째몬스터다음보상.style.boxSizing = "border-box";
-                // if (유저데이터.스탯.던전.지니.레벨 >= 20) {
-                //     첫번째몬스터다음보상.innerHTML = `최대Lv입니다`;
-                // } else 첫번째몬스터다음보상.innerHTML = `다음레벨보상<br>램프 ${(유저데이터.스탯.던전.지니.레벨 + 1) * 10}개`;
-                첫번째몬스터다음보상.innerHTML = `다음레벨보상<br>램프 ${(유저데이터.스탯.던전.지니.레벨 + 1) * 10}개`;
+                if (유저데이터.스탯.던전.지니.레벨 >= 20) {
+                    첫번째몬스터다음보상.innerHTML = `최대Lv입니다`;
+                } else 첫번째몬스터다음보상.innerHTML = `다음레벨보상<br>램프 ${(유저데이터.스탯.던전.지니.레벨 + 1) * 10}개`;
+                // 첫번째몬스터다음보상.innerHTML = `다음레벨보상<br>램프 ${(유저데이터.스탯.던전.지니.레벨 + 1) * 10}개`;
                 document.getElementById("던전화면컨테이너일행3열").append(첫번째몬스터다음보상);
 
                 행렬만들기(던전화면컨테이너일행4열, "던전화면컨테이너일행4열일행", 2);
@@ -4165,10 +3457,10 @@ nodemon server.js
                 두번째몬스터전투력.style.boxSizing = "border-box";
                 두번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) +
-                        (300 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.로쿠규.레벨 * 2) * 50
+                        (15000 * 유저데이터.스탯.던전.로쿠규.레벨 * 10) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.로쿠규.레벨 * 10) +
+                        (300 * 유저데이터.스탯.던전.로쿠규.레벨 * 10) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.로쿠규.레벨 * 10) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너이행2열").append(두번째몬스터전투력);
 
@@ -4185,7 +3477,10 @@ nodemon server.js
                 두번째몬스터다음보상.style.display = "flex";
                 두번째몬스터다음보상.style.width = "100%";
                 두번째몬스터다음보상.style.boxSizing = "border-box";
-                두번째몬스터다음보상.innerHTML = `다음레벨보상<br>낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 + 1) * 1}개`;
+                // 두번째몬스터다음보상.innerHTML = `다음레벨보상<br>낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 + 1) * 1}개`;
+                if (유저데이터.스탯.던전.로쿠규.레벨 >= 20) {
+                    두번째몬스터다음보상.innerHTML = `최대Lv입니다`;
+                } else 두번째몬스터다음보상.innerHTML = `다음레벨보상<br>낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 + 1) * 1}개`;
                 document.getElementById("던전화면컨테이너이행3열").append(두번째몬스터다음보상);
 
                 행렬만들기(던전화면컨테이너이행4열, "던전화면컨테이너이행4열일행", 2);
@@ -4263,10 +3558,10 @@ nodemon server.js
                 세번째몬스터전투력.style.boxSizing = "border-box";
                 세번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.락골렘.레벨 * 2) +
-                        (300 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.락골렘.레벨 * 2) * 50
+                        (15000 * 유저데이터.스탯.던전.락골렘.레벨 * 10) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.락골렘.레벨 * 10) +
+                        (300 * 유저데이터.스탯.던전.락골렘.레벨 * 10) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.락골렘.레벨 * 10) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너삼행2열").append(세번째몬스터전투력);
 
@@ -4283,7 +3578,10 @@ nodemon server.js
                 세번째몬스터다음보상.style.display = "flex";
                 세번째몬스터다음보상.style.width = "100%";
                 세번째몬스터다음보상.style.boxSizing = "border-box";
-                세번째몬스터다음보상.innerHTML = `다음레벨보상<br>스톤 ${(유저데이터.스탯.던전.락골렘.레벨 + 1) * 10}개`;
+                // 세번째몬스터다음보상.innerHTML = `다음레벨보상<br>스톤 ${(유저데이터.스탯.던전.락골렘.레벨 + 1) * 10}개`;
+                if (유저데이터.스탯.던전.락골렘.레벨 >= 20) {
+                    세번째몬스터다음보상.innerHTML = `최대Lv입니다`;
+                } else 세번째몬스터다음보상.innerHTML = `다음레벨보상<br>스톤 ${(유저데이터.스탯.던전.락골렘.레벨 + 1) * 10}개`;
                 document.getElementById("던전화면컨테이너삼행3열").append(세번째몬스터다음보상);
 
                 행렬만들기(던전화면컨테이너삼행4열, "던전화면컨테이너삼행4열일행", 2);
@@ -4365,10 +3663,10 @@ nodemon server.js
                 네번째몬스터전투력.style.boxSizing = "border-box";
                 네번째몬스터전투력.innerHTML =
                     `전투력 ${단위변환함수(
-                        (15000 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 0.05 +
-                        (900 * 유저데이터.스탯.던전.디지에그.레벨 * 2) +
-                        (300 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 2 +
-                        (1 + 0.1 * 유저데이터.스탯.던전.디지에그.레벨 * 2) * 50
+                        (15000 * 유저데이터.스탯.던전.디지에그.레벨 * 10) * 0.05 +
+                        (900 * 유저데이터.스탯.던전.디지에그.레벨 * 10) +
+                        (300 * 유저데이터.스탯.던전.디지에그.레벨 * 10) * 2 +
+                        (1 + 0.1 * 유저데이터.스탯.던전.디지에그.레벨 * 10) * 50
                     )}`;
                 document.getElementById("던전화면컨테이너사행2열").append(네번째몬스터전투력);
 
@@ -4385,7 +3683,10 @@ nodemon server.js
                 네번째몬스터다음보상.style.display = "flex";
                 네번째몬스터다음보상.style.width = "100%";
                 네번째몬스터다음보상.style.boxSizing = "border-box";
-                네번째몬스터다음보상.innerHTML = `다음레벨보상<br>디지에그 ${(유저데이터.스탯.던전.디지에그.레벨 + 1) * 1}개`;
+                // 네번째몬스터다음보상.innerHTML = `다음레벨보상<br>디지에그 ${(유저데이터.스탯.던전.디지에그.레벨 + 1) * 1}개`;
+                if (유저데이터.스탯.던전.디지에그.레벨 >= 20) {
+                    네번째몬스터다음보상.innerHTML = `최대Lv입니다`;
+                } else 네번째몬스터다음보상.innerHTML = `다음레벨보상<br>디지에그 ${(유저데이터.스탯.던전.디지에그.레벨 + 1) * 1}개`;
                 document.getElementById("던전화면컨테이너사행3열").append(네번째몬스터다음보상);
 
                 행렬만들기(던전화면컨테이너사행4열, "던전화면컨테이너사행4열일행", 2);
@@ -4451,6 +3752,7 @@ nodemon server.js
             `
             전장에서 강함을 증명하세요<br>
             도전에는 티켓 1장이 소모되며, 승리 시 순위를 빼았습니다<br>
+            티켓은 하루 최대 4장까지 충전됩니다<br>
         `;
         전장화면설명.style.textAlign = "center";
         전장화면설명.style.paddingBottom = "8px";
@@ -6539,7 +5841,7 @@ ${전투결과.결과}<br>
                             return;
                         }
                         화면잠금();
-                        const 응답 = await fetch("/digieggkey", {
+                        const 응답 = await fetch("/digieggkey1", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -6792,7 +6094,7 @@ ${전투결과.결과}<br>
                         }
 
                         화면잠금();
-                        const 응답 = await fetch("/digiegg10", {
+                        const 응답 = await fetch("/digieggkey10", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -7161,6 +6463,8 @@ ${전투결과.결과}<br>
         동료화면설명.innerHTML =
             `
 동료화면입니다<br>
+동료는 레벨이 오르면 자동으로 동행합니다<br>
+동료의 레벨업에는 먹이(디지에그)가 소모됩니다<br>
             `;
         동료화면설명.style.textAlign = "center";
         동료화면설명.style.paddingBottom = "8px";
@@ -7188,34 +6492,30 @@ ${전투결과.결과}<br>
                 행렬만들기(동료화면컨테이너, "디지에그표시", 1);
                 // 디지에그표시.style.borderTop = `0.2px solid #dadada`;
                 디지에그표시1열.innerHTML = `보유 디지에그 ${유저데이터.스탯.디지에그}`;
-                디지에그표시1열.style.marginTop = `8px`;
+                디지에그표시1열.style.padding = `8px`;
+                디지에그표시1열.style.borderBottom = "0.2px solid #dadada";
 
-                행렬만들기(동료화면컨테이너, "동료일행", 3);
-                동료일행.style.borderBottom = "0.2px solid #dadada";
-                동료일행1열.innerHTML = `첫번째 동료`;
-                동료일행1열.style.boxSizing = "border-box";
-                동료일행1열.style.border = "0.2px solid #dadada";
-                동료일행1열.style.borderRadius = "8px";
-                동료일행1열.style.padding = "8px";
+                행렬만들기(동료화면컨테이너, "동료스탯", 3);
+                동료스탯1열.innerHTML = `${유저데이터.스탯.동료1.시기}`;
+                동료스탯1열.style.borderRight = "0.2px solid #dadada";
+                동료스탯2열.innerHTML = `${유저데이터.스탯.동료2.시기}`;
+                동료스탯2열.style.borderRight = "0.2px solid #dadada";
+                동료스탯3열.innerHTML = `${유저데이터.스탯.동료3.시기}`;
 
-                동료일행2열.innerHTML = 유저데이터.스탯.계정.레벨 > 49 ? `두번째 동료` : `Lv50 개방`;
+                const 동료1이름 = document.createElement("div");
+                동료1이름.style.display = "flex";
+                동료1이름.innerHTML = `${유저데이터.스탯.동료1.이름} Lv${유저데이터.스탯.동료1.레벨}`;
+                동료스탯1열.append(동료1이름);
 
-                동료일행2열.style.boxSizing = "border-box";
-                동료일행2열.style.border = "0.2px solid #dadada";
-                동료일행2열.style.borderRadius = "8px";
-                동료일행2열.style.padding = "8px";
-                동료일행3열.innerHTML = `Lv100 개방`;
-                동료일행3열.style.boxSizing = "border-box";
-                동료일행3열.style.border = "0.2px solid #dadada";
-                동료일행3열.style.borderRadius = "8px";
-                동료일행3열.style.padding = "8px";
+                const 동료2이름 = document.createElement("div");
+                동료2이름.style.display = "flex";
+                동료2이름.innerHTML = `${유저데이터.스탯.동료2.이름} Lv${유저데이터.스탯.동료2.레벨}`;
+                동료스탯2열.append(동료2이름);
 
-                행렬만들기(동료화면컨테이너, "디지몬스탯", 3);
-                디지몬스탯1열.innerHTML = `${유저데이터.스탯.동료1.이름} Lv${유저데이터.스탯.동료1.레벨}`;
-                디지몬스탯1열.style.borderRight = "0.2px solid #dadada";
-                디지몬스탯2열.innerHTML = `${유저데이터.스탯.동료2.이름} Lv${유저데이터.스탯.동료2.레벨}`;
-                디지몬스탯2열.style.borderRight = "0.2px solid #dadada";
-                디지몬스탯3열.innerHTML = `${유저데이터.스탯.동료3.이름} Lv${유저데이터.스탯.동료3.레벨}`;
+                const 동료3이름 = document.createElement("div");
+                동료3이름.style.display = "flex";
+                동료3이름.innerHTML = `${유저데이터.스탯.동료3.이름} Lv${유저데이터.스탯.동료3.레벨}`;
+                동료스탯3열.append(동료3이름);
 
                 const 동료1일번스탯 = document.createElement("div");
                 동료1일번스탯.style.display = "flex";
@@ -7223,7 +6523,7 @@ ${전투결과.결과}<br>
                 동료1일번스탯.style.width = "100%";
                 동료1일번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1일번스탯.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.동료1.HP보너스}</span>`;
-                디지몬스탯1열.append(동료1일번스탯);
+                동료스탯1열.append(동료1일번스탯);
 
                 const 동료1이번스탯 = document.createElement("div");
                 동료1이번스탯.style.display = "flex";
@@ -7231,7 +6531,7 @@ ${전투결과.결과}<br>
                 동료1이번스탯.style.width = "100%";
                 동료1이번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1이번스탯.innerHTML = `<span>공격력보너스</span><span>${유저데이터.스탯.동료1.공격력보너스}</span>`;
-                디지몬스탯1열.append(동료1이번스탯);
+                동료스탯1열.append(동료1이번스탯);
 
                 const 동료1삼번스탯 = document.createElement("div");
                 동료1삼번스탯.style.display = "flex";
@@ -7239,7 +6539,7 @@ ${전투결과.결과}<br>
                 동료1삼번스탯.style.width = "100%";
                 동료1삼번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1삼번스탯.innerHTML = `<span>방어력보너스</span><span>${유저데이터.스탯.동료1.방어력보너스}</span>`;
-                디지몬스탯1열.append(동료1삼번스탯);
+                동료스탯1열.append(동료1삼번스탯);
 
                 const 동료1사번스탯 = document.createElement("div");
                 동료1사번스탯.style.display = "flex";
@@ -7247,7 +6547,7 @@ ${전투결과.결과}<br>
                 동료1사번스탯.style.width = "100%";
                 동료1사번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1사번스탯.innerHTML = `<span>동료치명</span><span>${유저데이터.스탯.동료1.동료치명}</span>`;
-                디지몬스탯1열.append(동료1사번스탯);
+                동료스탯1열.append(동료1사번스탯);
 
                 const 동료1오번스탯 = document.createElement("div");
                 동료1오번스탯.style.display = "flex";
@@ -7255,7 +6555,7 @@ ${전투결과.결과}<br>
                 동료1오번스탯.style.width = "100%";
                 동료1오번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1오번스탯.innerHTML = `<span>동료치명피해</span><span>${유저데이터.스탯.동료1.동료치명피해}</span>`;
-                디지몬스탯1열.append(동료1오번스탯);
+                동료스탯1열.append(동료1오번스탯);
 
                 const 동료1육번스탯 = document.createElement("div");
                 동료1육번스탯.style.display = "flex";
@@ -7263,7 +6563,7 @@ ${전투결과.결과}<br>
                 동료1육번스탯.style.width = "100%";
                 동료1육번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1육번스탯.innerHTML = `<span>동료피해</span><span>${유저데이터.스탯.동료1.동료피해}</span>`;
-                디지몬스탯1열.append(동료1육번스탯);
+                동료스탯1열.append(동료1육번스탯);
 
                 const 동료1칠번스탯 = document.createElement("div");
                 동료1칠번스탯.style.display = "flex";
@@ -7271,7 +6571,7 @@ ${전투결과.결과}<br>
                 동료1칠번스탯.style.width = "100%";
                 동료1칠번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1칠번스탯.innerHTML = `<span>동료피해감소</span><span>${유저데이터.스탯.동료1.동료피해감소}</span>`;
-                디지몬스탯1열.append(동료1칠번스탯);
+                동료스탯1열.append(동료1칠번스탯);
 
                 const 동료1팔번스탯 = document.createElement("div");
                 동료1팔번스탯.style.display = "flex";
@@ -7279,7 +6579,7 @@ ${전투결과.결과}<br>
                 동료1팔번스탯.style.width = "100%";
                 동료1팔번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료1팔번스탯.innerHTML = `<span>치명피해</span><span>${유저데이터.스탯.동료1.치명피해}</span>`;
-                디지몬스탯1열.append(동료1팔번스탯);
+                동료스탯1열.append(동료1팔번스탯);
 
                 const 동료2일번스탯 = document.createElement("div");
                 동료2일번스탯.style.display = "flex";
@@ -7287,7 +6587,7 @@ ${전투결과.결과}<br>
                 동료2일번스탯.style.width = "100%";
                 동료2일번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2일번스탯.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.동료2.HP보너스}</span>`;
-                디지몬스탯2열.append(동료2일번스탯);
+                동료스탯2열.append(동료2일번스탯);
 
                 const 동료2이번스탯 = document.createElement("div");
                 동료2이번스탯.style.display = "flex";
@@ -7295,7 +6595,7 @@ ${전투결과.결과}<br>
                 동료2이번스탯.style.width = "100%";
                 동료2이번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2이번스탯.innerHTML = `<span>공격력보너스</span><span>${유저데이터.스탯.동료2.공격력보너스}</span>`;
-                디지몬스탯2열.append(동료2이번스탯);
+                동료스탯2열.append(동료2이번스탯);
 
                 const 동료2삼번스탯 = document.createElement("div");
                 동료2삼번스탯.style.display = "flex";
@@ -7303,7 +6603,7 @@ ${전투결과.결과}<br>
                 동료2삼번스탯.style.width = "100%";
                 동료2삼번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2삼번스탯.innerHTML = `<span>방어력보너스</span><span>${유저데이터.스탯.동료2.방어력보너스}</span>`;
-                디지몬스탯2열.append(동료2삼번스탯);
+                동료스탯2열.append(동료2삼번스탯);
 
                 const 동료2사번스탯 = document.createElement("div");
                 동료2사번스탯.style.display = "flex";
@@ -7311,7 +6611,7 @@ ${전투결과.결과}<br>
                 동료2사번스탯.style.width = "100%";
                 동료2사번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2사번스탯.innerHTML = `<span>동료치명</span><span>${유저데이터.스탯.동료2.동료치명}</span>`;
-                디지몬스탯2열.append(동료2사번스탯);
+                동료스탯2열.append(동료2사번스탯);
 
                 const 동료2오번스탯 = document.createElement("div");
                 동료2오번스탯.style.display = "flex";
@@ -7319,7 +6619,7 @@ ${전투결과.결과}<br>
                 동료2오번스탯.style.width = "100%";
                 동료2오번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2오번스탯.innerHTML = `<span>동료치명피해</span><span>${유저데이터.스탯.동료2.동료치명피해}</span>`;
-                디지몬스탯2열.append(동료2오번스탯);
+                동료스탯2열.append(동료2오번스탯);
 
                 const 동료2육번스탯 = document.createElement("div");
                 동료2육번스탯.style.display = "flex";
@@ -7327,7 +6627,7 @@ ${전투결과.결과}<br>
                 동료2육번스탯.style.width = "100%";
                 동료2육번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2육번스탯.innerHTML = `<span>동료피해</span><span>${유저데이터.스탯.동료2.동료피해}</span>`;
-                디지몬스탯2열.append(동료2육번스탯);
+                동료스탯2열.append(동료2육번스탯);
 
                 const 동료2칠번스탯 = document.createElement("div");
                 동료2칠번스탯.style.display = "flex";
@@ -7335,7 +6635,7 @@ ${전투결과.결과}<br>
                 동료2칠번스탯.style.width = "100%";
                 동료2칠번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2칠번스탯.innerHTML = `<span>동료피해감소</span><span>${유저데이터.스탯.동료2.동료피해감소}</span>`;
-                디지몬스탯2열.append(동료2칠번스탯);
+                동료스탯2열.append(동료2칠번스탯);
 
                 const 동료2팔번스탯 = document.createElement("div");
                 동료2팔번스탯.style.display = "flex";
@@ -7343,7 +6643,7 @@ ${전투결과.결과}<br>
                 동료2팔번스탯.style.width = "100%";
                 동료2팔번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료2팔번스탯.innerHTML = `<span>콤보계수</span><span>${유저데이터.스탯.동료2.콤보계수}</span>`;
-                디지몬스탯2열.append(동료2팔번스탯);
+                동료스탯2열.append(동료2팔번스탯);
 
                 const 동료3일번스탯 = document.createElement("div");
                 동료3일번스탯.style.display = "flex";
@@ -7351,7 +6651,7 @@ ${전투결과.결과}<br>
                 동료3일번스탯.style.width = "100%";
                 동료3일번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3일번스탯.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.동료3.HP보너스}</span>`;
-                디지몬스탯3열.append(동료3일번스탯);
+                동료스탯3열.append(동료3일번스탯);
 
                 const 동료3이번스탯 = document.createElement("div");
                 동료3이번스탯.style.display = "flex";
@@ -7359,7 +6659,7 @@ ${전투결과.결과}<br>
                 동료3이번스탯.style.width = "100%";
                 동료3이번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3이번스탯.innerHTML = `<span>공격력보너스</span><span>${유저데이터.스탯.동료3.공격력보너스}</span>`;
-                디지몬스탯3열.append(동료3이번스탯);
+                동료스탯3열.append(동료3이번스탯);
 
                 const 동료3삼번스탯 = document.createElement("div");
                 동료3삼번스탯.style.display = "flex";
@@ -7367,7 +6667,7 @@ ${전투결과.결과}<br>
                 동료3삼번스탯.style.width = "100%";
                 동료3삼번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3삼번스탯.innerHTML = `<span>방어력보너스</span><span>${유저데이터.스탯.동료3.방어력보너스}</span>`;
-                디지몬스탯3열.append(동료3삼번스탯);
+                동료스탯3열.append(동료3삼번스탯);
 
                 const 동료3사번스탯 = document.createElement("div");
                 동료3사번스탯.style.display = "flex";
@@ -7375,7 +6675,7 @@ ${전투결과.결과}<br>
                 동료3사번스탯.style.width = "100%";
                 동료3사번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3사번스탯.innerHTML = `<span>동료치명</span><span>${유저데이터.스탯.동료3.동료치명}</span>`;
-                디지몬스탯3열.append(동료3사번스탯);
+                동료스탯3열.append(동료3사번스탯);
 
                 const 동료3오번스탯 = document.createElement("div");
                 동료3오번스탯.style.display = "flex";
@@ -7383,7 +6683,7 @@ ${전투결과.결과}<br>
                 동료3오번스탯.style.width = "100%";
                 동료3오번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3오번스탯.innerHTML = `<span>동료치명피해</span><span>${유저데이터.스탯.동료3.동료치명피해}</span>`;
-                디지몬스탯3열.append(동료3오번스탯);
+                동료스탯3열.append(동료3오번스탯);
 
                 const 동료3육번스탯 = document.createElement("div");
                 동료3육번스탯.style.display = "flex";
@@ -7391,7 +6691,7 @@ ${전투결과.결과}<br>
                 동료3육번스탯.style.width = "100%";
                 동료3육번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3육번스탯.innerHTML = `<span>동료피해</span><span>${유저데이터.스탯.동료3.동료피해}</span>`;
-                디지몬스탯3열.append(동료3육번스탯);
+                동료스탯3열.append(동료3육번스탯);
 
                 const 동료3칠번스탯 = document.createElement("div");
                 동료3칠번스탯.style.display = "flex";
@@ -7399,7 +6699,7 @@ ${전투결과.결과}<br>
                 동료3칠번스탯.style.width = "100%";
                 동료3칠번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3칠번스탯.innerHTML = `<span>동료피해감소</span><span>${유저데이터.스탯.동료3.동료피해감소}</span>`;
-                디지몬스탯3열.append(동료3칠번스탯);
+                동료스탯3열.append(동료3칠번스탯);
 
                 const 동료3팔번스탯 = document.createElement("div");
                 동료3팔번스탯.style.display = "flex";
@@ -7407,7 +6707,21 @@ ${전투결과.결과}<br>
                 동료3팔번스탯.style.width = "100%";
                 동료3팔번스탯.style.borderBottom = `0.2px solid #dadada`;
                 동료3팔번스탯.innerHTML = `<span>반격계수</span><span>${유저데이터.스탯.동료3.반격계수}</span>`;
-                디지몬스탯3열.append(동료3팔번스탯);
+                동료스탯3열.append(동료3팔번스탯);
+
+                let 동료1필요수량 = 유저데이터.스탯.동료1.레벨 + 1;
+                let 동료1진화확률 = null;
+
+                if ([30, 50, 70, 100, 130].includes(유저데이터.스탯.동료1.레벨 + 1)) {
+                    const n = 유저데이터.스탯.동료1.레벨;
+                    동료1필요수량 = (n * (n + 1)) / 2;
+
+                    if (유저데이터.스탯.동료1.레벨 + 1 === 30) 동료1진화확률 = 80;
+                    else if (유저데이터.스탯.동료1.레벨 + 1 === 50) 동료1진화확률 = 60;
+                    else if (유저데이터.스탯.동료1.레벨 + 1 === 70) 동료1진화확률 = 40;
+                    else if (유저데이터.스탯.동료1.레벨 + 1 === 100) 동료1진화확률 = 20;
+                    else if (유저데이터.스탯.동료1.레벨 + 1 === 130) 동료1진화확률 = 20;
+                }
 
                 const 동료1먹이주기 = document.createElement("div");
                 동료1먹이주기.id = "동료1먹이주기";
@@ -7418,9 +6732,23 @@ ${전투결과.결과}<br>
                 동료1먹이주기.style.display = "flex";
                 동료1먹이주기.style.flexDirection = "column";
                 동료1먹이주기.style.padding = "3px 8px";
-                동료1먹이주기.innerHTML = `먹이주기`;
+                동료1먹이주기.innerHTML = `먹이주기(${동료1필요수량})`;
                 동료1먹이주기.style.cursor = "pointer";
-                디지몬스탯1열.append(동료1먹이주기);
+                동료스탯1열.append(동료1먹이주기);
+
+                let 동료2필요수량 = 유저데이터.스탯.동료2.레벨 + 1;
+                let 동료2진화확률 = null;
+
+                if ([30, 50, 70, 100, 130].includes(유저데이터.스탯.동료2.레벨 + 1)) {
+                    const n = 유저데이터.스탯.동료2.레벨;
+                    동료2필요수량 = (n * (n + 1)) / 2;
+
+                    if (유저데이터.스탯.동료2.레벨 + 1 === 30) 동료2진화확률 = 80;
+                    else if (유저데이터.스탯.동료2.레벨 + 1 === 50) 동료2진화확률 = 60;
+                    else if (유저데이터.스탯.동료2.레벨 + 1 === 70) 동료2진화확률 = 40;
+                    else if (유저데이터.스탯.동료2.레벨 + 1 === 100) 동료2진화확률 = 20;
+                    else if (유저데이터.스탯.동료2.레벨 + 1 === 130) 동료2진화확률 = 20;
+                }
 
                 const 동료2먹이주기 = document.createElement("div");
                 동료2먹이주기.id = "동료2먹이주기";
@@ -7431,9 +6759,23 @@ ${전투결과.결과}<br>
                 동료2먹이주기.style.display = "flex";
                 동료2먹이주기.style.flexDirection = "column";
                 동료2먹이주기.style.padding = "3px 8px";
-                동료2먹이주기.innerHTML = `먹이주기`;
+                동료2먹이주기.innerHTML = `먹이주기(${동료2필요수량})`;
                 동료2먹이주기.style.cursor = "pointer";
-                디지몬스탯2열.append(동료2먹이주기);
+                동료스탯2열.append(동료2먹이주기);
+
+                let 동료3필요수량 = 유저데이터.스탯.동료3.레벨 + 1;
+                let 동료3진화확률 = null;
+
+                if ([30, 50, 70, 100, 130].includes(유저데이터.스탯.동료3.레벨 + 1)) {
+                    const n = 유저데이터.스탯.동료3.레벨;
+                    동료3필요수량 = (n * (n + 1)) / 2;
+
+                    if (유저데이터.스탯.동료3.레벨 + 1 === 30) 동료3진화확률 = 80;
+                    else if (유저데이터.스탯.동료3.레벨 + 1 === 50) 동료3진화확률 = 60;
+                    else if (유저데이터.스탯.동료3.레벨 + 1 === 70) 동료3진화확률 = 40;
+                    else if (유저데이터.스탯.동료3.레벨 + 1 === 100) 동료3진화확률 = 20;
+                    else if (유저데이터.스탯.동료3.레벨 + 1 === 130) 동료3진화확률 = 20;
+                }
 
                 const 동료3먹이주기 = document.createElement("div");
                 동료3먹이주기.id = "동료3먹이주기";
@@ -7444,48 +6786,198 @@ ${전투결과.결과}<br>
                 동료3먹이주기.style.display = "flex";
                 동료3먹이주기.style.flexDirection = "column";
                 동료3먹이주기.style.padding = "3px 8px";
-                동료3먹이주기.innerHTML = `먹이주기`;
+                동료3먹이주기.innerHTML = `먹이주기(${동료3필요수량})`;
                 동료3먹이주기.style.cursor = "pointer";
-                디지몬스탯3열.append(동료3먹이주기);
+                동료스탯3열.append(동료3먹이주기);
 
 
                 //뽀요몬 → 토코몬 → 파피몬 → 엔젤몬 → 홀리엔젤몬 → 세라피몬
                 //유라몬 → 나타몬 → 프로트몬 → 가트몬 → 엔젤우몬 → 오파니몬
                 //푸니몬 → 츠나몬 → 루나몬 → 레프리몬 → 렉시몬 → 케루비몬
-                // 외형강화삼행1열.addEventListener("click", async (e) => {
-                //     e.stopPropagation();
-                //     try {
-                //         if (유저데이터.스탯.가루 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
-                //             메시지표시(`강화에는 ${단위변환함수((20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000))}가루가 필요합니다`);
-                //             return;
-                //         }
+                동료1먹이주기.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.디지에그 < 동료1필요수량) {
+                            메시지표시(`먹이(디지에그)가 부족합니다 (필요: ${동료1필요수량})`);
+                            return;
+                        }
 
-                //         화면잠금();
-                //         const 응답 = await fetch("/ㅁㅁㅁㅁ", {
-                //             method: "POST",
-                //             headers: { "Content-Type": "application/json" },
-                //             body: JSON.stringify({
-                //                 id: 유저데이터.id
-                //             })
-                //         });
+                        if (동료1진화확률 !== null) {
+                            const 확인 = await 팝업(`진화시키겠습니까? (성공 확률 ${동료1진화확률}%)`);
+                            if (!확인) return;
+                        }
 
-                //         const 결과 = await 응답.json();
+                        화면잠금();
+                        const 응답 = await fetch("/Foodeat1", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
 
-                //         if (!응답.ok) {
-                //             메시지표시(결과.오류);
-                //             return;
-                //         }
+                        const 결과 = await 응답.json();
 
-                //         유저데이터 = 결과;
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
 
-                //         동료화면보여주기();
-                //     } catch (e) {
-                //         메시지표시("서버요청실패");
-                //         console.error(e);
-                //     } finally {
-                //         화면해제();
-                //     }
-                // });
+                        유저데이터 = 결과.me;   // ← 여기서 업데이트
+                        if (결과.진화성공 === true) {
+                            // 성공
+                            황금박스.style.display = "none";
+
+                            if (window.황금타이머) clearTimeout(window.황금타이머);
+
+                            황금박스.innerText = `${유저데이터.스탯.동료1.이름}(으)로 진화!`;
+                            황금박스.style.display = "block";
+
+                            window.황금타이머 = setTimeout(() => {
+                                황금박스.style.display = "none";
+                            }, 3000);
+                        } else if (결과.진화성공 === false) {
+                            // 실패
+                            메시지표시("진화에 실패했습니다...");
+                        } else {
+                            메시지표시(`${유저데이터.스탯.동료1.이름} 레벨업!`);
+                        }
+
+
+                        동료화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
+                동료2먹이주기.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.디지에그 < 동료2필요수량) {
+                            메시지표시(`먹이(디지에그)가 부족합니다 (필요: ${동료2필요수량})`);
+                            return;
+                        }
+
+                        if (동료2진화확률 !== null) {
+                            const 확인 = await 팝업(`진화시키겠습니까? (성공 확률 ${동료2진화확률}%)`);
+                            if (!확인) return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Foodeat2", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과.me;   // ← 여기서 업데이트
+                        if (결과.진화성공 === true) {
+                            // 성공
+                            황금박스.style.display = "none";
+
+                            if (window.황금타이머) clearTimeout(window.황금타이머);
+
+                            황금박스.innerText = `${유저데이터.스탯.동료2.이름}(으)로 진화!`;
+                            황금박스.style.display = "block";
+
+                            window.황금타이머 = setTimeout(() => {
+                                황금박스.style.display = "none";
+                            }, 3000);
+                        } else if (결과.진화성공 === false) {
+                            // 실패
+                            메시지표시("진화에 실패했습니다...");
+                        } else {
+                            메시지표시(`${유저데이터.스탯.동료2.이름} 레벨업!`);
+                        }
+
+
+                        동료화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                동료3먹이주기.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.디지에그 < 동료3필요수량) {
+                            메시지표시(`먹이(디지에그)가 부족합니다 (필요: ${동료3필요수량})`);
+                            return;
+                        }
+
+                        if (동료3진화확률 !== null) {
+                            const 확인 = await 팝업(`진화시키겠습니까? (성공 확률 ${동료3진화확률}%)`);
+                            if (!확인) return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Foodeat3", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과.me;   // ← 여기서 업데이트
+                        if (결과.진화성공 === true) {
+                            // 성공
+                            황금박스.style.display = "none";
+
+                            if (window.황금타이머) clearTimeout(window.황금타이머);
+
+                            황금박스.innerText = `${유저데이터.스탯.동료3.이름}(으)로 진화!`;
+                            황금박스.style.display = "block";
+
+                            window.황금타이머 = setTimeout(() => {
+                                황금박스.style.display = "none";
+                            }, 3000);
+                        } else if (결과.진화성공 === false) {
+                            // 실패
+                            메시지표시("진화에 실패했습니다...");
+                        } else {
+                            메시지표시(`${유저데이터.스탯.동료3.이름} 레벨업!`);
+                        }
+
+
+                        동료화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
+
+
             } catch (e) {
                 메시지표시("서버요청실패");
                 console.error(e);
@@ -7495,7 +6987,743 @@ ${전투결과.결과}<br>
         }
 
 
+        const 조각상화면 = document.createElement("div");
+        조각상화면.style.position = "absolute";
+        조각상화면.className = "화면숨기기";
+        조각상화면.style.boxSizing = "border-box";
+        조각상화면.style.top = "64px";
+        조각상화면.style.width = "400px";
+        조각상화면.style.display = "none";
+        조각상화면.style.flexDirection = "column";
+        조각상화면.style.gap = "8px";
+        document.body.append(조각상화면);
 
+        const 조각상화면설명 = document.createElement("div");
+        조각상화면설명.style.boxSizing = "border-box";
+        조각상화면설명.style.borderBottom = "0.2px solid #dadada";
+        조각상화면설명.style.flex = "1";
+        조각상화면설명.style.display = "flex";
+        조각상화면설명.style.flexDirection = "column";
+        조각상화면설명.innerHTML =
+            `
+한줄씩 원하는 옵션을 파밍하세요<br>
+원하는옵션이 등장했다면 강화하세요<br>
+옵션 리롤 시 강화수치가 초기화됩니다<br>
+등장하는 리롤목록은 agk사전을 참고하세요<br>
+            `;
+        조각상화면설명.style.textAlign = "center";
+        조각상화면설명.style.paddingBottom = "8px";
+        조각상화면.append(조각상화면설명);
+
+        const 조각상화면컨테이너 = document.createElement("div");
+        조각상화면컨테이너.id = "조각상화면컨테이너";
+        조각상화면컨테이너.style.boxSizing = "border-box";
+        조각상화면컨테이너.style.border = "0.2px solid #dadada";
+        조각상화면컨테이너.style.borderRadius = "8px";
+        조각상화면컨테이너.style.flex = "1";
+        조각상화면컨테이너.style.display = "flex";
+        조각상화면컨테이너.style.flexDirection = "column";
+        조각상화면컨테이너.style.padding = "8px";
+        조각상화면컨테이너.style.gap = "8px";
+        조각상화면.append(조각상화면컨테이너);
+
+        //조각상화면보여주기함수
+        async function 조각상화면보여주기() {
+            try {
+                모든화면숨기기();
+                조각상화면.style.display = "flex";
+                조각상화면컨테이너.innerHTML = "";
+
+                행렬만들기(조각상화면컨테이너, "조각상화면컨테이너일행", 1);
+                조각상화면컨테이너일행.style.borderBottom = `0.2px solid #dadada`;
+                조각상화면컨테이너일행.style.alignItems = `flex-start`;
+                조각상화면컨테이너일행.style.padding = `8px 0px`;
+                조각상화면컨테이너일행1열.style.gap = ``;
+
+                const 조각상장비아이콘변환박스 = document.createElement("div");
+                // 조각상장비아이콘변환박스.style.borderTop = `0.2px solid #dadada`;
+                조각상장비아이콘변환박스.style.display = "flex";
+                조각상장비아이콘변환박스.style.flex = "1";
+                조각상장비아이콘변환박스.innerHTML = 비장비아이콘변환(기본조각상아이콘);
+                document.getElementById("조각상화면컨테이너일행1열").append(조각상장비아이콘변환박스);
+
+                행렬만들기(조각상화면컨테이너, "조각상화면컨테이너일번스탯", 6);
+                조각상화면컨테이너일번스탯.style.padding = "3px 8px";
+                조각상화면컨테이너일번스탯.style.borderRadius = "8px";
+                조각상화면컨테이너일번스탯.style.border = `0.2px solid #dadada`;
+                조각상화면컨테이너일번스탯.style.boxSizing = "border-box";
+                // document.getElementById("조각상화면컨테이너일번스탯2열").style.borderLeft = `0.2px solid #dadada`;
+                document.getElementById("조각상화면컨테이너일번스탯1열").style.flex = "1";   // 10%
+                document.getElementById("조각상화면컨테이너일번스탯2열").style.flex = "3";   // 50%
+                document.getElementById("조각상화면컨테이너일번스탯3열").style.flex = "1.5";   // 20%
+                document.getElementById("조각상화면컨테이너일번스탯4열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너일번스탯5열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너일번스탯6열").style.flex = "1.2";   // 20%
+
+                const 조각상일번스탯등급 = document.createElement("div");
+                조각상일번스탯등급.style.display = "flex";
+                조각상일번스탯등급.innerHTML = 유저데이터.스탯.조각상1.등급 || "등급";
+                조각상일번스탯등급.style.color = 유저데이터.스탯.조각상1.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상1.등급]?.좌;
+                조각상일번스탯등급.style.fontWeight = "bold";
+                document.getElementById("조각상화면컨테이너일번스탯1열").append(조각상일번스탯등급);
+
+                const 조각상일번스탯옵션 = document.createElement("div");
+                조각상일번스탯옵션.style.display = "flex";
+                조각상일번스탯옵션.style.width = "100%";
+                const 조각상1번옵션 = Object.keys(유저데이터.스탯.조각상1).find(k => k !== "등급");
+                조각상일번스탯옵션.innerHTML = 조각상1번옵션 || "옵션";
+                document.getElementById("조각상화면컨테이너일번스탯2열").append(조각상일번스탯옵션);
+
+                const 조각상일번스탯값 = document.createElement("div");
+                조각상일번스탯값.style.display = "flex";
+                조각상일번스탯값.style.width = "100%";
+                조각상일번스탯값.innerHTML = `+${유저데이터.스탯.조각상1[조각상1번옵션] || 0}%`;
+                document.getElementById("조각상화면컨테이너일번스탯3열").append(조각상일번스탯값);
+
+                const 조각상일번스탯리롤 = document.createElement("div");
+                조각상일번스탯리롤.style.display = "flex";
+                조각상일번스탯리롤.style.width = "100%";
+                조각상일번스탯리롤.innerHTML = `리롤`;
+                조각상일번스탯리롤.style.cursor = "pointer";
+                조각상일번스탯리롤.style.borderRadius = "8px";
+                조각상일번스탯리롤.style.border = `0.2px solid #dadada`;
+                조각상일번스탯리롤.style.boxSizing = "border-box";
+                조각상일번스탯리롤.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너일번스탯4열").append(조각상일번스탯리롤);
+
+                const 조각상일번스탯강화 = document.createElement("div");
+                조각상일번스탯강화.style.display = "flex";
+                조각상일번스탯강화.style.width = "100%";
+                조각상일번스탯강화.innerHTML = `강화`;
+                조각상일번스탯강화.style.cursor = "pointer";
+                조각상일번스탯강화.style.borderRadius = "8px";
+                조각상일번스탯강화.style.border = `0.2px solid #dadada`;
+                조각상일번스탯강화.style.boxSizing = "border-box";
+                조각상일번스탯강화.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너일번스탯5열").append(조각상일번스탯강화);
+
+                const 조각상일번스탯자동 = document.createElement("div");
+                조각상일번스탯자동.style.display = "flex";
+                조각상일번스탯자동.style.width = "100%";
+                조각상일번스탯자동.innerHTML = `자동`;
+                조각상일번스탯자동.style.cursor = "pointer";
+                조각상일번스탯자동.style.borderRadius = "8px";
+                조각상일번스탯자동.style.border = `0.2px solid #dadada`;
+                조각상일번스탯자동.style.boxSizing = "border-box";
+                조각상일번스탯자동.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너일번스탯6열").append(조각상일번스탯자동);
+
+                조각상일번스탯리롤.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        if (유저데이터.스탯.스톤 < 10) {
+                            메시지표시(`스톤이 부족합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/reroll1", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상일번스탯강화.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상1 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상1.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance1", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        if (현재등급 != 유저데이터.스탯.조각상1.등급) {
+                            메시지표시(`강화성공`);
+                        } else 메시지표시(`강화실패`);
+
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상일번스탯자동.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
+                행렬만들기(조각상화면컨테이너, "조각상화면컨테이너이번스탯", 6);
+                조각상화면컨테이너이번스탯.style.padding = "3px 8px";
+                조각상화면컨테이너이번스탯.style.borderRadius = "8px";
+                조각상화면컨테이너이번스탯.style.border = `0.2px solid #dadada`;
+                조각상화면컨테이너이번스탯.style.boxSizing = "border-box";
+                // document.getElementById("조각상화면컨테이너이번스탯2열").style.borderLeft = `0.2px solid #dadada`;
+                document.getElementById("조각상화면컨테이너이번스탯1열").style.flex = "1";   // 10%
+                document.getElementById("조각상화면컨테이너이번스탯2열").style.flex = "3";   // 50%
+                document.getElementById("조각상화면컨테이너이번스탯3열").style.flex = "1.5";   // 20%
+                document.getElementById("조각상화면컨테이너이번스탯4열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너이번스탯5열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너이번스탯6열").style.flex = "1.2";   // 20%
+
+                const 조각상이번스탯등급 = document.createElement("div");
+                조각상이번스탯등급.style.display = "flex";
+                조각상이번스탯등급.innerHTML = 유저데이터.스탯.조각상2.등급 || "등급";
+                조각상이번스탯등급.style.color = 유저데이터.스탯.조각상2.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상2.등급]?.좌;
+                조각상이번스탯등급.style.fontWeight = "bold";
+                document.getElementById("조각상화면컨테이너이번스탯1열").append(조각상이번스탯등급);
+
+                const 조각상이번스탯옵션 = document.createElement("div");
+                조각상이번스탯옵션.style.display = "flex";
+                조각상이번스탯옵션.style.width = "100%";
+                const 조각상2번옵션 = Object.keys(유저데이터.스탯.조각상2).find(k => k !== "등급");
+                조각상이번스탯옵션.innerHTML = 조각상2번옵션 || "옵션";
+                document.getElementById("조각상화면컨테이너이번스탯2열").append(조각상이번스탯옵션);
+
+                const 조각상이번스탯값 = document.createElement("div");
+                조각상이번스탯값.style.display = "flex";
+                조각상이번스탯값.style.width = "100%";
+                조각상이번스탯값.innerHTML = `+${유저데이터.스탯.조각상2[조각상2번옵션] || 0}%`;
+                document.getElementById("조각상화면컨테이너이번스탯3열").append(조각상이번스탯값);
+
+                const 조각상이번스탯리롤 = document.createElement("div");
+                조각상이번스탯리롤.style.display = "flex";
+                조각상이번스탯리롤.style.width = "100%";
+                조각상이번스탯리롤.innerHTML = `리롤`;
+                조각상이번스탯리롤.style.cursor = "pointer";
+                조각상이번스탯리롤.style.borderRadius = "8px";
+                조각상이번스탯리롤.style.border = `0.2px solid #dadada`;
+                조각상이번스탯리롤.style.boxSizing = "border-box";
+                조각상이번스탯리롤.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너이번스탯4열").append(조각상이번스탯리롤);
+
+                const 조각상이번스탯강화 = document.createElement("div");
+                조각상이번스탯강화.style.display = "flex";
+                조각상이번스탯강화.style.width = "100%";
+                조각상이번스탯강화.innerHTML = `강화`;
+                조각상이번스탯강화.style.cursor = "pointer";
+                조각상이번스탯강화.style.borderRadius = "8px";
+                조각상이번스탯강화.style.border = `0.2px solid #dadada`;
+                조각상이번스탯강화.style.boxSizing = "border-box";
+                조각상이번스탯강화.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너이번스탯5열").append(조각상이번스탯강화);
+
+                const 조각상이번스탯자동 = document.createElement("div");
+                조각상이번스탯자동.style.display = "flex";
+                조각상이번스탯자동.style.width = "100%";
+                조각상이번스탯자동.innerHTML = `자동`;
+                조각상이번스탯자동.style.cursor = "pointer";
+                조각상이번스탯자동.style.borderRadius = "8px";
+                조각상이번스탯자동.style.border = `0.2px solid #dadada`;
+                조각상이번스탯자동.style.boxSizing = "border-box";
+                조각상이번스탯자동.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너이번스탯6열").append(조각상이번스탯자동);
+
+                조각상이번스탯리롤.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        if (유저데이터.스탯.스톤 < 10) {
+                            메시지표시(`스톤이 부족합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/reroll2", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상이번스탯강화.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상2 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상2.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance2", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                        if (현재등급 != 유저데이터.스탯.조각상2.등급) {
+                            메시지표시(`강화성공`);
+                        } else 메시지표시(`강화실패`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상이번스탯자동.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
+                행렬만들기(조각상화면컨테이너, "조각상화면컨테이너삼번스탯", 6);
+                조각상화면컨테이너삼번스탯.style.padding = "3px 8px";
+                조각상화면컨테이너삼번스탯.style.borderRadius = "8px";
+                조각상화면컨테이너삼번스탯.style.border = `0.2px solid #dadada`;
+                조각상화면컨테이너삼번스탯.style.boxSizing = "border-box";
+                // document.getElementById("조각상화면컨테이너삼번스탯2열").style.borderLeft = `0.2px solid #dadada`;
+                document.getElementById("조각상화면컨테이너삼번스탯1열").style.flex = "1";   // 10%
+                document.getElementById("조각상화면컨테이너삼번스탯2열").style.flex = "3";   // 50%
+                document.getElementById("조각상화면컨테이너삼번스탯3열").style.flex = "1.5";   // 20%
+                document.getElementById("조각상화면컨테이너삼번스탯4열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너삼번스탯5열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너삼번스탯6열").style.flex = "1.2";   // 20%
+
+                const 조각상삼번스탯등급 = document.createElement("div");
+                조각상삼번스탯등급.style.display = "flex";
+                조각상삼번스탯등급.innerHTML = 유저데이터.스탯.조각상3.등급 || "등급";
+                조각상삼번스탯등급.style.color = 유저데이터.스탯.조각상3.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상3.등급]?.좌;
+                조각상삼번스탯등급.style.fontWeight = "bold";
+                document.getElementById("조각상화면컨테이너삼번스탯1열").append(조각상삼번스탯등급);
+
+                const 조각상삼번스탯옵션 = document.createElement("div");
+                조각상삼번스탯옵션.style.display = "flex";
+                조각상삼번스탯옵션.style.width = "100%";
+                const 조각상3번옵션 = Object.keys(유저데이터.스탯.조각상3).find(k => k !== "등급");
+                조각상삼번스탯옵션.innerHTML = 조각상3번옵션 || "옵션";
+                document.getElementById("조각상화면컨테이너삼번스탯2열").append(조각상삼번스탯옵션);
+
+                const 조각상삼번스탯값 = document.createElement("div");
+                조각상삼번스탯값.style.display = "flex";
+                조각상삼번스탯값.style.width = "100%";
+                조각상삼번스탯값.innerHTML = `+${유저데이터.스탯.조각상3[조각상3번옵션] || 0}%`;
+                document.getElementById("조각상화면컨테이너삼번스탯3열").append(조각상삼번스탯값);
+
+                const 조각상삼번스탯리롤 = document.createElement("div");
+                조각상삼번스탯리롤.style.display = "flex";
+                조각상삼번스탯리롤.style.width = "100%";
+                조각상삼번스탯리롤.innerHTML = `리롤`;
+                조각상삼번스탯리롤.style.cursor = "pointer";
+                조각상삼번스탯리롤.style.borderRadius = "8px";
+                조각상삼번스탯리롤.style.border = `0.2px solid #dadada`;
+                조각상삼번스탯리롤.style.boxSizing = "border-box";
+                조각상삼번스탯리롤.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너삼번스탯4열").append(조각상삼번스탯리롤);
+
+                const 조각상삼번스탯강화 = document.createElement("div");
+                조각상삼번스탯강화.style.display = "flex";
+                조각상삼번스탯강화.style.width = "100%";
+                조각상삼번스탯강화.innerHTML = `강화`;
+                조각상삼번스탯강화.style.cursor = "pointer";
+                조각상삼번스탯강화.style.borderRadius = "8px";
+                조각상삼번스탯강화.style.border = `0.2px solid #dadada`;
+                조각상삼번스탯강화.style.boxSizing = "border-box";
+                조각상삼번스탯강화.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너삼번스탯5열").append(조각상삼번스탯강화);
+
+                const 조각상삼번스탯자동 = document.createElement("div");
+                조각상삼번스탯자동.style.display = "flex";
+                조각상삼번스탯자동.style.width = "100%";
+                조각상삼번스탯자동.innerHTML = `자동`;
+                조각상삼번스탯자동.style.cursor = "pointer";
+                조각상삼번스탯자동.style.borderRadius = "8px";
+                조각상삼번스탯자동.style.border = `0.2px solid #dadada`;
+                조각상삼번스탯자동.style.boxSizing = "border-box";
+                조각상삼번스탯자동.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너삼번스탯6열").append(조각상삼번스탯자동);
+
+                조각상삼번스탯리롤.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.계정.레벨 < 15) {
+                            메시지표시(`계정 15레벨 이상부터 가능합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.스톤 < 10) {
+                            메시지표시(`스톤이 부족합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/reroll3", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상삼번스탯강화.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.계정.레벨 < 15) {
+                            메시지표시(`계정 15레벨 이상부터 가능합니다`);
+                            return;
+                        }
+                        if (!Object.keys(유저데이터.스탯.조각상3 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상3.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance3", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                        if (현재등급 != 유저데이터.스탯.조각상3.등급) {
+                            메시지표시(`강화성공`);
+                        } else 메시지표시(`강화실패`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상삼번스탯자동.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
+                행렬만들기(조각상화면컨테이너, "조각상화면컨테이너사번스탯", 6);
+                조각상화면컨테이너사번스탯.style.padding = "3px 8px";
+                조각상화면컨테이너사번스탯.style.borderRadius = "8px";
+                조각상화면컨테이너사번스탯.style.border = `0.2px solid #dadada`;
+                조각상화면컨테이너사번스탯.style.boxSizing = "border-box";
+                // document.getElementById("조각상화면컨테이너사번스탯2열").style.borderLeft = `0.2px solid #dadada`;
+                document.getElementById("조각상화면컨테이너사번스탯1열").style.flex = "1";   // 10%
+                document.getElementById("조각상화면컨테이너사번스탯2열").style.flex = "3";   // 50%
+                document.getElementById("조각상화면컨테이너사번스탯3열").style.flex = "1.5";   // 20%
+                document.getElementById("조각상화면컨테이너사번스탯4열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너사번스탯5열").style.flex = "1.2";   // 20%
+                document.getElementById("조각상화면컨테이너사번스탯6열").style.flex = "1.2";   // 20%
+
+                const 조각상사번스탯등급 = document.createElement("div");
+                조각상사번스탯등급.style.display = "flex";
+                조각상사번스탯등급.innerHTML = 유저데이터.스탯.조각상4.등급 || "등급";
+                조각상사번스탯등급.style.color = 유저데이터.스탯.조각상4.등급 === "기본" ? "#dadada" : 등급색상[유저데이터.스탯.조각상4.등급]?.좌;
+                조각상사번스탯등급.style.fontWeight = "bold";
+                document.getElementById("조각상화면컨테이너사번스탯1열").append(조각상사번스탯등급);
+
+                const 조각상사번스탯옵션 = document.createElement("div");
+                조각상사번스탯옵션.style.display = "flex";
+                조각상사번스탯옵션.style.width = "100%";
+                const 조각상4번옵션 = Object.keys(유저데이터.스탯.조각상4).find(k => k !== "등급");
+                조각상사번스탯옵션.innerHTML = 조각상4번옵션 || "옵션";
+                document.getElementById("조각상화면컨테이너사번스탯2열").append(조각상사번스탯옵션);
+
+                const 조각상사번스탯값 = document.createElement("div");
+                조각상사번스탯값.style.display = "flex";
+                조각상사번스탯값.style.width = "100%";
+                조각상사번스탯값.innerHTML = `+${유저데이터.스탯.조각상4[조각상4번옵션] || 0}%`;
+                document.getElementById("조각상화면컨테이너사번스탯3열").append(조각상사번스탯값);
+
+                const 조각상사번스탯리롤 = document.createElement("div");
+                조각상사번스탯리롤.style.display = "flex";
+                조각상사번스탯리롤.style.width = "100%";
+                조각상사번스탯리롤.innerHTML = `리롤`;
+                조각상사번스탯리롤.style.cursor = "pointer";
+                조각상사번스탯리롤.style.borderRadius = "8px";
+                조각상사번스탯리롤.style.border = `0.2px solid #dadada`;
+                조각상사번스탯리롤.style.boxSizing = "border-box";
+                조각상사번스탯리롤.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너사번스탯4열").append(조각상사번스탯리롤);
+
+                const 조각상사번스탯강화 = document.createElement("div");
+                조각상사번스탯강화.style.display = "flex";
+                조각상사번스탯강화.style.width = "100%";
+                조각상사번스탯강화.innerHTML = `강화`;
+                조각상사번스탯강화.style.cursor = "pointer";
+                조각상사번스탯강화.style.borderRadius = "8px";
+                조각상사번스탯강화.style.border = `0.2px solid #dadada`;
+                조각상사번스탯강화.style.boxSizing = "border-box";
+                조각상사번스탯강화.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너사번스탯5열").append(조각상사번스탯강화);
+
+                const 조각상사번스탯자동 = document.createElement("div");
+                조각상사번스탯자동.style.display = "flex";
+                조각상사번스탯자동.style.width = "100%";
+                조각상사번스탯자동.innerHTML = `자동`;
+                조각상사번스탯자동.style.cursor = "pointer";
+                조각상사번스탯자동.style.borderRadius = "8px";
+                조각상사번스탯자동.style.border = `0.2px solid #dadada`;
+                조각상사번스탯자동.style.boxSizing = "border-box";
+                조각상사번스탯자동.style.justifyContent = "center";
+                document.getElementById("조각상화면컨테이너사번스탯6열").append(조각상사번스탯자동);
+
+                조각상사번스탯리롤.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`계정 30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+                        if (유저데이터.스탯.스톤 < 10) {
+                            메시지표시(`스톤이 부족합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/reroll4", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상사번스탯강화.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.계정.레벨 < 30) {
+                            메시지표시(`계정 30레벨 이상부터 가능합니다`);
+                            return;
+                        }
+                        if (!Object.keys(유저데이터.스탯.조각상4 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상4.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance4", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        메인화면보여주기();
+                        document.querySelector("#조각상")?.click();
+
+                        if (현재등급 != 유저데이터.스탯.조각상4.등급) {
+                            메시지표시(`강화성공`);
+                        } else 메시지표시(`강화실패`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                조각상사번스탯자동.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    메시지표시(`구현중입니다`);
+                });
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
 
 
 
@@ -7588,12 +7816,6 @@ ${전투결과.결과}<br>
                 }
             }
 
-            if (document.querySelector("#조각상컨테이너") && document.querySelector("#조각상컨테이너").style.display !== "none") {
-                if (!document.querySelector("#조각상컨테이너").contains(e.target)) {
-                    document.querySelector("#조각상컨테이너").style.display = "none";
-                }
-            }
-
             if (
                 (!document.querySelector("#램프") || !document.querySelector("#램프").contains(e.target)) &&
                 (!document.querySelector("#판매하기") || !document.querySelector("#판매하기").contains(e.target)) &&
@@ -7672,7 +7894,7 @@ ${전투결과.결과}<br>
              상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
              진행된 턴수 ${전투결과.턴수}<br>
              <br>
-             보상 램프 ${(유저데이터.스탯.던전.지니.레벨 - 1) * 10}개<br>
+             보상 램프 ${(유저데이터.스탯.던전.지니.레벨) * 10}개<br>
              `, false);
 
 
@@ -7753,7 +7975,7 @@ ${전투결과.결과}<br>
              상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
              진행된 턴수 ${전투결과.턴수}<br>
              <br>
-             보상 낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨 - 1) * 1}개<br>
+             보상 낙엽 ${(유저데이터.스탯.던전.로쿠규.레벨) * 1}개<br>
              `, false);
 
 
@@ -7835,7 +8057,7 @@ ${전투결과.결과}<br>
              상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
              진행된 턴수 ${전투결과.턴수}<br>
              <br>
-             보상 스톤 ${(유저데이터.스탯.던전.락골렘.레벨 - 1) * 10}개<br>
+             보상 스톤 ${(유저데이터.스탯.던전.락골렘.레벨) * 10}개<br>
              `, false);
 
 
@@ -7917,7 +8139,7 @@ ${전투결과.결과}<br>
              상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
              진행된 턴수 ${전투결과.턴수}<br>
              <br>
-             보상 디지에그 ${(유저데이터.스탯.던전.디지에그.레벨 - 1) * 1}개<br>
+             보상 디지에그 ${(유저데이터.스탯.던전.디지에그.레벨) * 1}개<br>
              `, false);
 
 
@@ -8468,6 +8690,9 @@ ${전투결과.결과}<br>
                         break;
                     case "f":
                         document.querySelector("#동료")?.click();
+                        break;
+                    case "b":
+                        document.querySelector("#조각상")?.click();
                         break;
                 }
 

@@ -2279,19 +2279,36 @@ app.post("/Enhance4", async (req, res) => {
   }
 });
 
-
 app.post("/arenalist", async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("스탯");   // id는 빼고 스탯만 가져오기
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    if (error || !data) {
-      return res.status(500).json({ 오류: "유저 조회 실패" });
+    const { data: 내유저, error: 내에러 } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (내에러 || !내유저) {
+      return res.status(404).json({ 오류: "내 유저 조회 실패" });
     }
 
-    // 정렬 안 하고 그대로 반환
-    res.json({ data });
+    const 내서버 = 내유저.스탯?.서버;
+    if (!내서버) {
+      return res.status(400).json({ 오류: "서버 값 없음" });
+    }
+
+    const { data: 전체, error: 전체에러 } = await supabase
+      .from("users")
+      .select("스탯")
+      .eq("스탯->>서버", 내서버.toString());
+
+    if (전체에러) {
+      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+    }
+
+    res.json({ data: 전체 });
   } catch (e) {
     console.error(e);
     res.status(500).json({ 오류: "서버 오류" });
@@ -4753,9 +4770,9 @@ function 던전스탯생성(레벨) {
       최종방어력: 300 * 레벨 * 10,
       최종공속: 1 + 0.1 * 레벨 * 10,
       전투력:
-        (15000 * 레벨 * 10) * 0.05 +
-        (900 * 레벨 * 10) +
-        (300 * 레벨 * 10) * 2 +
+        (10500 * 레벨 * 10) * 0.05 +
+        (630 * 레벨 * 10) +
+        (210 * 레벨 * 10) * 2 +
         (1 + 0.2 * 레벨 * 10) * 50,
     }
   };
@@ -4861,9 +4878,7 @@ app.listen(PORT, () => {
 app.use(express.static(__dirname));
 
 
-//오픈적용
 //서버적용
-//상점수정
 
 // app.post("/서버요청기본틀", async (req, res) => {
 //     try {

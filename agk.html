@@ -1510,7 +1510,6 @@
                 날개박스.style.marginTop = "8px";
                 날개박스.style.borderRadius = "8px";
                 날개박스.style.border = `0.2px solid #dadada`;
-
                 날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("메인화면컨테이너이행4열").append(날개박스);
 
@@ -3797,6 +3796,26 @@ nodemon server.js
         전장화면컨테이너.style.gap = "8px";
         전장화면.append(전장화면컨테이너);
 
+        const 전장유저정보 = document.createElement("div");
+        전장유저정보.id = "전장유저정보";
+        전장유저정보.className = "화면숨기기";
+        전장유저정보.style.position = "fixed";
+        전장유저정보.style.width = "350px";
+        전장유저정보.style.left = "50%";
+        전장유저정보.style.top = "50%";
+        전장유저정보.style.transform = "translate(-50%, -50%)";
+        전장유저정보.style.background = "black";
+        전장유저정보.style.border = "0.2px solid #dadada";
+        전장유저정보.style.borderRadius = "8px";
+        전장유저정보.style.alignItems = "center";
+        전장유저정보.style.flexDirection = "column";
+        전장유저정보.style.justifyContent = "center";
+        전장유저정보.style.display = "none";
+        전장유저정보.style.padding = "8px";
+        전장유저정보.style.gap = "8px";
+        전장유저정보.style.zIndex = "99";
+        document.body.append(전장유저정보);
+
         //전장화면보여주기함수
         async function 전장화면보여주기() {
             모든화면숨기기();
@@ -3949,6 +3968,110 @@ nodemon server.js
                     } else {
                         document.getElementById(`${i}번째유저3열`).innerText = 닉네임;
                     }
+                    document.getElementById(`${i}번째유저3열`).style.cursor = "pointer";
+                    //수정중
+                    // document.getElementById(`${i}번째유저3열`).addEventListener("click", async (e) => {
+                    //     e.stopPropagation();
+                    //     전장유저정보.style.display = "flex";
+                    //     전장유저정보.innerHTML = "";
+
+                    //     행렬만들기(전장유저정보, "전장유저장비", 6);
+                    //     전장유저장비.style.borderTop = `0.2px solid #dadada`;
+                    //     전장유저장비.style.alignItems = "flex-start";
+                    //     전장유저장비5열.style.borderLeft = `0.2px solid #dadada`;
+                    //     전장유저장비5열.style.paddingLeft = `8px`;
+
+                    //     const 장비리스트 = [
+                    //         ["무기", "전장유저장비1열"],
+                    //         ["옷", "전장유저장비1열"],
+                    //         ["무릎아머", "전장유저장비1열"],
+                    //         ["모자", "전장유저장비2열"],
+                    //         ["완갑", "전장유저장비2열"],
+                    //         ["신발", "전장유저장비2열"],
+                    //         ["안경", "전장유저장비3열"],
+                    //         ["장갑", "전장유저장비3열"],
+                    //         ["견갑", "전장유저장비4열"],
+                    //         ["벨트", "전장유저장비4열"],
+                    //     ];
+
+                    //     for (const [이름, 위치] of 장비리스트) {
+                    //         const div = document.createElement("div");
+                    //         div.style.display = "flex";
+                    //         div.id = 이름 + "외형";
+                    //         div.innerHTML =
+                    //             유저.스탯[이름] && 유저.스탯[이름].등급
+                    //                 ? (장비아이콘[이름]?.[유저.스탯[이름].등급]
+                    //                     || 장비아이콘[이름]?.기본
+                    //                     || "")
+                    //                 : (유저.스탯[이름]
+                    //                     ? (장비아이콘[이름]?.기본 || "")
+                    //                     : "");
+                    //         div.style.cursor = "pointer";
+                    //         div.style.width = "32px";
+                    //         div.style.height = "32px";
+                    //         div.style.padding = "8px";
+                    //         div.style.marginTop = "8px";
+                    //         div.style.borderRadius = "8px";
+                    //         div.style.border = `0.2px solid #dadada`;
+                    //         div.style.background = `radial-gradient(circle, ${등급색상[유저.스탯[이름]?.등급 || "기본"].좌} 40%, ${등급색상[유저.스탯[이름]?.등급 || "기본"].우} 100%)`;
+                    //         document.getElementById(위치).append(div);
+
+
+                    //     }
+
+                    //     let 탈것레벨변수 = 유저.스탯.탈것.레벨;
+                    //     let 탈것등급변수 = "기본";
+
+                    //     if (탈것레벨변수 >= 1 && 탈것레벨변수 <= 10) 탈것등급변수 = "D";
+                    //     if (탈것레벨변수 >= 11 && 탈것레벨변수 <= 20) 탈것등급변수 = "C";
+                    //     if (탈것레벨변수 >= 21 && 탈것레벨변수 <= 30) 탈것등급변수 = "B";
+                    //     if (탈것레벨변수 >= 31 && 탈것레벨변수 <= 40) 탈것등급변수 = "A";
+                    //     if (탈것레벨변수 >= 41 && 탈것레벨변수 <= 50) 탈것등급변수 = "S";
+                    //     if (탈것레벨변수 >= 51 && 탈것레벨변수 <= 60) 탈것등급변수 = "SS";
+                    //     if (탈것레벨변수 >= 61 && 탈것레벨변수 <= 70) 탈것등급변수 = "L";
+                    //     if (탈것레벨변수 >= 71 && 탈것레벨변수 <= 80) 탈것등급변수 = "LL";
+                    //     if (탈것레벨변수 >= 81 && 탈것레벨변수 <= 90) 탈것등급변수 = "U";
+                    //     if (탈것레벨변수 >= 91 && 탈것레벨변수 <= 100) 탈것등급변수 = "UU";
+                    //     if (탈것레벨변수 >= 101) 탈것등급변수 = "X";
+
+                    //     const 탈것박스 = document.createElement("div");
+                    //     탈것박스.id = "탈것";
+                    //     탈것박스.style.display = "flex";
+                    //     탈것박스.innerHTML =
+                    //         장비아이콘[`탈것`]?.[탈것등급변수]
+                    //         || 장비아이콘[`탈것`]?.기본;
+                    //     탈것박스.style.color = "black";
+                    //     탈것박스.style.cursor = "pointer";
+                    //     탈것박스.style.width = "32px";
+                    //     탈것박스.style.height = "32px";
+                    //     탈것박스.style.padding = "8px";
+                    //     탈것박스.style.marginTop = "8px";
+                    //     탈것박스.style.borderRadius = "8px";
+                    //     탈것박스.style.border = `0.2px solid #dadada`;
+                    //     탈것박스.style.background = `radial-gradient(circle, ${등급색상[탈것등급변수].좌} 40%, ${등급색상[탈것등급변수].우} 100%)`;
+                    //     document.getElementById("전장유저장비3열").append(탈것박스);
+
+                    //     const 날개박스 = document.createElement("날개박스");
+                    //     날개박스.id = "날개";
+                    //     날개박스.style.display = "flex";
+                    //     날개박스.innerHTML = `미정`;
+                    //     날개박스.style.textAlign = "center";
+                    //     날개박스.style.color = "#dadada";
+                    //     // 날개박스.style.fontSize = "11px";
+                    //     날개박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                    //     날개박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                    //     날개박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                    //     날개박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                    //     날개박스.style.cursor = "pointer";
+                    //     날개박스.style.width = "32px";
+                    //     날개박스.style.height = "32px";
+                    //     날개박스.style.padding = "8px";
+                    //     날개박스.style.marginTop = "8px";
+                    //     날개박스.style.borderRadius = "8px";
+                    //     날개박스.style.border = `0.2px solid #dadada`;
+                    //     날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                    //     document.getElementById("전장유저장비4열").append(날개박스);
+                    // });
 
                     document.getElementById(`${i}번째유저1열`).style.flex = "2";
                     document.getElementById(`${i}번째유저2열`).style.flex = "3";
@@ -6330,7 +6453,6 @@ ${전투결과.결과}<br>
                     });
                 }
 
-                //수정중
             } catch (e) {
                 메시지표시("서버요청실패");
                 console.error(e);
@@ -7997,6 +8119,10 @@ ${전투결과.결과}<br>
                 if (!document.querySelector("#팝업").contains(e.target)) {
                     document.querySelector("#팝업").style.display = "none";
                 }
+            }
+
+            if (document.querySelector("#전장유저정보").style.display !== "none") {
+                document.querySelector("#전장유저정보").style.display = "none";
             }
 
             if (document.querySelector("#램프설정컨테이너") && document.querySelector("#램프설정컨테이너").style.display !== "none") {

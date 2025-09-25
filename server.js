@@ -231,18 +231,6 @@ app.post("/register", async (req, res) => {
         동료피해: 0,
         치유량: 0.2,
       },
-      램프: {
-        레벨: 1,
-        현재골드: 0,
-        다음골드: 6000,
-        수량: 1000,
-      },
-      //재화
-      다이아: 0,
-      낙엽: 0,
-      스톤: 0,
-      가루: 0,
-
       서버: 서버,
       서버점검: 0,
       최초IP: clientIP,
@@ -252,37 +240,18 @@ app.post("/register", async (req, res) => {
       우편함: [
         {
           이름: "램프",
-          수량: 1000,
+          수량: 500,
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
         },
         {
           이름: "다이아",
-          수량: 1000,
+          수량: 500,
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "신규유저 보상",
         },
       ],
       주인장인가: 아이디 === "codl" ? 1 : 0,
-      던전: {
-        지니: { 레벨: 1, 열쇠: 4 },
-        로쿠규: { 레벨: 1, 열쇠: 4 },
-        락골렘: { 레벨: 1, 열쇠: 4 },
-      },
-      민원: {
-
-      },
-      탈것: {
-        회피: 0,
-        HP보너스: 0,
-        공격력보너스: 0,
-        방어력보너스: 0,
-        레벨: 0,
-      },
-      전장: {
-        포인트: 신규포인트,
-        티켓: 4,
-      }
     };
     //신규유저
 
@@ -351,20 +320,6 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
       if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
       if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
-
-      // if (data.스탯.전장.포인트 != 0) {
-      //   const 전장보상 = {
-      //     이름: "다이아",
-      //     수량: data.스탯.전장.포인트,
-      //     시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-      //     메모: `전장 포인트별 일일보상`,
-      //   };
-
-      //   if (!data.스탯.우편함) data.스탯.우편함 = [];
-      //   data.스탯.우편함.unshift(전장보상);
-
-      // }
-
     }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
@@ -403,16 +358,38 @@ app.post("/login", async (req, res) => {
       data.스탯.접속시각 = 현재접속;
     }
 
-    if (!data.스탯.던전.락골렘) {
-      data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.다이아) {
+      data.스탯.다이아 = 0;
     }
+
+    if (!data.스탯.램프) {
+      data.스탯.램프 =
+      {
+        레벨: 1,
+        현재골드: 0,
+        다음골드: 6000,
+        수량: 200,
+      };
+    }
+
+    if (!data.스탯.던전) data.스탯.던전 = {};
+    if (!data.스탯.던전.지니) data.스탯.던전.지니 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.로쿠규) data.스탯.던전.로쿠규 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.락골렘) data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.디지에그) data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
+
+    if (!data.스탯.가루) {
+      data.스탯.가루 = 0;
+    }
+
+    if (!data.스탯.낙엽) {
+      data.스탯.낙엽 = 0;
+    }
+
     if (!data.스탯.스톤) {
       data.스탯.스톤 = 0;
     }
 
-    if (!data.스탯.던전.디지에그) {
-      data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
-    }
     if (!data.스탯.디지에그) {
       data.스탯.디지에그 = 0;
     }
@@ -436,27 +413,28 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.전장) {
       data.스탯.전장 = { 포인트: 0, 티켓: 4 };
     }
-    data.스탯.무기외형 = { 이름: data.스탯.무기외형?.이름 || "" };
-    data.스탯.옷외형 = { 이름: data.스탯.옷외형?.이름 || "" };
-    data.스탯.모자외형 = { 이름: data.스탯.모자외형?.이름 || "" };
 
-    if (!data.스탯.탈것.회피) {
-      data.스탯.탈것.회피 = 0;
+    if (!data.스탯.무기외형이름) {
+      data.스탯.무기외형이름 = "";
     }
 
-    if (data.스탯.무기외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + data.스탯.무기외형.레벨 * 10000;
-      delete data.스탯.무기외형.레벨;
+    if (!data.스탯.옷외형이름) {
+      data.스탯.옷외형 = "";
     }
 
-    if (data.스탯.옷외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + data.스탯.옷외형.레벨 * 10000;
-      delete data.스탯.옷외형.레벨;
+    if (!data.스탯.모자외형이름) {
+      data.스탯.모자외형 = "";
     }
 
-    if (data.스탯.모자외형.레벨) {
-      data.스탯.가루 = data.스탯.가루 + data.스탯.모자외형.레벨 * 10000;
-      delete data.스탯.모자외형.레벨;
+    if (!data.스탯.탈것) {
+      data.스탯.탈것 =
+      {
+        회피: 0,
+        HP보너스: 0,
+        공격력보너스: 0,
+        방어력보너스: 0,
+        레벨: 0,
+      };
     }
 
     if (!data.스탯.외형강화) {
@@ -545,19 +523,20 @@ app.post("/login", async (req, res) => {
       };
     }
 
+    //기존유저
 
     if (!data.스탯.마지막접속시각) {
       data.스탯.마지막접속시각 = now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
     }
-    //기존유저
 
-    if (!data.스탯.길드) {
+    //길드상태
+    if (!data.스탯.길드 || (data.스탯.길드.레벨 !== 1 || !data.스탯.길드.길드명 || !data.스탯.길드.길드장)) {
       data.스탯.길드 = {
-        레벨: 0,
+        레벨: 1,
         경험치: 0,
-        이름: "",
+        길드명: "",
         상태: 0, // 0: 무소속, 1: 가입신청, 2: 소속, 3: 탈퇴/강퇴
-        길드마스터: "",
+        길드장: 0,
         길드원: {
           // "러브": 2,  // 길드 소속
           // "채이": 3   // 탈퇴 or 강퇴
@@ -565,10 +544,9 @@ app.post("/login", async (req, res) => {
         최고데미지: 0,
         누적데미지: 0,
         기부: 0,
+        한마디: "",
       };
     }
-
-
 
     for (let i = 1; i <= 6; i++) {
       if (!data.스탯[`조각상${i}`]) {
@@ -588,7 +566,7 @@ app.post("/login", async (req, res) => {
       스탯: data.스탯,
       유저아이디: data.스탯.계정.유저아이디,
       유저닉네임: data.스탯.계정.유저닉네임,
-      내용: (아이디 && 비밀번호) ? `로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}` : `자동로그인 / +${시간차 * (data.스탯.램프.레벨 * 2)}`
+      내용: (아이디 && 비밀번호) ? `로그인 / +${시간차 * (60 + (일수보정 - 1))}` : `자동로그인 / +${시간차 * (60 + (일수보정 - 1))}`
     });
 
     res.json(data);
@@ -886,10 +864,6 @@ app.post("/lamponeshot", async (req, res) => {
 
       // 스탯 갱신
       유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
-    }
-
-    if (유저데이터.스탯.계정.유저닉네임 === "염소") {
-      유저데이터.스탯.램프.수량 += 100;
     }
 
     // 마지막에 DB 업데이트
@@ -1195,27 +1169,10 @@ app.post("/receive-all-mail", async (req, res) => {
       return res.status(500).json({ 오류: "DB조회 실패" });
     }
 
-    if (!data.스탯.우편함 || data.스탯.우편함.length === 0) {
-      return res.status(400).json({ 오류: "받을 우편 없음" });
-    }
-
     for (let i = data.스탯.우편함.length - 1; i >= 0; i--) {
       const mail = data.스탯.우편함[i];
-      if (mail.이름 === "램프") {
-        data.스탯.램프.수량 += mail.수량;
-      } else if (mail.이름 === "다이아") {
-        data.스탯.다이아 += mail.수량;
-
-      } else if (mail.이름 === "가루") {
-        data.스탯.가루 += mail.수량;
-
-      } else if (mail.이름 === "디지에그") {
-        data.스탯.디지에그 += mail.수량;
-
-      } else if (mail.이름 === "티켓") {
-        data.스탯.전장.티켓 += mail.수량;
-
-      } else {
+      const 처리됨 = 우편목록(data, mail);
+      if (!처리됨) {
         await supabase.from("로그기록").insert({
           스탯: data.스탯,
           유저아이디: data.스탯.계정.유저아이디,
@@ -1244,6 +1201,32 @@ app.post("/receive-all-mail", async (req, res) => {
   }
 });
 
+function 우편목록(data, mail) {
+  if (mail.이름 === "램프") {
+    data.스탯.램프.수량 += mail.수량;
+    return true;
+  } else if (mail.이름 === "다이아") {
+    data.스탯.다이아 += mail.수량;
+    return true;
+  } else if (mail.이름 === "가루") {
+    data.스탯.가루 += mail.수량;
+    return true;
+  } else if (mail.이름 === "디지에그") {
+    data.스탯.디지에그 += mail.수량;
+    return true;
+  } else if (mail.이름 === "티켓") {
+    data.스탯.전장.티켓 += mail.수량;
+    return true;
+  } else if (mail.이름 === "낙엽") {
+    data.스탯.낙엽 += mail.수량;
+    return true;
+  } else if (mail.이름 === "스톤") {
+    data.스탯.스톤 += mail.수량;
+    return true;
+  }
+  return false;
+}
+
 app.post("/receive-mail", async (req, res) => {
   try {
     const { id, index } = req.body;
@@ -1260,51 +1243,19 @@ app.post("/receive-mail", async (req, res) => {
       return res.status(500).json({ 오류: "DB조회 실패" });
     }
 
-    if (!data.스탯.우편함[index]) {
-      return res.status(400).json({ 오류: "해당 우편 없음" });
-    }
+    const mail = data.스탯.우편함[index];
+    if (!mail) return res.status(400).json({ 오류: "해당 우편 없음" });
 
-    if (data.스탯.우편함[index].이름 === "램프") {
-      data.스탯.램프.수량 += data.스탯.우편함[index].수량;
-      data.스탯.우편함.splice(index, 1);
+    const 처리됨 = 우편목록(data, mail);
+    data.스탯.우편함.splice(index, 1);
 
-    } else if (data.스탯.우편함[index].이름 === "다이아") {
-      data.스탯.다이아 += data.스탯.우편함[index].수량;
-      data.스탯.우편함.splice(index, 1);
-
-    } else if (data.스탯.우편함[index].이름 === "가루") {
-      data.스탯.가루 += data.스탯.우편함[index].수량;
-      data.스탯.우편함.splice(index, 1);
-
-    } else if (data.스탯.우편함[index].이름 === "디지에그") {
-      data.스탯.디지에그 += data.스탯.우편함[index].수량;
-      data.스탯.우편함.splice(index, 1);
-
-    } else if (data.스탯.우편함[index].이름 === "티켓") {
-      data.스탯.전장.티켓 += data.스탯.우편함[index].수량;
-      data.스탯.우편함.splice(index, 1);
-
-    } else {
-      const 잘못된이름 = data.스탯.우편함[index].이름;
-      data.스탯.우편함.splice(index, 1);
-
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ 스탯: data.스탯 })
-        .eq("id", id);
-
-      if (updateError) {
-        console.error(updateError);
-        return res.status(500).json({ 오류: "DB저장 실패" });
-      }
-
+    if (!처리됨) {
       await supabase.from("로그기록").insert({
         스탯: data.스탯,
         유저아이디: data.스탯.계정.유저아이디,
         유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `잘못된 우편 삭제(${잘못된이름})`,
+        내용: `잘못된 우편 삭제(${mail.이름})`,
       });
-
       return res.status(400).json({ 오류: "잘못된 우편이므로 자동 삭제되었습니다" });
     }
 
@@ -3168,7 +3119,7 @@ app.post("/ChangeWeaponAppearance", async (req, res) => {
 
     유저데이터.스탯.가루 -= 2000;
 
-    유저데이터.스탯.무기외형.이름 = 외형;
+    유저데이터.스탯.무기외형이름 = 외형;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3200,11 +3151,11 @@ app.post("/WeaponAppearanceReset", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (!유저데이터.스탯.무기외형?.이름) {
+    if (!유저데이터.스탯.무기외형이름) {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
     }
 
-    유저데이터.스탯.무기외형.이름 = "";
+    유저데이터.스탯.무기외형이름 = "";
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3242,7 +3193,7 @@ app.post("/ChangeClothingAppearance", async (req, res) => {
 
     유저데이터.스탯.가루 -= 2000;
 
-    유저데이터.스탯.옷외형.이름 = 외형;
+    유저데이터.스탯.옷외형이름 = 외형;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3274,11 +3225,11 @@ app.post("/ClothingAppearanceReset", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (!유저데이터.스탯.옷외형?.이름) {
+    if (!유저데이터.스탯.옷외형이름) {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
     }
 
-    유저데이터.스탯.옷외형.이름 = "";
+    유저데이터.스탯.옷외형이름 = "";
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3316,7 +3267,7 @@ app.post("/ChangeHatAppearance", async (req, res) => {
 
     유저데이터.스탯.가루 -= 2000;
 
-    유저데이터.스탯.모자외형.이름 = 외형;
+    유저데이터.스탯.모자외형이름 = 외형;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3348,11 +3299,11 @@ app.post("/HatAppearanceReset", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (!유저데이터.스탯.모자외형?.이름) {
+    if (!유저데이터.스탯.모자외형이름) {
       return res.status(404).json({ 오류: "선택된 외형이 없습니다" });
     }
 
-    유저데이터.스탯.모자외형.이름 = "";
+    유저데이터.스탯.모자외형이름 = "";
 
     const { error: updateError } = await supabase
       .from("users")
@@ -3463,38 +3414,36 @@ app.post("/chatting", async (req, res) => {
   }
 });
 
-
 app.post("/Chatlist", async (req, res) => {
   try {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    // 유저 검증 (선택사항)
-    const { data: 유저데이터, error: 유저에러 } = await supabase
+    // 유저 데이터
+    const { data: 유저목록, error: 유저에러 } = await supabase
       .from("users")
-      .select("id")
-      .eq("id", id)
-      .single();
+      .select("스탯");
 
-    if (유저에러 || !유저데이터) {
-      return res.status(404).json({ 오류: "유저 없음" });
+    if (유저에러 || !유저목록) {
+      return res.status(500).json({ 오류: "유저 조회 실패" });
     }
 
-    // 채팅 테이블에서 최신 100개 불러오기
-    const { data: 채팅목록, error } = await supabase
+    // 채팅 데이터
+    const { data: 채팅목록, error: 채팅에러 } = await supabase
       .from("채팅")
       .select("*")
       .order("시간", { ascending: false })
       .limit(100);
 
-    if (error) {
+    if (채팅에러) {
       return res.status(500).json({ 오류: "채팅 불러오기 실패" });
     }
 
-    // 시간 오름차순 정렬해서 반환 (읽기 편하게)
-    // 채팅목록.reverse();
-
-    return res.json({ data: 채팅목록 });
+    // 두 가지를 함께 내려줌
+    return res.json({
+      유저데이터: 유저목록,
+      채팅데이터: 채팅목록
+    });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ 오류: "서버 에러" });
@@ -3871,9 +3820,114 @@ app.post("/Foodeat3", async (req, res) => {
 });
 
 
+const 쿠폰목록 = {
+  "엔젤키우기": { 이름: "램프", 수량: 1000, 메모: "쿠폰(엔젤키우기) 보상" },
+  "신평단가즈아": { 이름: "다이아", 수량: 1000, 메모: "쿠폰(신평단가즈아) 보상" },
+  "가글": { 이름: "다이아", 수량: 1000, 메모: "쿠폰(agk) 보상" }
+};
+
+app.post("/Coupon", async (req, res) => {
+  try {
+    const { id, 쿠폰내용 } = req.body;
+    if (!id || !쿠폰내용) {
+      return res.status(400).json({ 오류: "id와 쿠폰내용 필요" });
+    }
+
+    const 보상 = 쿠폰목록[쿠폰내용];
+    if (!보상) {
+      return res.status(400).json({ 오류: "존재하지 않는 쿠폰" });
+    }
+
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.쿠폰) {
+      유저데이터.스탯.쿠폰 = {};
+    }
+
+    if (유저데이터.스탯.쿠폰[쿠폰내용] === 1) {
+      return res.status(400).json({ 오류: "이미 사용한 쿠폰" });
+    }
+
+    유저데이터.스탯.쿠폰[쿠폰내용] = 1;
+
+    if (!유저데이터.스탯.우편함) {
+      유저데이터.스탯.우편함 = [];
+    }
+
+    유저데이터.스탯.우편함.unshift({
+      이름: 보상.이름,
+      수량: 보상.수량,
+      시간: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      메모: 보상.메모
+    });
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
+app.post("/Guildcreation", async (req, res) => {
+  try {
+    const { id, 길드명 } = req.body;
+    if (!id || !길드명) {
+      return res.status(400).json({ 오류: "id와 길드명 필요" });
+    }
 
+    const { data: 유저데이터, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "길드생성에는 1000다이아가 필요합니다" });
+    }
+
+    유저데이터.스탯.다이아 -= 1000;
+
+    유저데이터.스탯.길드.길드명 = 길드명;
+
+    유저데이터.스탯.길드.상태 = 2;
+
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
@@ -4121,7 +4175,7 @@ function 전투시뮬레이션(나, 상대) {
       }
       if (상대.스탯.최종HP <= 0) break;
 
-
+      //스킬발동
       if (Math.random() * 100 < 50) {
         if (Math.random() * 100 < 상대.스탯.스킬치명) {
           최종데미지 = 상대.스탯.최종공격력 * (상대.스탯.스킬치명피해 / 100) * (상대.스탯.스킬피해 / 100) * ((Math.max(0, 100 - 나.스탯.스킬피해감소)) / 100);
@@ -4134,6 +4188,7 @@ function 전투시뮬레이션(나, 상대) {
         if (나.스탯.최종HP <= 0) break;
       }
 
+      //동료발동
       if (Math.random() * 100 < 20) {
         if (Math.random() * 100 < 상대.스탯.동료치명) {
           최종데미지 = 상대.스탯.최종공격력 * (상대.스탯.동료치명피해 / 100) * (상대.스탯.동료피해 / 100) * ((Math.max(0, 100 - 나.스탯.동료피해감소)) / 100);
@@ -4809,3 +4864,47 @@ app.use(express.static(__dirname));
 //오픈적용
 //서버적용
 //상점수정
+
+// app.post("/서버요청기본틀", async (req, res) => {
+//     try {
+//         const { id } = req.body;
+
+// const { id, 채팅내용 } = req.body;
+// if (!id || !채팅내용) {
+//   return res.status(400).json({ 오류: "id와 채팅내용 필요" });
+// }
+
+
+//         const { data: 유저데이터, error } = await supabase
+//             .from("users")
+//             .select("*")
+//             .eq("id", id)
+//             .single();
+
+//         if (error || !유저데이터) {
+//             return res.status(404).json({ 오류: "유저 없음" });
+//         }
+
+//         if (유저데이터.스탯.가루 < 10000) {
+//             return res.status(404).json({ 오류: "초기화에는 1만가루가 필요합니다" });
+//         }
+
+//         유저데이터.스탯.가루 -= 10000;
+
+//         유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+//         const { error: updateError } = await supabase
+//             .from("users")
+//             .update({ 스탯: 유저데이터.스탯 })
+//             .eq("id", id);
+
+//         if (updateError) {
+//             return res.status(500).json({ 오류: "업데이트 실패" });
+//         }
+
+//         res.json(유저데이터);
+//     } catch (e) {
+//         console.error(e);
+//         res.status(500).json({ 오류: "서버 오류" });
+//     }
+// });

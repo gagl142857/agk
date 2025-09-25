@@ -682,7 +682,7 @@
         const 설정툴팁 = document.createElement("div");
         설정툴팁.className = "화면숨기기";
         설정툴팁.style.position = "absolute";
-        설정툴팁.style.padding = "3px 8px";
+        설정툴팁.style.padding = "12px 8px";
         설정툴팁.style.background = "black";
         설정툴팁.style.border = "0.2px solid #dadada";
         설정툴팁.style.borderRadius = "8px";
@@ -691,7 +691,7 @@
         설정툴팁.style.justifyContent = "center";
         설정툴팁.style.flexDirection = "column";
         설정툴팁.style.alignItems = "center";
-        설정툴팁.style.gap = "8px";
+        설정툴팁.style.gap = "12px";
         document.body.append(설정툴팁);
 
         const 회원탈퇴 = document.createElement("div");
@@ -742,6 +742,13 @@
         채팅.innerHTML = "채팅";
         채팅.style.cursor = "pointer";
         설정툴팁.append(채팅);
+
+        const 쿠폰 = document.createElement("div");
+        쿠폰.id = "쿠폰";
+        쿠폰.style.boxSizing = "border-box";
+        쿠폰.innerHTML = "쿠폰";
+        쿠폰.style.cursor = "pointer";
+        설정툴팁.append(쿠폰);
 
         document.addEventListener("mouseover", (e) => {
             if (!설정.contains(e.target) && !설정툴팁.contains(e.target)) {
@@ -1219,8 +1226,8 @@
                 }
 
                 무기외형.innerHTML =
-                    유저데이터.스탯.무기외형 && 유저데이터.스탯.무기외형.이름
-                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.무기외형.이름])
+                    유저데이터.스탯.무기외형이름
+                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.무기외형이름])
                         : (
                             유저데이터.스탯["무기"] && 유저데이터.스탯["무기"].등급
                                 ? (장비아이콘["무기"]?.[유저데이터.스탯["무기"].등급]
@@ -1232,8 +1239,8 @@
                         );
 
                 옷외형.innerHTML =
-                    유저데이터.스탯.옷외형 && 유저데이터.스탯.옷외형.이름
-                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.옷외형.이름])
+                    유저데이터.스탯.옷외형이름
+                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.옷외형이름])
                         : (
                             유저데이터.스탯["옷"] && 유저데이터.스탯["옷"].등급
                                 ? (장비아이콘["옷"]?.[유저데이터.스탯["옷"].등급]
@@ -1245,8 +1252,8 @@
                         );
 
                 모자외형.innerHTML =
-                    유저데이터.스탯.모자외형 && 유저데이터.스탯.모자외형.이름
-                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.모자외형.이름])
+                    유저데이터.스탯.모자외형이름
+                        ? 장비아이콘변환(외형아이콘맵[유저데이터.스탯.모자외형이름])
                         : (
                             유저데이터.스탯["모자"] && 유저데이터.스탯["모자"].등급
                                 ? (장비아이콘["모자"]?.[유저데이터.스탯["모자"].등급]
@@ -3009,6 +3016,16 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.09.25<br>
+전장 상위3명의 닉네임효과가 채팅화면에도 적용됩니다<br>
+외형적용 로직이 수정되었습니다<br>
+기존에 장착된 외형들이 해제되었습니다<br>
+외형을 변경하려면 다시 장착해주세요<br>
+쿠폰화면이 구현되었습니다. 단축키는 Z입니다<br>
+첫번째 쿠폰. '엔젤키우기'를 사용해보세요<br>
+닉네임에 숫자를 사용할 수 있습니다<br>
+<br>
+
 25.09.24<br>
 드랍장비의 특수옵션이 정상적으로 2개로 표시됩니다<br>
 던전몬스터들의 스탯이 500% 상향조정되었습니다<br>
@@ -3248,7 +3265,6 @@
  
 해야할일
 
-동료화면만드는중
 상대정보
 전투시뮬레이션에 총데미지
  길드만들자
@@ -3776,6 +3792,10 @@ nodemon server.js
 
         //전장화면보여주기함수
         async function 전장화면보여주기() {
+            모든화면숨기기();
+            전장화면.style.display = "flex";
+            전장화면컨테이너.innerHTML = "";
+
             try {
 
                 화면잠금();
@@ -3815,16 +3835,12 @@ nodemon server.js
                     기존전장뱃지.remove();
                 }
 
-                모든화면숨기기();
-                전장화면.style.display = "flex";
-                전장화면컨테이너.innerHTML = "";
 
                 // 전장순 정렬 (순위 표시용)
                 const 전장정렬 = [...결과.data].sort((a, b) => (b.스탯.전장.포인트 || 0) - (a.스탯.전장.포인트 || 0));
 
                 // 전투력순 정렬 (주변 유저 뽑기용)
                 const 전투력정렬 = [...결과.data].sort((a, b) => (b.스탯.전투력 || 0) - (a.스탯.전투력 || 0));
-
                 // 순위맵 만들기 (동점 처리)
                 let 순위맵 = {};
                 let 현재순위 = 0;
@@ -5100,7 +5116,7 @@ ${전투결과.결과}<br>
                 묠니르.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("무기사행5열").append(묠니르);
 
-                const 선택된무기 = document.getElementById(유저데이터.스탯.무기외형.이름);
+                const 선택된무기 = document.getElementById(유저데이터.스탯.무기외형이름);
                 if (선택된무기) {
                     선택된무기.style.border = `3px solid #dadada`;
                 }
@@ -5122,7 +5138,7 @@ ${전투결과.결과}<br>
                                 return;
                             }
 
-                            if (유저데이터.스탯.무기외형?.이름 === 이름) {
+                            if (유저데이터.스탯.무기외형이름 === 이름) {
                                 메시지표시(`외형이 선택되어있습니다`);
                                 return;
                             }
@@ -5167,7 +5183,7 @@ ${전투결과.결과}<br>
                 무기오행2열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-                        if (!유저데이터.스탯.무기외형?.이름) {
+                        if (!유저데이터.스탯.무기외형이름) {
                             메시지표시(`선택된 외형이 없습니다`);
                             return;
                         }
@@ -5262,7 +5278,7 @@ ${전투결과.결과}<br>
                 몽클레어자켓.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
                 document.getElementById("옷사행4열").append(몽클레어자켓);
 
-                const 선택된옷 = document.getElementById(유저데이터.스탯.옷외형?.이름);
+                const 선택된옷 = document.getElementById(유저데이터.스탯.옷외형이름);
                 if (선택된옷) {
                     선택된옷.style.border = `3px solid #dadada`;
                 }
@@ -5283,7 +5299,7 @@ ${전투결과.결과}<br>
                                 return;
                             }
 
-                            if (유저데이터.스탯.옷외형?.이름 === 이름) {
+                            if (유저데이터.스탯.옷외형이름 === 이름) {
                                 메시지표시(`외형이 선택되어있습니다`);
                                 return;
                             }
@@ -5328,7 +5344,7 @@ ${전투결과.결과}<br>
                 옷오행2열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-                        if (!유저데이터.스탯.옷외형?.이름) {
+                        if (!유저데이터.스탯.옷외형이름) {
                             메시지표시(`선택된 외형이 없습니다`);
                             return;
                         }
@@ -5439,7 +5455,7 @@ ${전투결과.결과}<br>
                 document.getElementById("모자사행5열").append(사무라이헬멧);
 
 
-                const 선택된모자 = document.getElementById(유저데이터.스탯.모자외형?.이름);
+                const 선택된모자 = document.getElementById(유저데이터.스탯.모자외형이름);
                 if (선택된모자) {
                     선택된모자.style.border = `3px solid #dadada`;
                 }
@@ -5461,7 +5477,7 @@ ${전투결과.결과}<br>
                                 return;
                             }
 
-                            if (유저데이터.스탯.모자외형?.이름 === 이름) {
+                            if (유저데이터.스탯.모자외형이름 === 이름) {
                                 메시지표시(`외형이 선택되어있습니다`);
                                 return;
                             }
@@ -5506,7 +5522,7 @@ ${전투결과.결과}<br>
                 모자오행2열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
-                        if (!유저데이터.스탯.모자외형?.이름) {
+                        if (!유저데이터.스탯.모자외형이름) {
                             메시지표시(`선택된 외형이 없습니다`);
                             return;
                         }
@@ -5537,15 +5553,6 @@ ${전투결과.결과}<br>
                         화면해제();
                     }
                 });
-
-
-
-
-
-
-
-
-
 
 
 
@@ -5606,59 +5613,61 @@ ${전투결과.결과}<br>
                 상점화면컨테이너.innerHTML = "";
 
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너일행", 3);
-                상점화면컨테이너일행1열.innerHTML = `1000 다이아 충전`;
-                상점화면컨테이너일행1열.style.cursor = `pointer`;
-                상점화면컨테이너일행1열.style.boxSizing = "border-box";
-                상점화면컨테이너일행1열.style.border = "0.2px solid #dadada";
-                상점화면컨테이너일행1열.style.borderRadius = "8px";
-                상점화면컨테이너일행1열.style.padding = "8px";
-                상점화면컨테이너일행2열.innerHTML = `11000 다이아 충전`;
+                상점화면컨테이너일행2열.innerHTML = `1000 다이아<br>(4,000원)`;
+                상점화면컨테이너일행2열.style.textAlign = `center`;
                 상점화면컨테이너일행2열.style.cursor = `pointer`;
                 상점화면컨테이너일행2열.style.boxSizing = "border-box";
                 상점화면컨테이너일행2열.style.border = "0.2px solid #dadada";
                 상점화면컨테이너일행2열.style.borderRadius = "8px";
-                상점화면컨테이너일행3열.innerHTML = `37000 다이아 충전`;
-                상점화면컨테이너일행3열.style.cursor = `pointer`;
-                상점화면컨테이너일행3열.style.boxSizing = "border-box";
-                상점화면컨테이너일행3열.style.border = "0.2px solid #dadada";
-                상점화면컨테이너일행3열.style.borderRadius = "8px";
+                상점화면컨테이너일행2열.style.padding = "8px";
+                // 상점화면컨테이너일행2열.innerHTML = `11000 다이아 충전<br>(100,000원)`;
+                // 상점화면컨테이너일행2열.style.textAlign = `center`;
+                // 상점화면컨테이너일행2열.style.cursor = `pointer`;
+                // 상점화면컨테이너일행2열.style.boxSizing = "border-box";
+                // 상점화면컨테이너일행2열.style.border = "0.2px solid #dadada";
+                // 상점화면컨테이너일행2열.style.borderRadius = "8px";
+                // 상점화면컨테이너일행3열.innerHTML = `37000 다이아 충전<br>(300,000원)`;
+                // 상점화면컨테이너일행3열.style.textAlign = `center`;
+                // 상점화면컨테이너일행3열.style.cursor = `pointer`;
+                // 상점화면컨테이너일행3열.style.boxSizing = "border-box";
+                // 상점화면컨테이너일행3열.style.border = "0.2px solid #dadada";
+                // 상점화면컨테이너일행3열.style.borderRadius = "8px";
 
                 행렬만들기(상점화면컨테이너, "주인장연결", 1);
-                주인장연결1열.innerHTML = `결제후 이곳을클릭하여 문의하시면 우편을 보내드립니다<br>404 Not Found가 뜬다면 이곳을 클릭하여 문의하세요`;
+                주인장연결1열.innerHTML = `결제는 이곳을 클릭해서 주인장에게 문의하세요`;
                 주인장연결1열.style.cursor = `pointer`;
                 주인장연결1열.style.boxSizing = "border-box";
                 주인장연결1열.style.border = "0.2px solid #dadada";
                 주인장연결1열.style.borderRadius = "8px";
                 주인장연결1열.style.padding = "3px 8px";
-                //수정중
 
-                상점화면컨테이너일행1열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    메시지표시(`오픈후 활성`);
-                    return;
-                    window.open("https://qr.kakaopay.com/FSk2jJzvp138803772", "_blank");
-                });
+                // 상점화면컨테이너일행1열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     메시지표시(`오픈후 활성`);
+                //     return;
+                //     window.open("https://qr.kakaopay.com/FSk2jJzvp138803772", "_blank");
+                // });
 
-                상점화면컨테이너일행2열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    메시지표시(`오픈후 활성`);
-                    return;
-                    window.open("https://qr.kakaopay.com/FSk2jJzvpc35000923", "_blank");
-                });
+                // 상점화면컨테이너일행2열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     메시지표시(`오픈후 활성`);
+                //     return;
+                //     window.open("https://qr.kakaopay.com/FSk2jJzvpc35000923", "_blank");
+                // });
 
-                상점화면컨테이너일행3열.addEventListener("click", async (e) => {
-                    e.stopPropagation();
-                    메시지표시(`오픈후 활성`);
-                    return;
-                    window.open("https://qr.kakaopay.com/FSk2jJzvp249f009967", "_blank");
-                });
+                // 상점화면컨테이너일행3열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     메시지표시(`오픈후 활성`);
+                //     return;
+                //     window.open("https://qr.kakaopay.com/FSk2jJzvp249f009967", "_blank");
+                // });
 
 
                 주인장연결1열.addEventListener("click", (e) => {
                     e.stopPropagation();
 
-                    메시지표시(`오픈후 활성`);
-                    return;
+                    // 메시지표시(`오픈후 활성`);
+                    // return;
                     window.open("https://open.kakao.com/o/s7LlXeTh", "_blank");
                 });
 
@@ -6127,6 +6136,7 @@ ${전투결과.결과}<br>
                     }
                 });
 
+
                 // 행렬만들기(상점화면컨테이너, "상점상품기능", 3);
                 // 상점상품기능.style.borderTop = "0.2px solid #dadada";
                 // 상점상품기능.style.padding = "8px 0px";
@@ -6229,45 +6239,91 @@ ${전투결과.결과}<br>
         //길드화면보여주기함수
         async function 길드화면보여주기() {
             try {
-                모든화면숨기기();
-                길드화면.style.display = "flex";
-                길드화면컨테이너.innerHTML = "";
+                if (유저데이터.스탯.길드.상태 !== 2) {
+                    모든화면숨기기();
+                    길드화면.style.display = "flex";
+                    길드화면컨테이너.innerHTML = "";
 
-                행렬만들기(길드화면컨테이너, "길드생성일행", 3);
-                행렬만들기(길드화면컨테이너, "길드생성이행", 3);
-                길드생성일행2열.innerHTML = "길드생성";
+                    행렬만들기(길드화면컨테이너, "길드생성일행", 3);
+                    길드생성일행2열.innerHTML = "길드생성";
 
-                const 길드명입력창 = document.createElement("input");
-                길드명입력창.type = "text";
-                길드명입력창.maxLength = 6;
-                길드명입력창.placeholder = "길드명";
-                길드명입력창.style.background = "white";
-                길드명입력창.style.color = "black";
-                길드명입력창.size = 10;
-                길드명입력창.style.outline = "none";
-                길드명입력창.value = "";
-                길드명입력창.focus();
-                길드생성이행2열.append(길드명입력창);
+                    행렬만들기(길드화면컨테이너, "길드생성이행", 3);
+                    const 길드명입력창 = document.createElement("input");
+                    길드명입력창.type = "text";
+                    길드명입력창.maxLength = 6;
+                    길드명입력창.placeholder = "길드명";
+                    길드명입력창.style.background = "white";
+                    길드명입력창.style.color = "black";
+                    길드명입력창.size = 20;
+                    길드명입력창.style.outline = "none";
+                    길드명입력창.value = "";
+                    길드명입력창.style.textAlign = "center";
+                    길드명입력창.style.flex = "1";
+                    길드명입력창.style.border = "0.2px solid #dadada";
+                    길드명입력창.style.borderRadius = "8px";
+                    길드명입력창.style.padding = "8px 8px";
+                    길드생성이행2열.append(길드명입력창);
 
-                길드명입력창.addEventListener("input", () => {
-                    if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/.test(길드명입력창.value)) {
-                        메시지표시("한글과 영어만 가능합니다");
-                        길드명입력창.value = 길드명입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/g, "");
-                    }
+                    길드명입력창.addEventListener("input", () => {
+                        if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]/.test(길드명입력창.value)) {
+                            메시지표시("한글, 영어, 숫자로만 입력해주세요");
+                            길드명입력창.value = 길드명입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]/g, "");
+                        }
 
-                    if (길드명입력창.value.length > 6) {
-                        메시지표시("길드명은 최대 6글자까지 가능합니다");
-                        길드명입력창.value = 길드명입력창.value.slice(0, 6);
-                    }
-                });
+                        if (길드명입력창.value.length > 6) {
+                            메시지표시("길드명은 최대 6글자까지 가능합니다");
+                            길드명입력창.value = 길드명입력창.value.slice(0, 6);
+                        }
+                    });
 
-                행렬만들기(길드화면컨테이너, "길드생성삼행", 3);
-                길드생성삼행2열.innerHTML = `생성(1000다이아)`;
-                길드생성삼행2열.style.boxSizing = "border-box";
-                길드생성삼행2열.style.border = "0.2px solid #dadada";
-                길드생성삼행2열.style.borderRadius = "8px";
-                길드생성삼행2열.style.cursor = "pointer";
+                    행렬만들기(길드화면컨테이너, "길드생성삼행", 3);
+                    길드생성삼행2열.innerHTML = `생성(1000다이아)`;
+                    길드생성삼행2열.style.boxSizing = "border-box";
+                    길드생성삼행2열.style.padding = "3px 8px";
+                    길드생성삼행2열.style.border = "0.2px solid #dadada";
+                    길드생성삼행2열.style.borderRadius = "8px";
+                    길드생성삼행2열.style.cursor = "pointer";
 
+                    길드생성삼행2열.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (유저데이터.스탯.다이아 < 1000) {
+                                메시지표시(`길드생성에는 1000다이아가 필요합니다`);
+                                return;
+                            }
+
+                            const 길드명 = 길드명입력창.value.trim();
+
+                            화면잠금();
+                            const 응답 = await fetch("/Guildcreation", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id,
+                                    길드명: 길드명,
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+
+                            길드화면보여주기();
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+                }
+
+                //수정중
             } catch (e) {
                 메시지표시("서버요청실패");
                 console.error(e);
@@ -6276,7 +6332,8 @@ ${전투결과.결과}<br>
             }
 
         }
-
+        // 길드명 길드장 상태 
+        // 길드명 길드장 길드원 상태
 
         const 채팅화면 = document.createElement("div");
         채팅화면.style.position = "absolute";
@@ -6396,8 +6453,10 @@ ${전투결과.결과}<br>
                     return;
                 }
 
+                const 전장정렬 = [...결과.유저데이터].sort((a, b) => (b.스탯.전장.포인트 || 0) - (a.스탯.전장.포인트 || 0));
+
                 // 채팅목록 표시
-                for (const 항목 of 결과.data) {
+                for (const 항목 of 결과.채팅데이터) {
                     const 박스 = document.createElement("div");
                     박스.style.display = "flex";
                     박스.style.flexDirection = "column";
@@ -6422,6 +6481,15 @@ ${전투결과.결과}<br>
                     });
 
                     let 닉네임HTML = 항목.유저닉네임;
+
+                    if (닉네임HTML === 전장정렬[0].스탯.계정.유저닉네임) {
+                        닉네임HTML = `<span class="마법의팔레트1위">${닉네임HTML}</span>`;
+                    } else if (닉네임HTML === 전장정렬[1].스탯.계정.유저닉네임) {
+                        닉네임HTML = `<span class="마법의팔레트2위">${닉네임HTML}</span>`;
+                    } else if (닉네임HTML === 전장정렬[2].스탯.계정.유저닉네임) {
+                        닉네임HTML = `<span class="마법의팔레트3위">${닉네임HTML}</span>`;
+                    }
+
                     if (
                         항목.스탯.주인장인가 === 1
                     ) {
@@ -7734,6 +7802,119 @@ ${전투결과.결과}<br>
 
 
 
+        const 쿠폰화면 = document.createElement("div");
+        쿠폰화면.style.position = "absolute";
+        쿠폰화면.className = "화면숨기기";
+        쿠폰화면.style.boxSizing = "border-box";
+        쿠폰화면.style.top = "64px";
+        쿠폰화면.style.width = "400px";
+        쿠폰화면.style.display = "none";
+        쿠폰화면.style.flexDirection = "column";
+        쿠폰화면.style.gap = "8px";
+        document.body.append(쿠폰화면);
+
+        const 쿠폰화면설명 = document.createElement("div");
+        쿠폰화면설명.style.boxSizing = "border-box";
+        쿠폰화면설명.style.borderBottom = "0.2px solid #dadada";
+        쿠폰화면설명.style.flex = "1";
+        쿠폰화면설명.style.display = "flex";
+        쿠폰화면설명.style.flexDirection = "column";
+        쿠폰화면설명.innerHTML =
+            `
+쿠폰화면입니다<br>
+엔터치시면 입력됩니다<br>
+쿠폰보상은 우편함으로 지급됩니다<br>
+            `;
+        쿠폰화면설명.style.textAlign = "center";
+        쿠폰화면설명.style.paddingBottom = "8px";
+        쿠폰화면.append(쿠폰화면설명);
+
+        const 쿠폰화면컨테이너 = document.createElement("div");
+        쿠폰화면컨테이너.id = "쿠폰화면컨테이너";
+        쿠폰화면컨테이너.style.boxSizing = "border-box";
+        쿠폰화면컨테이너.style.border = "0.2px solid #dadada";
+        쿠폰화면컨테이너.style.borderRadius = "8px";
+        쿠폰화면컨테이너.style.flex = "1";
+        쿠폰화면컨테이너.style.display = "flex";
+        쿠폰화면컨테이너.style.flexDirection = "column";
+        쿠폰화면컨테이너.style.padding = "8px";
+        쿠폰화면컨테이너.style.gap = "8px";
+        쿠폰화면.append(쿠폰화면컨테이너);
+
+        //쿠폰화면보여주기함수
+        async function 쿠폰화면보여주기() {
+            try {
+                모든화면숨기기();
+                쿠폰화면.style.display = "flex";
+                쿠폰화면컨테이너.innerHTML = "";
+
+                const 쿠폰입력 = document.createElement("input");
+                쿠폰입력.type = "text";
+                쿠폰입력.maxLength = 20;
+                쿠폰입력.style.textAlign = "center";
+                쿠폰입력.placeholder = "쿠폰을 입력하세요";
+                쿠폰입력.style.flex = "1";
+                쿠폰입력.style.marginTop = "8px";
+                쿠폰입력.style.border = "0.2px solid #dadada";
+                쿠폰입력.style.borderRadius = "8px";
+                쿠폰입력.style.padding = "8px 8px";
+                document.getElementById("쿠폰화면컨테이너").append(쿠폰입력);
+
+                쿠폰입력.addEventListener("input", () => {
+                    if (쿠폰입력.value.length > 20) {
+                        메시지표시("쿠폰은 20자 이내로 작성하세요");
+                        쿠폰입력.value = 쿠폰입력.value.slice(0, 20);
+                    }
+                });
+
+                쿠폰입력.addEventListener("keydown", async (ev) => {
+                    if (ev.key === "Enter") {
+                        ev.preventDefault();
+                        const 쿠폰내용 = 쿠폰입력.value.trim();
+                        try {
+                            화면잠금();
+                            const 응답 = await fetch("/Coupon", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id,
+                                    쿠폰내용: 쿠폰내용,
+                                })
+                            });
+
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+
+                            쿠폰화면보여주기();
+
+                            메시지표시(`보상이 우편으로 지급되었습니다`);
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+
+                    }
+                });
+
+
+
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
 
 
 
@@ -8186,11 +8367,17 @@ ${전투결과.결과}<br>
                 상점화면보여주기();
             }
 
+            if (e.target.matches("#쿠폰")) {
+                쿠폰화면보여주기();
+            }
+
             if (e.target.matches("#채팅")) {
                 채팅화면보여주기();
             }
 
             if (e.target.matches("#길드")) {
+                메시지표시("구현중입니다");
+                return;
                 길드화면보여주기();
             }
 
@@ -8214,9 +8401,9 @@ ${전투결과.결과}<br>
                     입력창.focus();
 
                     입력창.addEventListener("input", () => {
-                        if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/.test(입력창.value)) {
-                            메시지표시("한글과 영어만 가능합니다");
-                            입력창.value = 입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z]/g, "");
+                        if (/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]/.test(입력창.value)) {
+                            메시지표시("한글, 영어, 숫자로만 입력해주세요");
+                            입력창.value = 입력창.value.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]/g, "");
                         }
 
                         if (입력창.value.length > 6) {
@@ -8709,6 +8896,9 @@ ${전투결과.결과}<br>
                     case "b":
                         document.querySelector("#조각상")?.click();
                         break;
+                    case "z":
+                        document.querySelector("#쿠폰")?.click();
+                        break;
                 }
 
             }
@@ -8748,6 +8938,7 @@ ${전투결과.결과}<br>
 
                 const 팝업 = document.createElement("div");
                 팝업.id = "팝업";
+                팝업.className = "화면숨기기";
                 팝업.style.position = "fixed";
                 팝업.style.width = "320px";
                 팝업.style.background = "black";
@@ -9031,6 +9222,9 @@ ${전투결과.결과}<br>
         //                 화면해제();
         //             }
         //         });
+
+
+
         //     } catch (e) {
         //         메시지표시("서버요청실패");
         //         console.error(e);

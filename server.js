@@ -1635,13 +1635,6 @@ app.post("/GenieDungeon", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    await supabase.from("로그기록").insert({
-      스탯: data.스탯,
-      유저아이디: data.스탯.계정.유저아이디,
-      유저닉네임: data.스탯.계정.유저닉네임,
-      내용: ``,
-    });
-
     //수정중
     // res.json(유저데이터);
     res.json({ 유저데이터, 전투결과 });

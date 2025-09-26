@@ -207,6 +207,10 @@ app.post("/register", async (req, res) => {
     }
 
     const 기본스탯 = {
+      전장: {
+        포인트: 신규포인트,
+        티켓: 4,
+      },
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
       생성요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
       접속시각: Math.floor(now.getTime() / 3600000), // 478520,
@@ -252,10 +256,6 @@ app.post("/register", async (req, res) => {
         },
       ],
       주인장인가: 아이디 === "codl" ? 1 : 0,
-      전장: {
-        포인트: 신규포인트,
-        티켓: 4,
-      },
     };
     //신규유저
 
@@ -1609,8 +1609,6 @@ app.post("/GenieDungeon", async (req, res) => {
       if (유저데이터.스탯.던전.지니.레벨 < 20) {
         유저데이터.스탯.던전.지니.레벨 += 1;
       }
-      // 유저데이터.스탯.던전.지니.레벨 += 1;
-
     } else {
       유저데이터.스탯.램프.수량 = 유저데이터.스탯.램프.수량 + (유저데이터.스탯.던전.지니.레벨 - 1) * 10;
     }

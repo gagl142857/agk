@@ -1227,6 +1227,18 @@ function 우편목록(data, mail) {
   } else if (mail.이름 === "스톤") {
     data.스탯.스톤 += mail.수량;
     return true;
+  }else if (mail.이름 === "지니열쇠") {
+    data.스탯.던전.지니.열쇠 += mail.수량;
+    return true;
+  }else if (mail.이름 === "로쿠규열쇠") {
+    data.스탯.던전.로쿠규.열쇠 += mail.수량;
+    return true;
+  }else if (mail.이름 === "락골렘열쇠") {
+    data.스탯.던전.락골렘.열쇠 += mail.수량;
+    return true;
+  }else if (mail.이름 === "디지에그열쇠") {
+    data.스탯.던전.디지에그.열쇠 += mail.수량;
+    return true;
   }
   return false;
 }

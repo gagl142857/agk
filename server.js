@@ -15,6 +15,19 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
+export const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+export const supabaseAuth = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: { persistSession: false, autoRefreshToken: false },
+  }
+);
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
@@ -38,7 +51,7 @@ app.use(async (req, res, next) => {
   }
 
   // try {
-  //   const { data: 전체유저, error } = await supabase
+  //   const { data: 전체유저, error } = await supabaseAdmin
   //     .from("users")
   //     .select("id, 스탯");
 
@@ -53,7 +66,7 @@ app.use(async (req, res, next) => {
   //         티켓: 4
   //       };
 
-  //       await supabase
+  //       await supabaseAdmin
   //         .from("users")
   //         .update({ 스탯: 전체유저[i].스탯 })
   //         .eq("id", 전체유저[i].id);
@@ -64,7 +77,7 @@ app.use(async (req, res, next) => {
   // }
 
   // try {
-  //   const { data: 전체유저, error } = await supabase
+  //   const { data: 전체유저, error } = await supabaseAdmin
   //     .from("users")
   //     .select("id, 스탯");
 
@@ -73,7 +86,7 @@ app.use(async (req, res, next) => {
   //       if (전체유저[i].스탯?.동료1) {
   //         delete 전체유저[i].스탯.동료1;
 
-  //         await supabase
+  //         await supabaseAdmin
   //           .from("users")
   //           .update({ 스탯: 전체유저[i].스탯 })
   //           .eq("id", 전체유저[i].id);
@@ -87,7 +100,7 @@ app.use(async (req, res, next) => {
 
 
   // try {
-  //   const { data: 전체유저, error } = await supabase
+  //   const { data: 전체유저, error } = await supabaseAdmin
   //     .from("users")
   //     .select("id, 스탯");
 
@@ -99,7 +112,7 @@ app.use(async (req, res, next) => {
   //       if (!전체유저[i].스탯.던전.로쿠규) {
   //         전체유저[i].스탯.던전.로쿠규 = { 레벨: 1, 열쇠: 4 };
 
-  //         await supabase
+  //         await supabaseAdmin
   //           .from("users")
   //           .update({ 스탯: 전체유저[i].스탯 })
   //           .eq("id", 전체유저[i].id);
@@ -113,7 +126,7 @@ app.use(async (req, res, next) => {
 
 
 
-  // const { data, error } = await supabase
+  // const { data, error } = await supabaseAdmin
   //   .from("users")
   //   .select("스탯")
   //   .eq("스탯->주인장인가", 1)   // 주인장 계정만 찾기 (조건은 상황에 맞게)
@@ -177,7 +190,7 @@ app.post("/register", async (req, res) => {
 
     // Auth 계정 생성
     const { data: authData, error: authError } =
-      await supabase.auth.admin.createUser({
+      await supabaseAuth.auth.admin.createUser({
         email,
         password: 비밀번호,
         email_confirm: true
@@ -248,7 +261,7 @@ app.post("/register", async (req, res) => {
     //신규유저
 
 
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseAdmin
       .from("users")
       .insert({
         id,
@@ -275,11 +288,11 @@ app.post("/login", async (req, res) => {
     if (아이디 && 비밀번호) {
       const email = `${아이디}@agk.com`;
       const { data: authData, error: authError } =
-        await supabase.auth.signInWithPassword({ email, password: 비밀번호 });
+        await supabaseAuth.auth.signInWithPassword({ email, password: 비밀번호 });
       if (authError || !authData.user) {
         return res.status(400).json({ 오류: "아이디 또는 비밀번호가 올바르지 않습니다" });
       }
-      const { data: userData, error } = await supabase
+      const { data: userData, error } = await supabaseAdmin
         .from("users")
         .select("*")
         .eq("id", authData.user.id)
@@ -287,7 +300,7 @@ app.post("/login", async (req, res) => {
       if (error || !userData) return res.status(404).json({ 오류: "유저 데이터 없음" });
       data = userData;
     } else if (기기ID) {
-      const { data: userData, error } = await supabase
+      const { data: userData, error } = await supabaseAdmin
         .from("users")
         .select("*")
         .eq("스탯->>기기ID", 기기ID)
@@ -557,43 +570,43 @@ app.post("/login", async (req, res) => {
       }
     }
 
-    // const { data: 기존, error: 기존에러 } = await supabase
-    //   .from("전장순위")
-    //   .select("순위")
-    //   .eq("유저아이디", data.스탯.계정.유저아이디)
-    //   .single();
+    const { data: 기존, error: 기존에러 } = await supabaseAdmin
+      .from("전장순위")
+      .select("순위")
+      .eq("유저아이디", data.스탯.계정.유저아이디)
+      .single();
 
-    // if (기존에러 && 기존에러.code !== "PGRST116") {
-    //   console.error("전장순위 조회 실패:", 기존에러);
-    // } else if (!기존) {
-    //   const { data: 순위데이터, error: 순위에러 } = await supabase
-    //     .from("전장순위")
-    //     .select("순위")
-    //     .order("순위", { ascending: false })
-    //     .limit(1);
+    if (기존에러 && 기존에러.code !== "PGRST116") {
+      console.error("전장순위 조회 실패:", 기존에러);
+    } else if (!기존) {
+      const { data: 순위데이터, error: 순위에러 } = await supabaseAdmin
+        .from("전장순위")
+        .select("순위")
+        .order("순위", { ascending: false })
+        .limit(1);
 
-    //   if (순위에러) {
-    //     console.error("전장순위순위조회실패:", 순위에러);
-    //   }
+      if (순위에러) {
+        console.error("전장순위순위조회실패:", 순위에러);
+      }
 
-    //   let 신규순위 = 1;
-    //   if (순위데이터 && 순위데이터.length > 0) {
-    //     신규순위 = 순위데이터[0].순위 + 1;
-    //   }
+      let 신규순위 = 1;
+      if (순위데이터 && 순위데이터.length > 0) {
+        신규순위 = 순위데이터[0].순위 + 1;
+      }
 
-    //   const { error: 추가에러 } = await supabase
-    //     .from("전장순위")
-    //     .insert({
-    //       스탯: {},
-    //       유저아이디: data.스탯.계정.유저아이디,
-    //       유저닉네임: data.스탯.계정.유저닉네임,
-    //       순위: 신규순위,
-    //     });
+      const { error: 추가에러 } = await supabaseAdmin
+        .from("전장순위")
+        .insert({
+          스탯: {},
+          유저아이디: data.스탯.계정.유저아이디,
+          유저닉네임: data.스탯.계정.유저닉네임,
+          순위: 신규순위,
+        });
 
-    //   if (추가에러) {
-    //     console.error("전장순위 insert 실패:", 추가에러);
-    //   }
-    // }
+      if (추가에러) {
+        console.error("전장순위 insert 실패:", 추가에러);
+      }
+    }
 
 
     //기존유저
@@ -604,10 +617,10 @@ app.post("/login", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
 
-    const { error: updateError } = await supabase.from("users").update({ 스탯 }).eq("id", data.id);
+    const { error: updateError } = await supabaseAdmin.from("users").update({ 스탯 }).eq("id", data.id);
     if (updateError) return res.status(500).json({ 오류: "DB저장 실패" });
 
-    await supabase.from("로그기록").insert({
+    await supabaseAdmin.from("로그기록").insert({
       스탯: data.스탯,
       유저아이디: data.스탯.계정.유저아이디,
       유저닉네임: data.스탯.계정.유저닉네임,
@@ -631,7 +644,7 @@ app.post("/delete-user", async (req, res) => {
     }
 
     // ① 유저 스탯 먼저 조회
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -642,7 +655,7 @@ app.post("/delete-user", async (req, res) => {
     }
 
     // ② 로그 먼저 기록
-    await supabase
+    await supabaseAdmin
       .from("로그기록")
       .insert({
         스탯: data.스탯,
@@ -651,27 +664,27 @@ app.post("/delete-user", async (req, res) => {
         내용: `회원탈퇴`,
       });
 
-    // const { data: 내순위데이터, error: 내순위에러 } = await supabase
-    //   .from("전장순위")
-    //   .select("순위")
-    //   .eq("유저아이디", data.스탯.계정.유저아이디)
-    //   .single();
+    const { data: 내순위데이터, error: 내순위에러 } = await supabaseAdmin
+      .from("전장순위")
+      .select("순위")
+      .eq("유저아이디", data.스탯.계정.유저아이디)
+      .single();
 
-    // if (내순위데이터) {
-    //   const 내순위 = 내순위데이터.순위;
+    if (내순위데이터) {
+      const 내순위 = 내순위데이터.순위;
 
-    //   // 내 순위 삭제
-    //   await supabase
-    //     .from("전장순위")
-    //     .delete()
-    //     .eq("유저아이디", data.스탯.계정.유저아이디);
+      // 내 순위 삭제
+      await supabaseAdmin
+        .from("전장순위")
+        .delete()
+        .eq("유저아이디", data.스탯.계정.유저아이디);
 
-    //   // 내 순위보다 큰 순위들을 한 칸씩 올리기
-    //   await supabase.rpc("shift_rank_up", { cutoff_rank: 내순위 });
-    // }
+      // 내 순위보다 큰 순위들을 한 칸씩 올리기
+      await supabaseAdmin.rpc("shift_rank_up", { cutoff_rank: 내순위 });
+    }
 
     // ① users 테이블에서 삭제
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseAdmin
       .from("users")
       .delete()
       .eq("id", id);
@@ -681,7 +694,7 @@ app.post("/delete-user", async (req, res) => {
     }
 
     // ② Auth 계정 삭제
-    const { error: authError } = await supabase.auth.admin.deleteUser(id);
+    const { error: authError } = await supabaseAuth.auth.admin.deleteUser(id);
     if (authError) {
       return res.status(500).json({ 오류: "Auth 삭제 실패" });
     }
@@ -700,7 +713,7 @@ app.post("/logout", async (req, res) => {
     }
 
     // ① 유저 스탯 먼저 조회
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -711,7 +724,7 @@ app.post("/logout", async (req, res) => {
     }
 
     // ② 로그 먼저 기록
-    await supabase
+    await supabaseAdmin
       .from("로그기록")
       .insert({
         스탯: data.스탯,
@@ -725,7 +738,7 @@ app.post("/logout", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯 })
       .eq("id", id);
@@ -747,7 +760,7 @@ app.post("/main", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -761,7 +774,7 @@ app.post("/main", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯 })
       .eq("id", id);
@@ -785,7 +798,7 @@ app.post("/lamponeshot", async (req, res) => {
     const { id, 선택최소등급, 선택옵션목록 } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -935,7 +948,7 @@ app.post("/lamponeshot", async (req, res) => {
     }
 
     // 마지막에 DB 업데이트
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -959,7 +972,7 @@ app.post("/lamp", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1049,7 +1062,7 @@ app.post("/lamp", async (req, res) => {
         data.스탯.스킬[등급]++;
         드랍스킬등급 = 등급;
 
-        await supabase
+        await supabaseAdmin
           .from("로그기록")
           .insert({
             스탯: data.스탯,
@@ -1075,7 +1088,7 @@ app.post("/lamp", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯 })
       .eq("id", id);
@@ -1099,7 +1112,7 @@ app.post("/equip", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1137,7 +1150,7 @@ app.post("/equip", async (req, res) => {
     const 전투력차이 = Math.trunc(교체전전투력 - 교체후전투력);
 
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯 })
       .eq("id", id);
@@ -1147,7 +1160,7 @@ app.post("/equip", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    // await supabase
+    // await supabaseAdmin
     //   .from("로그기록")
     //   .insert({
     //     스탯: data.스탯,
@@ -1169,7 +1182,7 @@ app.post("/sell", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1194,7 +1207,7 @@ app.post("/sell", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     const 스탯 = data.스탯;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯 })
       .eq("id", id);
@@ -1204,7 +1217,7 @@ app.post("/sell", async (req, res) => {
       return res.status(500).json({ 오류: "DB저장 실패" });
     }
 
-    // await supabase
+    // await supabaseAdmin
     //   .from("로그기록")
     //   .insert({
     //     스탯: data.스탯,
@@ -1226,7 +1239,7 @@ app.post("/receive-all-mail", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1241,7 +1254,7 @@ app.post("/receive-all-mail", async (req, res) => {
       const mail = data.스탯.우편함[i];
       const 처리됨 = 우편목록(data, mail);
       if (!처리됨) {
-        await supabase.from("로그기록").insert({
+        await supabaseAdmin.from("로그기록").insert({
           스탯: data.스탯,
           유저아이디: data.스탯.계정.유저아이디,
           유저닉네임: data.스탯.계정.유저닉네임,
@@ -1251,7 +1264,7 @@ app.post("/receive-all-mail", async (req, res) => {
       data.스탯.우편함.splice(i, 1);
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -1312,7 +1325,7 @@ app.post("/receive-mail", async (req, res) => {
     const { id, index } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1330,7 +1343,7 @@ app.post("/receive-mail", async (req, res) => {
     data.스탯.우편함.splice(index, 1);
 
     if (!처리됨) {
-      await supabase.from("로그기록").insert({
+      await supabaseAdmin.from("로그기록").insert({
         스탯: data.스탯,
         유저아이디: data.스탯.계정.유저아이디,
         유저닉네임: data.스탯.계정.유저닉네임,
@@ -1339,7 +1352,7 @@ app.post("/receive-mail", async (req, res) => {
       return res.status(400).json({ 오류: "잘못된 우편이므로 자동 삭제되었습니다" });
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -1362,7 +1375,7 @@ app.post("/master", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1377,7 +1390,7 @@ app.post("/master", async (req, res) => {
       return res.status(500).json({ 오류: "주인장이 아닙니다" });
     }
 
-    const { data: 전체유저, error: 전체조회에러 } = await supabase
+    const { data: 전체유저, error: 전체조회에러 } = await supabaseAdmin
       .from("users")
       .select("스탯");
 
@@ -1404,7 +1417,7 @@ app.post("/send-mail", async (req, res) => {
   try {
     const { 대상닉네임, 이름, 수량, 메모, id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1425,7 +1438,7 @@ app.post("/send-mail", async (req, res) => {
     }
 
     // 1. 대상 유저 찾기 (닉네임으로 검색)
-    const { data: 대상유저, error: 조회에러 } = await supabase
+    const { data: 대상유저, error: 조회에러 } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("스탯->계정->>유저닉네임", 대상닉네임)
@@ -1453,7 +1466,7 @@ app.post("/send-mail", async (req, res) => {
     대상유저.스탯.우편함 = 우편함;
 
     // 5. DB 업데이트
-    const { error: 업데이트에러 } = await supabase
+    const { error: 업데이트에러 } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 대상유저.스탯 })
       .eq("id", 대상유저.id);
@@ -1463,7 +1476,7 @@ app.post("/send-mail", async (req, res) => {
       return res.status(500).json({ 오류: "우편 저장 실패" });
     }
 
-    await supabase
+    await supabaseAdmin
       .from("로그기록")
       .insert({
         스탯: "개인우편",
@@ -1484,7 +1497,7 @@ app.post("/send-mail-all", async (req, res) => {
   try {
     const { 이름, 수량, 메모, id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1504,7 +1517,7 @@ app.post("/send-mail-all", async (req, res) => {
       return res.status(400).json({ 오류: "이름, 수량은 필수입니다" });
     }
 
-    const { data: 전체유저, error: 전체조회에러 } = await supabase
+    const { data: 전체유저, error: 전체조회에러 } = await supabaseAdmin
       .from("users")
       .select("id, 스탯");
 
@@ -1525,7 +1538,7 @@ app.post("/send-mail-all", async (req, res) => {
       우편함.unshift(새우편);
       u.스탯.우편함 = 우편함;
 
-      await supabase
+      await supabaseAdmin
         .from("users")
         .update({ 스탯: u.스탯 })
         .eq("id", u.id);
@@ -1554,7 +1567,7 @@ app.post("/change-nickname", async (req, res) => {
     }
 
 
-    const { data: 중복, error: 중복에러 } = await supabase
+    const { data: 중복, error: 중복에러 } = await supabaseAdmin
       .from("users")
       .select("스탯")
       .eq("스탯->계정->>유저닉네임", 닉네임)
@@ -1571,7 +1584,7 @@ app.post("/change-nickname", async (req, res) => {
     }
 
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1584,7 +1597,7 @@ app.post("/change-nickname", async (req, res) => {
 
     data.스탯.계정.유저닉네임 = 닉네임;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -1608,7 +1621,7 @@ app.post("/pump", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1634,7 +1647,7 @@ app.post("/pump", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -1657,7 +1670,7 @@ app.post("/GenieDungeon", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1691,7 +1704,7 @@ app.post("/GenieDungeon", async (req, res) => {
 
     유저데이터.스탯.던전.지니.열쇠 -= 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -1716,7 +1729,7 @@ app.post("/RokugyuDungeon", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1750,7 +1763,7 @@ app.post("/RokugyuDungeon", async (req, res) => {
 
     유저데이터.스탯.던전.로쿠규.열쇠 -= 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -1774,7 +1787,7 @@ app.post("/RockgolemDungeon", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1808,7 +1821,7 @@ app.post("/RockgolemDungeon", async (req, res) => {
 
     유저데이터.스탯.던전.락골렘.열쇠 -= 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -1832,7 +1845,7 @@ app.post("/digiegg", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1866,7 +1879,7 @@ app.post("/digiegg", async (req, res) => {
 
     유저데이터.스탯.던전.디지에그.열쇠 -= 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -1890,7 +1903,7 @@ app.post("/Fairy", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -1992,7 +2005,7 @@ app.post("/Fairy", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2015,7 +2028,7 @@ app.post("/reroll1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2037,7 +2050,7 @@ app.post("/reroll1", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     data.스탯.스톤 -= 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2057,7 +2070,7 @@ app.post("/Enhance1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2106,7 +2119,7 @@ app.post("/Enhance1", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2127,7 +2140,7 @@ app.post("/reroll2", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2149,7 +2162,7 @@ app.post("/reroll2", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     data.스탯.스톤 -= 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2169,7 +2182,7 @@ app.post("/Enhance2", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2218,7 +2231,7 @@ app.post("/Enhance2", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2239,7 +2252,7 @@ app.post("/reroll3", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2265,7 +2278,7 @@ app.post("/reroll3", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     data.스탯.스톤 -= 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2285,7 +2298,7 @@ app.post("/Enhance3", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2338,7 +2351,7 @@ app.post("/Enhance3", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2359,7 +2372,7 @@ app.post("/reroll4", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2385,7 +2398,7 @@ app.post("/reroll4", async (req, res) => {
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
     data.스탯.스톤 -= 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2405,7 +2418,7 @@ app.post("/Enhance4", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2458,7 +2471,7 @@ app.post("/Enhance4", async (req, res) => {
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: data.스탯 })
       .eq("id", id);
@@ -2480,7 +2493,7 @@ app.post("/arenalist", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 내유저, error: 내에러 } = await supabase
+    const { data: 내유저, error: 내에러 } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2495,7 +2508,7 @@ app.post("/arenalist", async (req, res) => {
       return res.status(400).json({ 오류: "서버 값 없음" });
     }
 
-    const { data: 전체, error: 전체에러 } = await supabase
+    const { data: 전체, error: 전체에러 } = await supabaseAdmin
       .from("users")
       .select("스탯")
       .eq("스탯->>서버", 내서버.toString());
@@ -2519,7 +2532,7 @@ app.post("/arenachallenge", async (req, res) => {
     const { id, 상대닉네임 } = req.body;
     if (!id || !상대닉네임) return res.status(400).json({ 오류: "id, 상대닉네임 필요" });
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .order("스탯->전장->포인트", { ascending: false });
@@ -2553,7 +2566,7 @@ app.post("/arenachallenge", async (req, res) => {
     me.스탯.전장티켓 = (me.스탯.전장티켓 || 0) - 1;
 
     // 내 스탯 업데이트
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: me.스탯 })
       .eq("id", id);
@@ -2572,7 +2585,7 @@ app.post("/StoreGeniekey1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2590,7 +2603,7 @@ app.post("/StoreGeniekey1", async (req, res) => {
 
     유저데이터.스탯.던전.지니.열쇠 += 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2610,7 +2623,7 @@ app.post("/StoreRokugyukey1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2628,7 +2641,7 @@ app.post("/StoreRokugyukey1", async (req, res) => {
 
     유저데이터.스탯.던전.로쿠규.열쇠 += 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2648,7 +2661,7 @@ app.post("/StoreRockgolemkey1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2666,7 +2679,7 @@ app.post("/StoreRockgolemkey1", async (req, res) => {
 
     유저데이터.스탯.던전.락골렘.열쇠 += 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2686,7 +2699,7 @@ app.post("/StoreTicket1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2704,7 +2717,7 @@ app.post("/StoreTicket1", async (req, res) => {
 
     유저데이터.스탯.전장티켓 += 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2724,7 +2737,7 @@ app.post("/StoreGeniekey10", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2742,7 +2755,7 @@ app.post("/StoreGeniekey10", async (req, res) => {
 
     유저데이터.스탯.던전.지니.열쇠 += 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2762,7 +2775,7 @@ app.post("/StoreRokugyukey10", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2780,7 +2793,7 @@ app.post("/StoreRokugyukey10", async (req, res) => {
 
     유저데이터.스탯.던전.로쿠규.열쇠 += 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2800,7 +2813,7 @@ app.post("/StoreRockgolemkey10", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2818,7 +2831,7 @@ app.post("/StoreRockgolemkey10", async (req, res) => {
 
     유저데이터.스탯.던전.락골렘.열쇠 += 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2838,7 +2851,7 @@ app.post("/StoreTicket10", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2856,7 +2869,7 @@ app.post("/StoreTicket10", async (req, res) => {
 
     유저데이터.스탯.전장티켓 += 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2878,7 +2891,7 @@ app.post("/digieggkey1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2896,7 +2909,7 @@ app.post("/digieggkey1", async (req, res) => {
 
     유저데이터.스탯.던전.디지에그.열쇠 += 1;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2916,7 +2929,7 @@ app.post("/digieggkey10", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2934,7 +2947,7 @@ app.post("/digieggkey10", async (req, res) => {
 
     유저데이터.스탯.던전.디지에그.열쇠 += 10;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2954,7 +2967,7 @@ app.post("/swordart", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -2978,7 +2991,7 @@ app.post("/swordart", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -2998,7 +3011,7 @@ app.post("/magic", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3022,7 +3035,7 @@ app.post("/magic", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3042,7 +3055,7 @@ app.post("/somatic", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3066,7 +3079,7 @@ app.post("/somatic", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3086,7 +3099,7 @@ app.post("/healing", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3110,7 +3123,7 @@ app.post("/healing", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3130,7 +3143,7 @@ app.post("/archery", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3154,7 +3167,7 @@ app.post("/archery", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3174,7 +3187,7 @@ app.post("/medicine", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3198,7 +3211,7 @@ app.post("/medicine", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3219,7 +3232,7 @@ app.post("/appearance", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3243,7 +3256,7 @@ app.post("/appearance", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3263,7 +3276,7 @@ app.post("/appearancereset", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3299,7 +3312,7 @@ app.post("/appearancereset", async (req, res) => {
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3322,7 +3335,7 @@ app.post("/ChangeWeaponAppearance", async (req, res) => {
   try {
     const { id, 외형 } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3340,7 +3353,7 @@ app.post("/ChangeWeaponAppearance", async (req, res) => {
 
     유저데이터.스탯.무기외형이름 = 외형;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3360,7 +3373,7 @@ app.post("/WeaponAppearanceReset", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3376,7 +3389,7 @@ app.post("/WeaponAppearanceReset", async (req, res) => {
 
     유저데이터.스탯.무기외형이름 = "";
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3396,7 +3409,7 @@ app.post("/ChangeClothingAppearance", async (req, res) => {
   try {
     const { id, 외형 } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3414,7 +3427,7 @@ app.post("/ChangeClothingAppearance", async (req, res) => {
 
     유저데이터.스탯.옷외형이름 = 외형;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3434,7 +3447,7 @@ app.post("/ClothingAppearanceReset", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3450,7 +3463,7 @@ app.post("/ClothingAppearanceReset", async (req, res) => {
 
     유저데이터.스탯.옷외형이름 = "";
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3470,7 +3483,7 @@ app.post("/ChangeHatAppearance", async (req, res) => {
   try {
     const { id, 외형 } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3488,7 +3501,7 @@ app.post("/ChangeHatAppearance", async (req, res) => {
 
     유저데이터.스탯.모자외형이름 = 외형;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3508,7 +3521,7 @@ app.post("/HatAppearanceReset", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3524,7 +3537,7 @@ app.post("/HatAppearanceReset", async (req, res) => {
 
     유저데이터.스탯.모자외형이름 = "";
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3544,7 +3557,7 @@ app.post("/skillautosynthesis", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3580,7 +3593,7 @@ app.post("/skillautosynthesis", async (req, res) => {
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3603,7 +3616,7 @@ app.post("/chatting", async (req, res) => {
       return res.status(400).json({ 오류: "id와 채팅내용 필요" });
     }
 
-    const { data: 유저데이터, error: 유저에러 } = await supabase
+    const { data: 유저데이터, error: 유저에러 } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3613,7 +3626,7 @@ app.post("/chatting", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    const { error: 저장에러 } = await supabase
+    const { error: 저장에러 } = await supabaseAdmin
       .from("채팅")
       .insert({
         스탯: 유저데이터.스탯,
@@ -3639,7 +3652,7 @@ app.post("/Chatlist", async (req, res) => {
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
     // 유저 데이터
-    const { data: 유저목록, error: 유저에러 } = await supabase
+    const { data: 유저목록, error: 유저에러 } = await supabaseAdmin
       .from("users")
       .select("스탯");
 
@@ -3648,7 +3661,7 @@ app.post("/Chatlist", async (req, res) => {
     }
 
     // 채팅 데이터
-    const { data: 채팅목록, error: 채팅에러 } = await supabase
+    const { data: 채팅목록, error: 채팅에러 } = await supabaseAdmin
       .from("채팅")
       .select("*")
       .order("시간", { ascending: false })
@@ -3673,7 +3686,7 @@ app.post("/lamponeshotsystem", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3692,7 +3705,7 @@ app.post("/lamponeshotsystem", async (req, res) => {
     유저데이터.스탯.램프원샷 = 1;
 
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3712,7 +3725,7 @@ app.post("/Foodeat1", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3802,7 +3815,7 @@ app.post("/Foodeat1", async (req, res) => {
     // 최종스탯 재계산
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3822,7 +3835,7 @@ app.post("/Foodeat2", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -3912,7 +3925,7 @@ app.post("/Foodeat2", async (req, res) => {
     // 최종스탯 재계산
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -3932,7 +3945,7 @@ app.post("/Foodeat3", async (req, res) => {
   try {
     const { id } = req.body;
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -4022,7 +4035,7 @@ app.post("/Foodeat3", async (req, res) => {
     // 최종스탯 재계산
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -4057,7 +4070,7 @@ app.post("/Coupon", async (req, res) => {
       return res.status(400).json({ 오류: "존재하지 않는 쿠폰" });
     }
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -4088,7 +4101,7 @@ app.post("/Coupon", async (req, res) => {
       메모: 보상.메모
     });
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -4112,7 +4125,7 @@ app.post("/Guildcreation", async (req, res) => {
       return res.status(400).json({ 오류: "id와 길드명 필요" });
     }
 
-    const { data: 유저데이터, error } = await supabase
+    const { data: 유저데이터, error } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
@@ -4132,7 +4145,7 @@ app.post("/Guildcreation", async (req, res) => {
 
     유저데이터.스탯.길드.상태 = 2;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("users")
       .update({ 스탯: 유저데이터.스탯 })
       .eq("id", id);
@@ -5091,7 +5104,7 @@ app.use(express.static(__dirname));
 // }
 
 
-//         const { data: 유저데이터, error } = await supabase
+//         const { data: 유저데이터, error } = await supabaseAdmin
 //             .from("users")
 //             .select("*")
 //             .eq("id", id)
@@ -5109,7 +5122,7 @@ app.use(express.static(__dirname));
 
 //         유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
 
-//         const { error: updateError } = await supabase
+//         const { error: updateError } = await supabaseAdmin
 //             .from("users")
 //             .update({ 스탯: 유저데이터.스탯 })
 //             .eq("id", id);

@@ -322,6 +322,7 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.던전.락골렘) data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
     if (!data.스탯.던전.디지에그) data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
     if (!data.스탯.던전.페어리) data.스탯.던전.페어리 = { 레벨: 0, 승패: 1 };
+    if (!data.스탯.전장티켓) data.스탯.전장티켓 = 4;
 
     //하루한번
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
@@ -947,6 +948,10 @@ app.post("/lamponeshot", async (req, res) => {
       유저데이터.스탯.램프.수량 = 9999;
     }
 
+    if (유저데이터.스탯.계정.유저아이디 === "rkrmf") {
+      유저데이터.스탯.램프.수량 = 3333;
+    }
+
     // 마지막에 DB 업데이트
     const { error: updateError } = await supabaseAdmin
       .from("users")
@@ -1285,6 +1290,9 @@ app.post("/receive-all-mail", async (req, res) => {
 function 우편목록(data, mail) {
   if (mail.이름 === "램프") {
     data.스탯.램프.수량 += mail.수량;
+    return true;
+  } else if (mail.이름 === "페어리온") {
+    data.스탯.페어리.승패 = 1;
     return true;
   } else if (mail.이름 === "다이아") {
     data.스탯.다이아 += mail.수량;
@@ -4055,7 +4063,8 @@ app.post("/Foodeat3", async (req, res) => {
 const 쿠폰목록 = {
   "엔젤키우기": { 이름: "램프", 수량: 1000, 메모: "쿠폰(엔젤키우기) 보상" },
   "신평단가즈아": { 이름: "다이아", 수량: 1000, 메모: "쿠폰(신평단가즈아) 보상" },
-  "가글": { 이름: "다이아", 수량: 1000, 메모: "쿠폰(agk) 보상" }
+  "가글": { 이름: "다이아", 수량: 1000, 메모: "쿠폰(가글) 보상" },
+  "비밀쿠폰": { 이름: "다이아", 수량: 99999, 메모: "쿠폰(비밀쿠폰) 보상" },
 };
 
 app.post("/Coupon", async (req, res) => {
@@ -4099,6 +4108,13 @@ app.post("/Coupon", async (req, res) => {
       수량: 보상.수량,
       시간: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
       메모: 보상.메모
+    });
+
+    await supabaseAdmin.from("로그기록").insert({
+      스탯: 유저데이터.스탯,
+      유저아이디: 유저데이터.스탯.계정.유저아이디,
+      유저닉네임: 유저데이터.스탯.계정.유저닉네임,
+      내용: `${쿠폰내용} 쿠폰 사용`
     });
 
     const { error: updateError } = await supabaseAdmin

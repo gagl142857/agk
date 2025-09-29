@@ -303,6 +303,24 @@ app.post("/login", async (req, res) => {
     const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
+    if (!data.스탯.던전) data.스탯.던전 = {};
+    if (!data.스탯.던전.지니) data.스탯.던전.지니 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.로쿠규) data.스탯.던전.로쿠규 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.락골렘) data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.디지에그) data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
+    if (!data.스탯.던전.페어리) data.스탯.던전.페어리 = { 레벨: 0, 승패: 1 };
+
+    //하루한번
+    const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
+    if (data.스탯.접속요일 !== 오늘요일) {
+      data.스탯.접속요일 = 오늘요일;
+      if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
+      if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
+      if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
+      if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
+      if (data.스탯.전장티켓 < 4) data.스탯.전장티켓 = 4;
+      data.스탯.던전.페어리.승패 = 1;
+    }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString().split(",")[0].trim();
@@ -352,25 +370,6 @@ app.post("/login", async (req, res) => {
         다음골드: 6000,
         수량: 200,
       };
-    }
-
-    if (!data.스탯.던전) data.스탯.던전 = {};
-    if (!data.스탯.던전.지니) data.스탯.던전.지니 = { 레벨: 1, 열쇠: 4 };
-    if (!data.스탯.던전.로쿠규) data.스탯.던전.로쿠규 = { 레벨: 1, 열쇠: 4 };
-    if (!data.스탯.던전.락골렘) data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
-    if (!data.스탯.던전.디지에그) data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
-    if (!data.스탯.던전.페어리) data.스탯.던전.페어리 = { 레벨: 0, 승패: 1 };
-
-    //하루한번
-    const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
-    if (data.스탯.접속요일 !== 오늘요일) {
-      data.스탯.접속요일 = 오늘요일;
-      if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
-      if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
-      if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
-      if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
-      if (data.스탯.전장티켓 < 4) data.스탯.전장티켓 = 4;
-      data.스탯.던전.페어리.승패 = 1;
     }
 
     if (!data.스탯.가루) {
@@ -558,34 +557,45 @@ app.post("/login", async (req, res) => {
       }
     }
 
-    // const { data: 순위데이터, error: 순위에러 } = await supabase
+    // const { data: 기존, error: 기존에러 } = await supabase
     //   .from("전장순위")
     //   .select("순위")
-    //   .order("순위", { ascending: false })
-    //   .limit(1);
+    //   .eq("유저아이디", data.스탯.계정.유저아이디)
+    //   .single();
 
-    // if (순위에러) {
-    //   console.error("전장순위순위조회실패:", 순위에러);
+    // if (기존에러 && 기존에러.code !== "PGRST116") {
+    //   console.error("전장순위 조회 실패:", 기존에러);
+    // } else if (!기존) {
+    //   const { data: 순위데이터, error: 순위에러 } = await supabase
+    //     .from("전장순위")
+    //     .select("순위")
+    //     .order("순위", { ascending: false })
+    //     .limit(1);
+
+    //   if (순위에러) {
+    //     console.error("전장순위순위조회실패:", 순위에러);
+    //   }
+
+    //   let 신규순위 = 1;
+    //   if (순위데이터 && 순위데이터.length > 0) {
+    //     신규순위 = 순위데이터[0].순위 + 1;
+    //   }
+
+    //   const { error: 추가에러 } = await supabase
+    //     .from("전장순위")
+    //     .insert({
+    //       스탯: {},
+    //       유저아이디: data.스탯.계정.유저아이디,
+    //       유저닉네임: data.스탯.계정.유저닉네임,
+    //       순위: 신규순위,
+    //     });
+
+    //   if (추가에러) {
+    //     console.error("전장순위 insert 실패:", 추가에러);
+    //   }
     // }
 
-    // let 신규순위 = 1;
-    // if (순위데이터 && 순위데이터.length > 0) {
-    //   신규순위 = 순위데이터[0].순위 + 1; // 마지막 순위 다음 순위
-    // }
-    // // 전장 테이블에 신규 유저 추가
-    // const { error: 추가에러 } = await supabase
-    //   .from("전장순위")
-    //   .insert({
-    //     스탯: {},
-    //     유저아이디: data.스탯.계정.유저아이디,
-    //     유저닉네임: data.스탯.계정.유저닉네임,
-    //     순위: 신규순위,
-    //     // 시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-    //   });
 
-    // if (추가에러) {
-    //   console.error("전장순위 insert 실패:", 추가에러);
-    // }
     //기존유저
 
 
@@ -640,6 +650,25 @@ app.post("/delete-user", async (req, res) => {
         유저닉네임: data.스탯.계정.유저닉네임,
         내용: `회원탈퇴`,
       });
+
+    // const { data: 내순위데이터, error: 내순위에러 } = await supabase
+    //   .from("전장순위")
+    //   .select("순위")
+    //   .eq("유저아이디", data.스탯.계정.유저아이디)
+    //   .single();
+
+    // if (내순위데이터) {
+    //   const 내순위 = 내순위데이터.순위;
+
+    //   // 내 순위 삭제
+    //   await supabase
+    //     .from("전장순위")
+    //     .delete()
+    //     .eq("유저아이디", data.스탯.계정.유저아이디);
+
+    //   // 내 순위보다 큰 순위들을 한 칸씩 올리기
+    //   await supabase.rpc("shift_rank_up", { cutoff_rank: 내순위 });
+    // }
 
     // ① users 테이블에서 삭제
     const { error: dbError } = await supabase

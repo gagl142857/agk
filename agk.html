@@ -3400,13 +3400,7 @@
 
 해야할일
 
-전장손보는중
-상대정보
 길드만들자
-별자리 황도12궁
-날개진화
-길드만들기
-서버적용
 
 git add . && git commit -m "배포" && git push origin main
 
@@ -4216,7 +4210,7 @@ ${전투결과.결과}<br>
                     document.getElementById("내정보1열").innerHTML = `${순위맵[유저.스탯.계정.유저닉네임]}위`;
                     document.getElementById("내정보2열").innerHTML = `전투력 ${단위변환함수(유저.스탯.전투력)}`;
                     document.getElementById("내정보3열").innerHTML = 유저.스탯.계정.유저닉네임 || 유저.id;
-                    document.getElementById("내정보4열").innerHTML = `티켓${유저.스탯.전장.티켓}`;
+                    document.getElementById("내정보4열").innerHTML = `티켓${유저.스탯.전장티켓}`;
                     document.getElementById(`내정보1열`).style.flex = "2";
                     document.getElementById(`내정보2열`).style.flex = "3";
                     document.getElementById(`내정보3열`).style.flex = "3";
@@ -4420,7 +4414,7 @@ ${전투결과.결과}<br>
                     document.getElementById(`${i}번째유저4열`).addEventListener("click", async (e) => {
                         e.stopPropagation();
                         try {
-                            if (유저데이터.스탯.전장.티켓 < 1) {
+                            if (유저데이터.스탯.전장티켓 < 1) {
                                 메시지표시(`티켓이 부족합니다`);
                                 return;
                             }

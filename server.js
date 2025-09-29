@@ -303,17 +303,6 @@ app.post("/login", async (req, res) => {
     const 이전접속 = data.스탯?.접속시각 || 현재접속;
     const 시간차 = Math.min(현재접속 - 이전접속, 24);
 
-    //하루한번
-    const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
-    if (data.스탯.접속요일 !== 오늘요일) {
-      data.스탯.접속요일 = 오늘요일;
-      if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
-      if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
-      if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
-      if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
-      if (data.스탯.전장티켓 < 4) data.스탯.전장티켓 = 4;
-      data.스탯.던전.페어리.승패 = 1;
-    }
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString().split(",")[0].trim();
@@ -371,6 +360,18 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.던전.락골렘) data.스탯.던전.락골렘 = { 레벨: 1, 열쇠: 4 };
     if (!data.스탯.던전.디지에그) data.스탯.던전.디지에그 = { 레벨: 1, 열쇠: 4 };
     if (!data.스탯.던전.페어리) data.스탯.던전.페어리 = { 레벨: 0, 승패: 1 };
+
+    //하루한번
+    const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
+    if (data.스탯.접속요일 !== 오늘요일) {
+      data.스탯.접속요일 = 오늘요일;
+      if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
+      if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
+      if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
+      if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
+      if (data.스탯.전장티켓 < 4) data.스탯.전장티켓 = 4;
+      data.스탯.던전.페어리.승패 = 1;
+    }
 
     if (!data.스탯.가루) {
       data.스탯.가루 = 0;
@@ -557,31 +558,35 @@ app.post("/login", async (req, res) => {
       }
     }
 
-
     // const { data: 순위데이터, error: 순위에러 } = await supabase
     //   .from("전장순위")
     //   .select("순위")
     //   .order("순위", { ascending: false })
     //   .limit(1);
 
+    // if (순위에러) {
+    //   console.error("전장순위순위조회실패:", 순위에러);
+    // }
+
     // let 신규순위 = 1;
     // if (순위데이터 && 순위데이터.length > 0) {
     //   신규순위 = 순위데이터[0].순위 + 1; // 마지막 순위 다음 순위
     // }
-
     // // 전장 테이블에 신규 유저 추가
     // const { error: 추가에러 } = await supabase
     //   .from("전장순위")
     //   .insert({
-    //     유저아이디: id,
-    //     유저닉네임: "신규닉네임",
+    //     스탯: {},
+    //     유저아이디: data.스탯.계정.유저아이디,
+    //     유저닉네임: data.스탯.계정.유저닉네임,
     //     순위: 신규순위,
-    //     시간: new Date().toISOString(),
-    //     스탯: { 전장: { 포인트: 0, 티켓: 4 } },
+    //     // 시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
     //   });
 
+    // if (추가에러) {
+    //   console.error("전장순위 insert 실패:", 추가에러);
+    // }
     //기존유저
-
 
 
     if (기기ID) data.스탯.기기ID = 기기ID;

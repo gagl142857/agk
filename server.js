@@ -197,20 +197,8 @@ app.post("/register", async (req, res) => {
       .split(",")[0]
       .trim();
 
-    const { count, error: countError } = await supabase
-      .from("users")
-      .select("id", { count: "exact", head: true });
-
-    let 신규포인트 = 0;
-    if (!countError && typeof count === "number") {
-      신규포인트 = 10000000 - (1000 * count);
-    }
-
     const 기본스탯 = {
-      전장: {
-        포인트: 신규포인트,
-        티켓: 4,
-      },
+      전장티켓: 4,
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
       생성요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
       접속시각: Math.floor(now.getTime() / 3600000), // 478520,
@@ -323,7 +311,7 @@ app.post("/login", async (req, res) => {
       if (data.스탯.던전.로쿠규.열쇠 < 4) data.스탯.던전.로쿠규.열쇠 = 4;
       if (data.스탯.던전.락골렘.열쇠 < 4) data.스탯.던전.락골렘.열쇠 = 4;
       if (data.스탯.던전.디지에그.열쇠 < 4) data.스탯.던전.디지에그.열쇠 = 4;
-      if (data.스탯.전장.티켓 < 4) data.스탯.전장.티켓 = 4;
+      if (data.스탯.전장티켓 < 4) data.스탯.전장티켓 = 4;
       data.스탯.던전.페어리.승패 = 1;
     }
 
@@ -529,7 +517,6 @@ app.post("/login", async (req, res) => {
       };
     }
 
-    //기존유저
     if (!data.스탯.별자리) {
       data.스탯.별자리 =
       {
@@ -569,6 +556,33 @@ app.post("/login", async (req, res) => {
         data.스탯[`조각상${i}`] = {};
       }
     }
+
+
+    // const { data: 순위데이터, error: 순위에러 } = await supabase
+    //   .from("전장순위")
+    //   .select("순위")
+    //   .order("순위", { ascending: false })
+    //   .limit(1);
+
+    // let 신규순위 = 1;
+    // if (순위데이터 && 순위데이터.length > 0) {
+    //   신규순위 = 순위데이터[0].순위 + 1; // 마지막 순위 다음 순위
+    // }
+
+    // // 전장 테이블에 신규 유저 추가
+    // const { error: 추가에러 } = await supabase
+    //   .from("전장순위")
+    //   .insert({
+    //     유저아이디: id,
+    //     유저닉네임: "신규닉네임",
+    //     순위: 신규순위,
+    //     시간: new Date().toISOString(),
+    //     스탯: { 전장: { 포인트: 0, 티켓: 4 } },
+    //   });
+
+    //기존유저
+
+
 
     if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;
@@ -1235,7 +1249,7 @@ function 우편목록(data, mail) {
     data.스탯.디지에그 += mail.수량;
     return true;
   } else if (mail.이름 === "티켓") {
-    data.스탯.전장.티켓 += mail.수량;
+    data.스탯.전장티켓 += mail.수량;
     return true;
   } else if (mail.이름 === "낙엽") {
     data.스탯.낙엽 += mail.수량;
@@ -2473,7 +2487,8 @@ app.post("/arenachallenge", async (req, res) => {
 
     const { data, error } = await supabase
       .from("users")
-      .select("*");
+      .select("*")
+      .order("스탯->전장->포인트", { ascending: false });
 
     if (error || !data) return res.status(500).json({ 오류: "유저 조회 실패" });
 
@@ -2481,13 +2496,15 @@ app.post("/arenachallenge", async (req, res) => {
     const me = data.find(u => u.id === id);
     if (!me) return res.status(404).json({ 오류: "유저 없음" });
 
-    if (!me.스탯.전장 || me.스탯.전장.티켓 < 1) {
+    if (!me.스탯.전장 || me.스탯.전장티켓 < 1) {
       return res.status(400).json({ 오류: "티켓 부족" });
     }
 
     // 상대 데이터 (닉네임으로 찾기)
     const 상대 = data.find(u => u.스탯?.계정?.유저닉네임 === 상대닉네임);
     if (!상대) return res.status(404).json({ 오류: "상대 없음" });
+
+    const 상대Index = data.findIndex(u => u.스탯?.계정?.유저닉네임 === 상대닉네임);
 
     // 전투 시뮬레이션
     const 전투결과 = 전투시뮬레이션(
@@ -2499,7 +2516,7 @@ app.post("/arenachallenge", async (req, res) => {
       me.스탯.전장.포인트 = (상대.스탯.전장.포인트 || 0) + 100 + me.스탯.계정.레벨;
     }
 
-    me.스탯.전장.티켓 = (me.스탯.전장.티켓 || 0) - 1;
+    me.스탯.전장티켓 = (me.스탯.전장티켓 || 0) - 1;
 
     // 내 스탯 업데이트
     const { error: updateError } = await supabase
@@ -2651,7 +2668,7 @@ app.post("/StoreTicket1", async (req, res) => {
 
     유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
 
-    유저데이터.스탯.전장.티켓 += 1;
+    유저데이터.스탯.전장티켓 += 1;
 
     const { error: updateError } = await supabase
       .from("users")
@@ -2803,7 +2820,7 @@ app.post("/StoreTicket10", async (req, res) => {
 
     유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 10000;
 
-    유저데이터.스탯.전장.티켓 += 10;
+    유저데이터.스탯.전장티켓 += 10;
 
     const { error: updateError } = await supabase
       .from("users")

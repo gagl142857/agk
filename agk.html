@@ -4134,6 +4134,12 @@ ${전투결과.결과}<br>
             전장화면.style.display = "flex";
             전장화면컨테이너.innerHTML = "";
 
+            if (유저데이터.스탯.주인장인가) {
+                행렬만들기(전장화면컨테이너, "주인장버튼", 1);
+                주인장버튼1열.innerHTML = `정렬`;
+
+
+            }
             try {
 
                 화면잠금();
@@ -4199,6 +4205,261 @@ ${전투결과.결과}<br>
 
                 줄.style.backgroundColor = "#303030";
                 줄.style.paddingTop = "8px";
+
+                const 구분선 = document.createElement("div");
+                구분선.style.borderTop = "2px solid #000";
+                구분선.style.margin = "12px 0";
+                전장화면컨테이너.appendChild(구분선);
+
+
+
+                for (let i = 0; i < 결과.전장리스트.length; i++) {
+                    const 유저 = 결과.전장리스트[i];
+                    const 순위 = 유저.순위;
+                    const 닉네임 = 유저.유저닉네임 || 유저.유저아이디;
+
+                    행렬만들기(전장화면컨테이너, `${i}번째유저`, 4);
+
+                    document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #dadada";
+
+                    // 순위 아이콘
+                    if (순위 === 1) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24"  stroke="gold" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+
+                    } else if (순위 === 2) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24"  stroke="silver" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+
+                    } else if (순위 === 3) {
+                        document.getElementById(`${i}번째유저1열`).innerHTML = `
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" stroke="#cd7f32" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/>
+            <path d="M5 21h14"/>
+          </svg>`;
+
+                    } else {
+                        document.getElementById(`${i}번째유저1열`).innerText = `${순위}위`;
+                    }
+
+                    // 전투력
+                    document.getElementById(`${i}번째유저2열`).innerHTML =
+                        `전투력 ${단위변환함수(유저.스탯.전투력)}`;
+
+                    // 닉네임
+                    if (순위 === 1) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML = `<span class="마법의팔레트1위">${닉네임}</span>`;
+                    } else if (순위 === 2) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML = `<span class="마법의팔레트2위">${닉네임}</span>`;
+                    } else if (순위 === 3) {
+                        document.getElementById(`${i}번째유저3열`).innerHTML = `<span class="마법의팔레트3위">${닉네임}</span>`;
+                    } else {
+                        document.getElementById(`${i}번째유저3열`).innerText = 닉네임;
+                    }
+                    document.getElementById(`${i}번째유저3열`).style.cursor = "pointer";
+
+                    document.getElementById(`${i}번째유저3열`).addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        전장유저정보.style.display = "flex";
+                        전장유저정보.innerHTML = "";
+                        // 레벨1열.innerHTML = 유저.스탯.직업?.이름 ? `${유저.스탯.직업?.이름}(${유저.스탯.직업?.종류}) lv ${유저.스탯.계정.레벨}` : `lv ${유저.스탯.계정.레벨}`;
+
+                        행렬만들기(전장유저정보, "닉네임", 2);
+                        닉네임1열.style.display = `block`;
+                        닉네임1열.innerHTML = 유저.스탯.계정.유저닉네임;
+                        닉네임2열.style.display = `block`;
+                        닉네임2열.innerHTML = 유저.스탯.직업?.이름 ? `${유저.스탯.직업?.이름}(${유저.스탯.직업?.종류})` : `직업 -`;
+                        행렬만들기(전장유저정보, "레벨", 2);
+                        레벨1열.style.display = `block`;
+                        레벨1열.innerHTML = `별자리 Lv${유저.스탯.별자리?.레벨 || 0}`;
+                        레벨2열.style.display = `block`;
+                        레벨2열.innerHTML = `스킬최고등급 ` + 유저.스탯.스킬.최고등급 + `급`;
+                        행렬만들기(전장유저정보, "외형강화", 2);
+                        외형강화1열.style.display = `block`;
+                        외형강화1열.innerHTML = `외형강화 Lv${유저.스탯.외형강화.레벨}`;
+                        외형강화2열.style.display = `block`;
+                        외형강화2열.innerHTML = `동료합산 Lv${유저.스탯.동료1.레벨 + 유저.스탯.동료2.레벨 + 유저.스탯.동료3.레벨}`;
+
+                        행렬만들기(전장유저정보, "전장유저장비", 4);
+                        전장유저장비.style.borderTop = `0.2px solid #dadada`;
+                        전장유저장비.style.alignItems = "flex-start";
+                        // 전장유저장비5열.style.borderLeft = `0.2px solid #dadada`;
+                        // 전장유저장비5열.style.paddingLeft = `8px`;
+
+                        const 장비리스트 = [
+                            ["무기", "전장유저장비1열"],
+                            ["옷", "전장유저장비1열"],
+                            ["무릎아머", "전장유저장비1열"],
+                            ["모자", "전장유저장비2열"],
+                            ["완갑", "전장유저장비2열"],
+                            ["신발", "전장유저장비2열"],
+                            ["안경", "전장유저장비3열"],
+                            ["장갑", "전장유저장비3열"],
+                            ["견갑", "전장유저장비4열"],
+                            ["벨트", "전장유저장비4열"],
+                        ];
+
+                        for (const [이름, 위치] of 장비리스트) {
+                            const div = document.createElement("div");
+                            div.style.display = "flex";
+                            div.id = 이름 + "외형";
+                            div.innerHTML =
+                                유저.스탯[이름] && 유저.스탯[이름].등급
+                                    ? (장비아이콘[이름]?.[유저.스탯[이름].등급]
+                                        || 장비아이콘[이름]?.기본
+                                        || "")
+                                    : (유저.스탯[이름]
+                                        ? (장비아이콘[이름]?.기본 || "")
+                                        : "");
+                            div.style.cursor = "pointer";
+                            div.style.width = "32px";
+                            div.style.height = "32px";
+                            div.style.padding = "8px";
+                            div.style.marginTop = "8px";
+                            div.style.borderRadius = "8px";
+                            div.style.border = `0.2px solid #dadada`;
+                            div.style.background = `radial-gradient(circle, ${등급색상[유저.스탯[이름]?.등급 || "기본"].좌} 40%, ${등급색상[유저.스탯[이름]?.등급 || "기본"].우} 100%)`;
+                            document.getElementById(위치).append(div);
+                        }
+
+                        let 탈것레벨변수 = 유저.스탯.탈것.레벨;
+                        let 탈것등급변수 = "기본";
+
+                        if (탈것레벨변수 >= 1 && 탈것레벨변수 <= 10) 탈것등급변수 = "D";
+                        if (탈것레벨변수 >= 11 && 탈것레벨변수 <= 20) 탈것등급변수 = "C";
+                        if (탈것레벨변수 >= 21 && 탈것레벨변수 <= 30) 탈것등급변수 = "B";
+                        if (탈것레벨변수 >= 31 && 탈것레벨변수 <= 40) 탈것등급변수 = "A";
+                        if (탈것레벨변수 >= 41 && 탈것레벨변수 <= 50) 탈것등급변수 = "S";
+                        if (탈것레벨변수 >= 51 && 탈것레벨변수 <= 60) 탈것등급변수 = "SS";
+                        if (탈것레벨변수 >= 61 && 탈것레벨변수 <= 70) 탈것등급변수 = "L";
+                        if (탈것레벨변수 >= 71 && 탈것레벨변수 <= 80) 탈것등급변수 = "LL";
+                        if (탈것레벨변수 >= 81 && 탈것레벨변수 <= 90) 탈것등급변수 = "U";
+                        if (탈것레벨변수 >= 91 && 탈것레벨변수 <= 100) 탈것등급변수 = "UU";
+                        if (탈것레벨변수 >= 101) 탈것등급변수 = "X";
+
+                        const 탈것박스 = document.createElement("div");
+                        탈것박스.id = "탈것";
+                        탈것박스.style.display = "flex";
+                        탈것박스.innerHTML =
+                            장비아이콘[`탈것`]?.[탈것등급변수]
+                            || 장비아이콘[`탈것`]?.기본;
+                        탈것박스.style.color = "black";
+                        탈것박스.style.cursor = "pointer";
+                        탈것박스.style.width = "32px";
+                        탈것박스.style.height = "32px";
+                        탈것박스.style.padding = "8px";
+                        탈것박스.style.marginTop = "8px";
+                        탈것박스.style.borderRadius = "8px";
+                        탈것박스.style.border = `0.2px solid #dadada`;
+                        탈것박스.style.background = `radial-gradient(circle, ${등급색상[탈것등급변수].좌} 40%, ${등급색상[탈것등급변수].우} 100%)`;
+                        document.getElementById("전장유저장비3열").append(탈것박스);
+
+                        const 날개박스 = document.createElement("날개박스");
+                        날개박스.id = "날개";
+                        날개박스.style.display = "flex";
+                        날개박스.innerHTML = `미정`;
+                        날개박스.style.textAlign = "center";
+                        날개박스.style.color = "#dadada";
+                        // 날개박스.style.fontSize = "11px";
+                        날개박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                        날개박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                        날개박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                        날개박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                        날개박스.style.cursor = "pointer";
+                        날개박스.style.width = "32px";
+                        날개박스.style.height = "32px";
+                        날개박스.style.padding = "8px";
+                        날개박스.style.marginTop = "8px";
+                        날개박스.style.borderRadius = "8px";
+                        날개박스.style.border = `0.2px solid #dadada`;
+                        날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                        document.getElementById("전장유저장비4열").append(날개박스);
+                    });
+
+
+                    // 도전 버튼
+                    document.getElementById(`${i}번째유저4열`).innerHTML = `도전`;
+                    document.getElementById(`${i}번째유저4열`).style.cursor = "pointer";
+                    document.getElementById(`${i}번째유저4열`).style.padding = "3px 8px";
+                    document.getElementById(`${i}번째유저4열`).style.border = "0.2px solid #dadada";
+                    document.getElementById(`${i}번째유저4열`).style.borderRadius = "8px";
+
+                    document.getElementById(`${i}번째유저4열`).addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (유저데이터.스탯.전장티켓 < 1) {
+                                메시지표시(`티켓이 부족합니다`);
+                                return;
+                            }
+                            화면잠금();
+                            const 응답 = await fetch("/arenachallenge", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: 유저데이터.id, 상대닉네임: 닉네임 })
+                            });
+
+                            const 결과 = await 응답.json();
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과.me;
+                            const 전투결과 = 결과.전투결과;
+
+                            전장화면보여주기();
+
+                            await 팝업(
+                                `
+${전투결과.결과}<br>
+<br>
+내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+<br>
+내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
+상대 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
+내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+내총동료피해량 ${단위변환함수(전투결과.나총동료피해량)}<br>
+상대총동료피해량 ${단위변환함수(전투결과.상대총동료피해량)}<br>
+내총데미지 ${단위변환함수(전투결과.나총데미지)} (순간최고데미지 ${단위변환함수(전투결과.나순간최고데미지)})<br>
+상대총데미지 ${단위변환함수(전투결과.상대총데미지)} (순간최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)})<br>
+진행된 턴수 ${전투결과.턴수}
+`
+                                , false);
+
+
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
+                    // flex 비율
+                    document.getElementById(`${i}번째유저1열`).style.flex = "2";
+                    document.getElementById(`${i}번째유저2열`).style.flex = "3";
+                    document.getElementById(`${i}번째유저3열`).style.flex = "3";
+                    document.getElementById(`${i}번째유저4열`).style.flex = "1";
+
+
+                }
+
+
 
 
 
@@ -8568,10 +8829,10 @@ ${전투결과.결과}<br>
             }
 
             if (e.target.matches("#전장")) {
-                메시지표시("점검중입니다");
-                return;
+                // 메시지표시("점검중입니다");
+                // return;
 
-                // 전장화면보여주기();
+                전장화면보여주기();
             }
 
             if (e.target.matches("#상점")) {
@@ -8681,6 +8942,9 @@ ${전투결과.결과}<br>
 
                                 메시지표시("닉네임이 변경되었습니다");
                                 document.removeEventListener("click", 외부클릭취소);
+
+                                location.reload();
+
                             } catch (err) {
                                 console.error(err);
                                 메시지표시("서버 요청 오류");

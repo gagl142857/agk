@@ -609,7 +609,10 @@ app.post("/login", async (req, res) => {
     } else {
       const { error: 업데이트에러 } = await supabaseAdmin
         .from("전장순위")
-        .update({ 스탯: data.스탯 })
+        .update({
+          스탯: data.스탯,
+          유저닉네임: data.스탯.계정.유저닉네임
+        })
         .eq("유저아이디", data.스탯.계정.유저아이디);
 
       if (업데이트에러) {
@@ -675,28 +678,35 @@ app.post("/delete-user", async (req, res) => {
 
     const { data: 내순위데이터 } = await supabaseAdmin
       .from("전장순위")
-      .select("순위")
+      .select("id, 순위")
       .eq("유저아이디", data.스탯.계정.유저아이디)
       .single();
 
     if (내순위데이터) {
-      const 내순위 = 내순위데이터.순위;
-
+      // 내 기록 삭제
       await supabaseAdmin
         .from("전장순위")
         .delete()
         .eq("유저아이디", data.스탯.계정.유저아이디);
 
-      const { data: 뒤순위들 } = await supabaseAdmin
+      // 전체 재정렬
+      const { data: 전체유저 } = await supabaseAdmin
         .from("전장순위")
-        .select("id, 순위")
-        .gt("순위", 내순위);
+        .select("*")
+        .order("순위", { ascending: true });
 
-      for (const 항목 of 뒤순위들) {
+      const 새로운순위목록 = 전체유저.map((u, idx) => ({
+        id: u.id,
+        순위: idx + 1,
+        유저아이디: u.유저아이디,
+        유저닉네임: u.유저닉네임,
+        스탯: u.스탯,
+      }));
+
+      if (새로운순위목록.length > 0) {
         await supabaseAdmin
           .from("전장순위")
-          .update({ 순위: 항목.순위 - 1 })
-          .eq("id", 항목.id);
+          .upsert(새로운순위목록);
       }
     }
 
@@ -2606,48 +2616,102 @@ app.post("/arenachallenge", async (req, res) => {
     const { id, 상대닉네임 } = req.body;
     if (!id || !상대닉네임) return res.status(400).json({ 오류: "id, 상대닉네임 필요" });
 
-    const { data, error } = await supabaseAdmin
+    // ① 내 유저 조회 (users 테이블)
+    const { data: 내유저, error: 내유저에러 } = await supabaseAdmin
       .from("users")
       .select("*")
-      .order("스탯->전장->포인트", { ascending: false });
+      .eq("id", id)
+      .single();
 
-    if (error || !data) return res.status(500).json({ 오류: "유저 조회 실패" });
+    if (내유저에러 || !내유저) return res.status(404).json({ 오류: "내 유저 없음" });
 
-    // 내 데이터
-    const me = data.find(u => u.id === id);
-    if (!me) return res.status(404).json({ 오류: "유저 없음" });
-
-    if (!me.스탯.전장 || me.스탯.전장티켓 < 1) {
+    const 내유저아이디 = 내유저.스탯.계정.유저아이디;
+    if (!내유저.스탯.전장 || 내유저.스탯.전장티켓 < 1) {
       return res.status(400).json({ 오류: "티켓 부족" });
     }
 
-    // 상대 데이터 (닉네임으로 찾기)
-    const 상대 = data.find(u => u.스탯?.계정?.유저닉네임 === 상대닉네임);
-    if (!상대) return res.status(404).json({ 오류: "상대 없음" });
+    const 내닉네임 = 내유저.스탯.계정.유저닉네임;
 
-    const 상대Index = data.findIndex(u => u.스탯?.계정?.유저닉네임 === 상대닉네임);
+    const { data: 순위데이터, error: 순위에러 } = await supabaseAdmin
+      .from("전장순위")
+      .select("*")
+      .in("유저닉네임", [내닉네임, 상대닉네임]);
 
-    // 전투 시뮬레이션
-    const 전투결과 = 전투시뮬레이션(
-      JSON.parse(JSON.stringify(me)),
-      JSON.parse(JSON.stringify(상대))
-    );
 
-    if (전투결과.결과 === "승리") {
-      me.스탯.전장.포인트 = (상대.스탯.전장.포인트 || 0) + 100 + me.스탯.계정.레벨;
+    if (순위에러 || !순위데이터 || 순위데이터.length < 2) {
+      return res.status(404).json({ 오류: "순위 데이터 조회 실패" });
     }
 
-    me.스탯.전장티켓 = (me.스탯.전장티켓 || 0) - 1;
+    const 내순위데이터 = 순위데이터.find(u => u.유저닉네임 === 내닉네임);
+    const 상대순위데이터 = 순위데이터.find(u => u.유저닉네임 === 상대닉네임);
 
-    // 내 스탯 업데이트
-    const { error: updateError } = await supabaseAdmin
+    if (!내순위데이터 || !상대순위데이터) {
+      return res.status(404).json({ 오류: "내/상대 순위 없음" });
+    }
+
+    // ④ 전투 시뮬레이션
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(내유저)),
+      JSON.parse(JSON.stringify(상대순위데이터))
+    );
+
+    // ⑤ 티켓 차감 (users 테이블만)
+    내유저.스탯.전장티켓 -= 1;
+    await supabaseAdmin
       .from("users")
-      .update({ 스탯: me.스탯 })
+      .update({ 스탯: 내유저.스탯 })
       .eq("id", id);
 
-    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    if (전투결과.결과 === "승리") {
+      const { data: 전체유저 } = await supabaseAdmin
+        .from("전장순위")
+        .select("*")
+        .order("순위", { ascending: true });
 
-    res.json({ me, 전투결과 });
+      let 새로운순위목록 = [];
+      let 순위카운터 = 1;
+
+      for (const u of 전체유저) {
+        // 내 기존 row는 건너뛰기
+        if (u.유저닉네임 === 내닉네임) continue;
+
+        if (u.유저닉네임 === 상대닉네임) {
+          // 상대 자리에서 내가 먼저 들어감
+          새로운순위목록.push({
+            id: 내순위데이터.id,
+            순위: 순위카운터++,
+            유저아이디: 내유저아이디,
+            유저닉네임: 내유저.스탯.계정.유저닉네임,
+            스탯: 내유저.스탯
+          });
+        }
+
+        // 나머지 유저들 그대로 이어가기
+        새로운순위목록.push({
+          id: u.id,
+          순위: 순위카운터++,
+          유저아이디: u.유저아이디,
+          유저닉네임: u.유저닉네임,
+          스탯: u.스탯
+        });
+      }
+
+      // DB 업데이트 (upsert로 한 번에 처리)
+      await supabaseAdmin
+        .from("전장순위")
+        .upsert(
+          새로운순위목록.map(r => ({
+            id: r.id,                // PK (전장순위 테이블의 기본키여야 함)
+            순위: r.순위,            // 새 순위
+            유저아이디: r.유저아이디,
+            유저닉네임: r.유저닉네임,
+            스탯: r.스탯
+          }))
+        );
+
+    }
+
+    res.json({ me: 내유저, 전투결과 });
 
   } catch (e) {
     console.error(e);

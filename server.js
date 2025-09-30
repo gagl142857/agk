@@ -1567,16 +1567,20 @@ app.post("/send-mail-all", async (req, res) => {
       시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
     };
 
-    for (const u of 전체유저) {
+    const 업데이트목록 = 전체유저.map(u => {
       const 우편함 = u.스탯.우편함 || [];
       우편함.unshift(새우편);
-      u.스탯.우편함 = 우편함;
 
-      await supabaseAdmin
-        .from("users")
-        .update({ 스탯: u.스탯 })
-        .eq("id", u.id);
-    }
+      return {
+        id: u.id,      // users 테이블의 PK
+        스탯: { ...u.스탯, 우편함 }
+      };
+    });
+
+    await supabaseAdmin
+      .from("users")
+      .upsert(업데이트목록);
+
 
     res.json({ 성공: true });
 
@@ -2170,6 +2174,53 @@ app.post("/Enhance1", async (req, res) => {
   }
 });
 
+app.post("/Enhance1Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상1 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    let 조각상 = data.스탯.조각상1;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/reroll2", async (req, res) => {
   try {
     const { id } = req.body;
@@ -2274,6 +2325,53 @@ app.post("/Enhance2", async (req, res) => {
       return res.status(500).json({ 오류: "업데이트 실패" });
     }
 
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance2Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상2 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    let 조각상 = data.스탯.조각상2;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
     res.json(data);
 
   } catch (e) {
@@ -2402,6 +2500,53 @@ app.post("/Enhance3", async (req, res) => {
   }
 });
 
+app.post("/Enhance3Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상3 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    let 조각상 = data.스탯.조각상3;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/reroll4", async (req, res) => {
   try {
     const { id } = req.body;
@@ -2522,6 +2667,87 @@ app.post("/Enhance4", async (req, res) => {
   }
 });
 
+app.post("/Enhance4Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상4 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    let 조각상 = data.스탯.조각상4;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/wjdfuf", async (req, res) => {
+  try {
+    // ② 전장순위 전체 재정렬
+    const { data: 전체유저 } = await supabaseAdmin
+      .from("전장순위")
+      .select("*")
+      .order("순위", { ascending: true });
+
+    if (전체유저) {
+      let 새로운순위목록 = [];
+      let 순위카운터 = 1;
+
+      for (const u of 전체유저) {
+        새로운순위목록.push({
+          id: u.id,
+          순위: 순위카운터++,
+          유저아이디: u.유저아이디,
+          유저닉네임: u.유저닉네임,
+          스탯: u.스탯
+        });
+      }
+
+      await supabaseAdmin.from("전장순위").upsert(새로운순위목록);
+    }
+
+    // ✅ 응답 반환 (클라가 기다리지 않게)
+    res.json({ 성공: true });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/arenalist", async (req, res) => {
   try {
     const { id } = req.body;
@@ -2542,68 +2768,48 @@ app.post("/arenalist", async (req, res) => {
       return res.status(400).json({ 오류: "서버 값 없음" });
     }
 
-    if (내서버) {
-      const { data: 기존, error: 기존에러 } = await supabaseAdmin
+    if (내서버 === 1) {
+
+      // // ② 전장순위 전체 재정렬
+      // const { data: 전체유저 } = await supabaseAdmin
+      //   .from("전장순위")
+      //   .select("*")
+      //   .order("순위", { ascending: true });
+
+      // if (전체유저) {
+      //   let 새로운순위목록 = [];
+      //   let 순위카운터 = 1;
+
+      //   for (const u of 전체유저) {
+      //     새로운순위목록.push({
+      //       id: u.id,
+      //       순위: 순위카운터++,
+      //       유저아이디: u.유저아이디,
+      //       유저닉네임: u.유저닉네임,
+      //       스탯: u.스탯
+      //     });
+      //   }
+
+      //   await supabaseAdmin
+      //     .from("전장순위")
+      //     .upsert(새로운순위목록);
+      // }
+
+      // ③ 정리된 순위 다시 조회
+      const { data: 전장리스트, error: 전체에러 } = await supabaseAdmin
         .from("전장순위")
-        .select("순위")
-        .eq("유저아이디", 유저데이터.스탯.계정.유저아이디)
-        .single();
+        .select("*")
+        .order("순위", { ascending: true });
 
-      if (기존에러 && 기존에러.code !== "PGRST116") {
-        console.error("전장순위 조회 실패:", 기존에러);
-      } else if (!기존) {
-        const { data: 순위데이터, error: 순위에러 } = await supabaseAdmin
-          .from("전장순위")
-          .select("순위")
-          .order("순위", { ascending: false })
-          .limit(1);
-
-        if (순위에러) {
-          console.error("전장순위순위조회실패:", 순위에러);
-        }
-
-        let 신규순위 = 1;
-        if (순위데이터 && 순위데이터.length > 0) {
-          신규순위 = 순위데이터[0].순위 + 1;
-        }
-
-        const { error: 추가에러 } = await supabaseAdmin
-          .from("전장순위")
-          .insert({
-            스탯: 유저데이터.스탯,
-            유저아이디: 유저데이터.스탯.계정.유저아이디,
-            유저닉네임: 유저데이터.스탯.계정.유저닉네임,
-            순위: 신규순위,
-          });
-
-        if (추가에러) {
-          console.error("전장순위 insert 실패:", 추가에러);
-        }
-      } else {
-        const { error: 업데이트에러 } = await supabaseAdmin
-          .from("전장순위")
-          .update({ 스탯: 유저데이터.스탯 })
-          .eq("유저아이디", 유저데이터.스탯.계정.유저아이디);
-
-        if (업데이트에러) {
-          console.error("전장순위 update 실패:", 업데이트에러);
-        }
+      if (전체에러) {
+        return res.status(500).json({ 오류: "전체 조회 실패" });
       }
 
+      // 클라로 전송
+      res.json({ 전장리스트 });
 
     }
 
-    const { data: 전장리스트, error: 전체에러 } = await supabaseAdmin
-      .from("전장순위")
-      .select("*")
-      .order("순위", { ascending: true });
-
-    if (전체에러) {
-      return res.status(500).json({ 오류: "전체 조회 실패" });
-    }
-
-    // 클라로 전송
-    res.json({ 전장리스트 });
 
   } catch (e) {
     console.error(e);

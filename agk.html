@@ -577,7 +577,7 @@
         상단바.style.background = "black";
         상단바.style.borderBottom = "0.2px solid #dadada";
         상단바.style.boxSizing = "border-box";
-        상단바.style.display = "flex"; // 플렉스(정렬)박스활성
+        상단바.style.display = "flex"; // 
         상단바.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         상단바.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         상단바.style.zIndex = "9";
@@ -594,7 +594,7 @@
 
         const 좌측그룹 = document.createElement("div");
         좌측그룹.style.boxSizing = "border-box";
-        좌측그룹.style.display = "flex"; // 플렉스(정렬)박스활성
+        좌측그룹.style.display = "flex"; // 
         좌측그룹.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         좌측그룹.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         상단바컨테이너.append(좌측그룹);
@@ -643,7 +643,7 @@
         const 메인 = document.createElement("div");
         메인.id = "메인";
         메인.style.boxSizing = "border-box";
-        메인.style.display = "flex"; // 플렉스(정렬)박스활성
+        메인.style.display = "flex"; //
         메인.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         메인.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         메인.style.margin = "4px 4px";
@@ -653,7 +653,7 @@
         const 던전 = document.createElement("div");
         던전.id = "던전";
         던전.style.boxSizing = "border-box";
-        던전.style.display = "flex"; // 플렉스(정렬)박스활성
+        던전.style.display = "flex"; //
         던전.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         던전.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         던전.style.margin = "4px 4px";
@@ -663,7 +663,7 @@
         // const 길드 = document.createElement("div");
         // 길드.id = "길드";
         // 길드.style.boxSizing = "border-box";
-        // 길드.style.display = "flex"; // 플렉스(정렬)박스활성
+        // 길드.style.display = "flex"; //
         // 길드.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         // 길드.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         // 길드.style.margin = "4px 4px";
@@ -673,7 +673,7 @@
         const 월드 = document.createElement("div");
         월드.id = "월드";
         월드.style.boxSizing = "border-box";
-        월드.style.display = "flex"; // 플렉스(정렬)박스활성
+        월드.style.display = "flex"; //
         월드.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         월드.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         월드.style.margin = "4px 4px";
@@ -683,7 +683,7 @@
         const 전장 = document.createElement("div");
         전장.id = "전장";
         전장.style.boxSizing = "border-box";
-        전장.style.display = "flex"; // 플렉스(정렬)박스활성
+        전장.style.display = "flex"; //
         전장.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         전장.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         전장.style.margin = "4px 4px";
@@ -693,7 +693,7 @@
         const 설정 = document.createElement("div");
         설정.id = "설정";
         설정.style.boxSizing = "border-box";
-        설정.style.display = "flex"; // 플렉스(정렬)박스활성
+        설정.style.display = "flex"; //
         설정.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
         설정.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
         설정.style.margin = "4px 4px";
@@ -893,7 +893,7 @@
                 const 회원가입 = document.createElement("div");
                 회원가입.id = "회원가입"
                 회원가입.style.boxSizing = "border-box";
-                회원가입.style.display = "flex"; // 플렉스(정렬)박스활성
+                회원가입.style.display = "flex"; //
                 회원가입.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
                 회원가입.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
                 회원가입.style.cursor = "pointer";
@@ -907,7 +907,7 @@
                 const 로그인 = document.createElement("div");
                 로그인.id = "로그인"
                 로그인.style.boxSizing = "border-box";
-                로그인.style.display = "flex"; // 플렉스(정렬)박스활성
+                로그인.style.display = "flex"; //
                 로그인.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
                 로그인.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
                 로그인.style.cursor = "pointer";
@@ -1025,6 +1025,8 @@
         let 선택최소등급 = "D";
         let 선택옵션목록 = [];
         let 풀자동플래그 = false;
+
+        let 조각상플래그 = false;
 
         //메인화면보여주기함수
         async function 메인화면보여주기() {
@@ -3129,6 +3131,8 @@
 계획대로라면 중복순위, 누락순위가 이제 없어야할텐데<br>
 있더라도 누군가 도전하게되면 새로 정렬되게 해두었습니다<br>
 지켜보고 계속 유지보수하겠습니다<br>
+조각상 컨텐츠에 자동버튼이 구현되었습니다<br>
+자동 시 1회 성공 시 까지 스톤을 연속으로 소모합니다<br>
 <br>
 
 25.09.29<br>
@@ -4144,7 +4148,37 @@ ${전투결과.결과}<br>
             if (유저데이터.스탯.주인장인가) {
                 행렬만들기(전장화면컨테이너, "주인장버튼", 1);
                 주인장버튼1열.innerHTML = `정렬`;
+                주인장버튼1열.style.padding = `8px`;
+                주인장버튼1열.style.cursor = `pointer`;
 
+                주인장버튼1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        화면잠금();
+                        const 응답 = await fetch("/wjdfuf", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        전장화면보여주기();
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
 
             }
             try {
@@ -7648,6 +7682,7 @@ ${전투결과.결과}<br>
                 document.getElementById("조각상화면컨테이너일번스탯5열").append(조각상일번스탯강화);
 
                 const 조각상일번스탯자동 = document.createElement("div");
+                조각상일번스탯자동.id = `조각상일번스탯자동`;
                 조각상일번스탯자동.style.display = "flex";
                 조각상일번스탯자동.style.width = "100%";
                 조각상일번스탯자동.innerHTML = `자동`;
@@ -7710,6 +7745,11 @@ ${전투결과.결과}<br>
                             현재인덱스 = 등급순서.indexOf(현재등급);
                         }
 
+                        if (현재인덱스 === 등급순서.length - 1) {
+                            메시지표시(`최고등급입니다`);
+                            return;
+                        }
+
                         const 필요스톤 = 현재등급 === "기본"
                             ? 20
                             : (현재인덱스 + 3) * 10;
@@ -7740,9 +7780,7 @@ ${전투결과.결과}<br>
                             메시지표시(`강화성공`);
                         } else 메시지표시(`강화실패`);
 
-                        메인화면보여주기();
-                        document.querySelector("#조각상")?.click();
-
+                        조각상화면보여주기();
                     } catch (e) {
                         메시지표시("서버요청실패");
                         console.error(e);
@@ -7753,7 +7791,54 @@ ${전투결과.결과}<br>
 
                 조각상일번스탯자동.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`구현중입니다`);
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상1 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상1.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        if (현재인덱스 === 등급순서.length - 1) {
+                            메시지표시(`최고등급입니다`);
+                            return;
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance1Auto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: 유저데이터.id })
+                        });
+                        const 결과 = await 응답.json();
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+                        유저데이터 = 결과;
+                        메시지표시(`자동강화 완료`);
+                        조각상화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
                 });
 
                 행렬만들기(조각상화면컨테이너, "조각상화면컨테이너이번스탯", 6);
@@ -7812,6 +7897,7 @@ ${전투결과.결과}<br>
                 document.getElementById("조각상화면컨테이너이번스탯5열").append(조각상이번스탯강화);
 
                 const 조각상이번스탯자동 = document.createElement("div");
+                조각상이번스탯자동.id = `조각상이번스탯자동`;
                 조각상이번스탯자동.style.display = "flex";
                 조각상이번스탯자동.style.width = "100%";
                 조각상이번스탯자동.innerHTML = `자동`;
@@ -7917,8 +8003,56 @@ ${전투결과.결과}<br>
 
                 조각상이번스탯자동.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`구현중입니다`);
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상2 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상2.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        if (현재인덱스 === 등급순서.length - 1) {
+                            메시지표시(`최고등급입니다`);
+                            return;
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance2Auto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: 유저데이터.id })
+                        });
+                        const 결과 = await 응답.json();
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+                        유저데이터 = 결과;
+                        메시지표시(`자동강화 완료`);
+                        조각상화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
                 });
+
 
                 행렬만들기(조각상화면컨테이너, "조각상화면컨테이너삼번스탯", 6);
                 조각상화면컨테이너삼번스탯.style.padding = "3px 8px";
@@ -7976,6 +8110,7 @@ ${전투결과.결과}<br>
                 document.getElementById("조각상화면컨테이너삼번스탯5열").append(조각상삼번스탯강화);
 
                 const 조각상삼번스탯자동 = document.createElement("div");
+                조각상삼번스탯자동.id = `조각상삼번스탯자동`;
                 조각상삼번스탯자동.style.display = "flex";
                 조각상삼번스탯자동.style.width = "100%";
                 조각상삼번스탯자동.innerHTML = `자동`;
@@ -8088,8 +8223,56 @@ ${전투결과.결과}<br>
 
                 조각상삼번스탯자동.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`구현중입니다`);
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상3 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상3.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        if (현재인덱스 === 등급순서.length - 1) {
+                            메시지표시(`최고등급입니다`);
+                            return;
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance3Auto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: 유저데이터.id })
+                        });
+                        const 결과 = await 응답.json();
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+                        유저데이터 = 결과;
+                        메시지표시(`자동강화 완료`);
+                        조각상화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
                 });
+
 
                 행렬만들기(조각상화면컨테이너, "조각상화면컨테이너사번스탯", 6);
                 조각상화면컨테이너사번스탯.style.padding = "3px 8px";
@@ -8147,6 +8330,7 @@ ${전투결과.결과}<br>
                 document.getElementById("조각상화면컨테이너사번스탯5열").append(조각상사번스탯강화);
 
                 const 조각상사번스탯자동 = document.createElement("div");
+                조각상사번스탯자동.id = `조각상사번스탯자동`;
                 조각상사번스탯자동.style.display = "flex";
                 조각상사번스탯자동.style.width = "100%";
                 조각상사번스탯자동.innerHTML = `자동`;
@@ -8259,8 +8443,56 @@ ${전투결과.결과}<br>
 
                 조각상사번스탯자동.addEventListener("click", async (e) => {
                     e.stopPropagation();
-                    메시지표시(`구현중입니다`);
+                    try {
+                        if (!Object.keys(유저데이터.스탯.조각상4 || {}).find(k => k !== "등급")) {
+                            메시지표시(`먼저 리롤로 옵션을 획득하세요`);
+                            return;
+                        }
+
+                        const 현재등급 = 유저데이터.스탯.조각상4.등급 || "기본";
+                        let 현재인덱스 = -1;
+
+                        if (현재등급 !== "기본") {
+                            현재인덱스 = 등급순서.indexOf(현재등급);
+                        }
+
+                        if (현재인덱스 === 등급순서.length - 1) {
+                            메시지표시(`최고등급입니다`);
+                            return;
+                        }
+
+                        const 필요스톤 = 현재등급 === "기본"
+                            ? 20
+                            : (현재인덱스 + 3) * 10;
+
+                        if ((유저데이터.스탯.스톤 || 0) < 필요스톤) {
+                            메시지표시(`스톤이 부족합니다 (필요: ${필요스톤})`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/Enhance4Auto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: 유저데이터.id })
+                        });
+                        const 결과 = await 응답.json();
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+                        유저데이터 = 결과;
+                        메시지표시(`자동강화 완료`);
+                        조각상화면보여주기();
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
                 });
+
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -8487,6 +8719,14 @@ ${전투결과.결과}<br>
             ) {
                 반자동플래그 = false;
                 풀자동플래그 = false;
+            }
+
+            if (
+                (!document.querySelector("#조각상일번스탯자동") || !document.querySelector("#조각상일번스탯자동").contains(e.target)) &&
+                (!document.querySelector("#조각상이번스탯자동") || !document.querySelector("#조각상이번스탯자동").contains(e.target)) &&
+                (!document.querySelector("#조각상삼번스탯자동") || !document.querySelector("#조각상삼번스탯자동").contains(e.target))
+            ) {
+                조각상플래그 = false;
             }
 
             if (e.target.matches("#첫번째몬스터도전")) {

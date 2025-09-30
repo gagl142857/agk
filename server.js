@@ -211,7 +211,6 @@ app.post("/register", async (req, res) => {
       .trim();
 
     const 기본스탯 = {
-      전장티켓: 4,
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
       생성요일: now.toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" }), //"화요일"
       접속시각: Math.floor(now.getTime() / 3600000), // 478520,
@@ -598,7 +597,7 @@ app.post("/login", async (req, res) => {
       const { error: 추가에러 } = await supabaseAdmin
         .from("전장순위")
         .insert({
-          스탯: {},
+          스탯: data.스탯,
           유저아이디: data.스탯.계정.유저아이디,
           유저닉네임: data.스탯.계정.유저닉네임,
           순위: 신규순위,
@@ -606,6 +605,15 @@ app.post("/login", async (req, res) => {
 
       if (추가에러) {
         console.error("전장순위 insert 실패:", 추가에러);
+      }
+    } else {
+      const { error: 업데이트에러 } = await supabaseAdmin
+        .from("전장순위")
+        .update({ 스탯: data.스탯 })
+        .eq("유저아이디", data.스탯.계정.유저아이디);
+
+      if (업데이트에러) {
+        console.error("전장순위 update 실패:", 업데이트에러);
       }
     }
 
@@ -665,7 +673,7 @@ app.post("/delete-user", async (req, res) => {
         내용: `회원탈퇴`,
       });
 
-    const { data: 내순위데이터, error: 내순위에러 } = await supabaseAdmin
+    const { data: 내순위데이터 } = await supabaseAdmin
       .from("전장순위")
       .select("순위")
       .eq("유저아이디", data.스탯.계정.유저아이디)
@@ -674,14 +682,22 @@ app.post("/delete-user", async (req, res) => {
     if (내순위데이터) {
       const 내순위 = 내순위데이터.순위;
 
-      // 내 순위 삭제
       await supabaseAdmin
         .from("전장순위")
         .delete()
         .eq("유저아이디", data.스탯.계정.유저아이디);
 
-      // 내 순위보다 큰 순위들을 한 칸씩 올리기
-      await supabaseAdmin.rpc("shift_rank_up", { cutoff_rank: 내순위 });
+      const { data: 뒤순위들 } = await supabaseAdmin
+        .from("전장순위")
+        .select("id, 순위")
+        .gt("순위", 내순위);
+
+      for (const 항목 of 뒤순위들) {
+        await supabaseAdmin
+          .from("전장순위")
+          .update({ 순위: 항목.순위 - 1 })
+          .eq("id", 항목.id);
+      }
     }
 
     // ① users 테이블에서 삭제
@@ -2501,33 +2517,83 @@ app.post("/arenalist", async (req, res) => {
     const { id } = req.body;
     if (!id) return res.status(400).json({ 오류: "id 필요" });
 
-    const { data: 내유저, error: 내에러 } = await supabaseAdmin
+    const { data: 유저데이터, error: 내에러 } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("id", id)
       .single();
 
-    if (내에러 || !내유저) {
+    if (내에러 || !유저데이터) {
       return res.status(404).json({ 오류: "내 유저 조회 실패" });
     }
 
-    const 내서버 = 내유저.스탯?.서버;
+    const 내서버 = 유저데이터.스탯?.서버;
     if (!내서버) {
       return res.status(400).json({ 오류: "서버 값 없음" });
     }
 
-    const { data: 전체, error: 전체에러 } = await supabaseAdmin
-      .from("users")
-      .select("스탯")
-      .eq("스탯->>서버", 내서버.toString());
+    if (내서버) {
+      const { data: 기존, error: 기존에러 } = await supabaseAdmin
+        .from("전장순위")
+        .select("순위")
+        .eq("유저아이디", 유저데이터.스탯.계정.유저아이디)
+        .single();
 
-    if (전체에러) {
-      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+      if (기존에러 && 기존에러.code !== "PGRST116") {
+        console.error("전장순위 조회 실패:", 기존에러);
+      } else if (!기존) {
+        const { data: 순위데이터, error: 순위에러 } = await supabaseAdmin
+          .from("전장순위")
+          .select("순위")
+          .order("순위", { ascending: false })
+          .limit(1);
+
+        if (순위에러) {
+          console.error("전장순위순위조회실패:", 순위에러);
+        }
+
+        let 신규순위 = 1;
+        if (순위데이터 && 순위데이터.length > 0) {
+          신규순위 = 순위데이터[0].순위 + 1;
+        }
+
+        const { error: 추가에러 } = await supabaseAdmin
+          .from("전장순위")
+          .insert({
+            스탯: 유저데이터.스탯,
+            유저아이디: 유저데이터.스탯.계정.유저아이디,
+            유저닉네임: 유저데이터.스탯.계정.유저닉네임,
+            순위: 신규순위,
+          });
+
+        if (추가에러) {
+          console.error("전장순위 insert 실패:", 추가에러);
+        }
+      } else {
+        const { error: 업데이트에러 } = await supabaseAdmin
+          .from("전장순위")
+          .update({ 스탯: 유저데이터.스탯 })
+          .eq("유저아이디", 유저데이터.스탯.계정.유저아이디);
+
+        if (업데이트에러) {
+          console.error("전장순위 update 실패:", 업데이트에러);
+        }
+      }
+
+
     }
 
-    const 필터링 = 전체.filter(u => u.스탯?.계정?.유저아이디 !== "codl");
+    const { data: 전장리스트, error: 전체에러 } = await supabaseAdmin
+      .from("전장순위")
+      .select("*")
+      .order("순위", { ascending: true });
 
-    res.json({ data: 필터링 });
+    if (전체에러) {
+      return res.status(500).json({ 오류: "전체 조회 실패" });
+    }
+
+    // 클라로 전송
+    res.json({ 전장리스트 });
 
   } catch (e) {
     console.error(e);

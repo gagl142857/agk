@@ -3129,8 +3129,6 @@
 25.10.01<br>
 던전몬스터 지니에 자동도전 버튼이 구현되었습니다<br>
 별도 팝업 없이 바로 실행되니, 도전 전 레벨과 비교하시면 됩니다<br>
-상점 다이아 상품이 4,000원 ➡ 2,000원으로 변경되었습니다<br>
-기존가격으로 구매한 유저분들의 다이아는 우편으로 처리됐습니다<br>
 <br>
 
 25.09.30<br>
@@ -6192,14 +6190,14 @@ ${전투결과.결과}<br>
                 상점화면.style.display = "flex";
                 상점화면컨테이너.innerHTML = "";
 
-                행렬만들기(상점화면컨테이너, "상점화면컨테이너일행", 3);
-                상점화면컨테이너일행2열.innerHTML = `1000 다이아<br>(2,000원)`;
-                상점화면컨테이너일행2열.style.textAlign = `center`;
-                상점화면컨테이너일행2열.style.cursor = `pointer`;
-                상점화면컨테이너일행2열.style.boxSizing = "border-box";
-                상점화면컨테이너일행2열.style.border = "0.2px solid #dadada";
-                상점화면컨테이너일행2열.style.borderRadius = "8px";
-                상점화면컨테이너일행2열.style.padding = "8px";
+                // 행렬만들기(상점화면컨테이너, "상점화면컨테이너일행", 3);
+                // 상점화면컨테이너일행2열.innerHTML = `1000 다이아<br>(2,000원)`;
+                // 상점화면컨테이너일행2열.style.textAlign = `center`;
+                // 상점화면컨테이너일행2열.style.cursor = `pointer`;
+                // 상점화면컨테이너일행2열.style.boxSizing = "border-box";
+                // 상점화면컨테이너일행2열.style.border = "0.2px solid #dadada";
+                // 상점화면컨테이너일행2열.style.borderRadius = "8px";
+                // 상점화면컨테이너일행2열.style.padding = "8px";
                 // 상점화면컨테이너일행2열.innerHTML = `11000 다이아 충전<br>(100,000원)`;
                 // 상점화면컨테이너일행2열.style.textAlign = `center`;
                 // 상점화면컨테이너일행2열.style.cursor = `pointer`;
@@ -6213,13 +6211,13 @@ ${전투결과.결과}<br>
                 // 상점화면컨테이너일행3열.style.border = "0.2px solid #dadada";
                 // 상점화면컨테이너일행3열.style.borderRadius = "8px";
 
-                행렬만들기(상점화면컨테이너, "주인장연결", 1);
-                주인장연결1열.innerHTML = `결제는 이곳을 클릭해서 주인장에게 문의하세요`;
-                주인장연결1열.style.cursor = `pointer`;
-                주인장연결1열.style.boxSizing = "border-box";
-                주인장연결1열.style.border = "0.2px solid #dadada";
-                주인장연결1열.style.borderRadius = "8px";
-                주인장연결1열.style.padding = "3px 8px";
+                // 행렬만들기(상점화면컨테이너, "주인장연결", 1);
+                // 주인장연결1열.innerHTML = `결제는 이곳을 클릭해서 주인장에게 문의하세요`;
+                // 주인장연결1열.style.cursor = `pointer`;
+                // 주인장연결1열.style.boxSizing = "border-box";
+                // 주인장연결1열.style.border = "0.2px solid #dadada";
+                // 주인장연결1열.style.borderRadius = "8px";
+                // 주인장연결1열.style.padding = "3px 8px";
 
                 // 상점화면컨테이너일행1열.addEventListener("click", async (e) => {
                 //     e.stopPropagation();
@@ -6243,13 +6241,13 @@ ${전투결과.결과}<br>
                 // });
 
 
-                주인장연결1열.addEventListener("click", (e) => {
-                    e.stopPropagation();
+                // 주인장연결1열.addEventListener("click", (e) => {
+                //     e.stopPropagation();
 
-                    // 메시지표시(`오픈후 활성`);
-                    // return;
-                    window.open("https://open.kakao.com/o/s7LlXeTh", "_blank");
-                });
+                //     // 메시지표시(`오픈후 활성`);
+                //     // return;
+                //     window.open("https://open.kakao.com/o/s7LlXeTh", "_blank");
+                // });
 
 
 

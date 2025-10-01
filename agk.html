@@ -3126,6 +3126,11 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.10.01<br>
+던전몬스터 지니에 자동도전 버튼이 구현되었습니다<br>
+별도 팝업 없이 바로 실행되니, 도전 전 레벨과 비교하시면 됩니다<br>
+<br>
+
 25.09.30<br>
 전장 DB구조를 변경해봤습니다<br>
 계획대로라면 중복순위, 누락순위가 이제 없어야할텐데<br>
@@ -4068,6 +4073,83 @@ ${전투결과.결과}<br>
                         화면해제();
                     }
                 });
+
+
+                const 다섯번째몬스터자동 = document.createElement("div");
+                다섯번째몬스터자동.id = "다섯번째몬스터자동";
+                다섯번째몬스터자동.style.textAlign = "center";
+                다섯번째몬스터자동.style.display = "flex";
+                다섯번째몬스터자동.style.boxSizing = "border-box";
+                다섯번째몬스터자동.style.border = "0.2px solid #dadada";
+                다섯번째몬스터자동.style.borderRadius = "8px";
+                다섯번째몬스터자동.innerHTML = `자동`;
+                다섯번째몬스터자동.style.padding = "3px 6px";
+                다섯번째몬스터자동.style.cursor = "pointer";
+                document.getElementById("던전화면배치4열일행2열").append(다섯번째몬스터자동);
+
+                다섯번째몬스터자동.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (!유저데이터.스탯.던전.페어리.승패) {
+                            메시지표시(`금일도전종료`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/FairyAuto", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return; // 여기서 함수 종료
+                        }
+
+                        유저데이터 = 결과.유저데이터;       // 유저 데이터만 저장
+                        // const 전투결과 = 결과.전투결과;     // 전투 결과 따로 저장
+
+                        던전화면보여주기();
+
+                        const 던전버튼 = document.getElementById("던전");
+                        const 던전열쇠수량 =
+                            (유저데이터?.스탯?.던전?.지니?.열쇠 || 0) +
+                            (유저데이터?.스탯?.던전?.로쿠규?.열쇠 || 0) +
+                            (유저데이터?.스탯?.던전?.락골렘?.열쇠 || 0) +
+                            (유저데이터?.스탯?.던전?.디지에그?.열쇠 || 0);
+                        const 기존던전뱃지 = document.getElementById("던전알림점");
+
+                        if (던전버튼 && 던전열쇠수량 > 0 && 유저데이터.스탯.던전.페어리.승패 && !기존던전뱃지) {
+                            const 뱃지 = document.createElement("div");
+                            뱃지.id = "던전알림점";
+                            뱃지.style.position = "absolute";
+                            뱃지.style.width = "7px";
+                            뱃지.style.height = "7px";
+                            뱃지.style.backgroundColor = "red";
+                            뱃지.style.borderRadius = "50%";
+                            뱃지.style.top = "0px";
+                            뱃지.style.right = "-6px";
+                            던전버튼.style.position = "relative";
+                            던전버튼.appendChild(뱃지);
+                        } else if (기존던전뱃지 && !유저데이터.스탯.던전.페어리.승패 && 던전열쇠수량 === 0) {
+                            기존던전뱃지.remove();
+                        }
+
+                        메시지표시(`금일 도전이 종료되었습니다`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
 
 
             } catch (err) {

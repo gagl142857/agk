@@ -2062,6 +2062,138 @@ app.post("/Fairy", async (req, res) => {
   }
 });
 
+app.post("/FairyAuto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (!유저데이터.스탯.던전.페어리.승패) {
+      return res.status(400).json({ 오류: "금일도전종료" });
+    }
+
+
+
+    while (true) {
+      const 레벨 = 유저데이터.스탯.던전.페어리.레벨;
+
+      const 페어리 = {
+        스탯: {
+          치명: Math.min(70, 1 * 1),
+          치명무시: 1,
+          치명피해: 150 + 1 * 1,
+          치명저항: 1,
+          콤보: Math.min(70, 1 * 1),
+          콤보무시: 1,
+          콤보계수: 100 + 1 * 1,
+          콤보피해감소: 1,
+          반격: Math.min(70, 1 * 1),
+          반격무시: 1,
+          반격계수: 100 + 1 * 1,
+          반격피해감소: 1,
+          스턴: Math.min(70, 1 * 1),
+          스턴무시: 1,
+          회피: Math.min(70, 1 * 1),
+          회피무시: 1,
+          회복: Math.min(70, 1 * 1),
+          회복무시: 1,
+          에어본: 1 * 1,
+          일반공격계수: 100 + 1 * 1,
+          일반공격피해감소: 1,
+          스킬치명: Math.min(70, 1 * 레벨),
+          스킬치명피해: 150 + 1 * 레벨,
+          스킬피해: 레벨,
+          스킬피해감소: 1,
+          동료치명: Math.min(70, 1 * 1),
+          동료치명피해: 150 + 1 * 1,
+          동료피해: 1,
+          동료피해감소: 1,
+          치유량: 0.2 + 0.002 * 1,
+          관통: Math.min(70, 1 * 1),
+          관통무시: 1,
+          막기: Math.min(70, 1 * 1),
+          막기무시: 1,
+          피해감소: 1,
+
+          최종HP: 1000 * 레벨,
+          최종공격력: 60 * 레벨,
+          최종방어력: 20 * 레벨,
+          최종공속: 1 + 0.05 * 레벨,
+          전투력:
+            (1000 * 레벨) * 0.05 +
+            (60 * 레벨) +
+            (20 * 레벨) * 2 +
+            (1 + 0.05 * 레벨) * 50
+        }
+      };
+
+      const 전투결과 = 전투시뮬레이션(
+        JSON.parse(JSON.stringify(유저데이터)), // 복사본
+        JSON.parse(JSON.stringify(페어리))  // 복사본
+      );
+
+      if (전투결과.결과 === "승리") {
+        유저데이터.스탯.던전.페어리.레벨 += 1;
+        유저데이터.스탯.별자리.레벨 = 유저데이터.스탯.던전.페어리.레벨;
+      } else {
+        유저데이터.스탯.던전.페어리.승패 = 0;
+        break;
+      }
+
+      const 순서 = [
+        "HP보너스",
+        "공격력보너스",
+        "방어력보너스",
+        "치명피해",
+        "치명저항",
+        "콤보계수",
+        "반격계수",
+        "스킬피해",
+        "동료피해"
+      ];
+
+      for (let i = 0; i < 순서.length; i++) {
+        유저데이터.스탯.별자리[순서[i]] = 0;
+      }
+
+      for (let i = 0; i < 유저데이터.스탯.던전.페어리.레벨; i++) {
+        const index = i % 순서.length;
+        유저데이터.스탯.별자리[순서[index]] += 1;
+      }
+
+    }
+
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    // res.json(유저데이터);
+    res.json({ 유저데이터 });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/reroll1", async (req, res) => {
   try {
     const { id } = req.body;

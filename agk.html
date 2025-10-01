@@ -9554,7 +9554,7 @@ ${전투결과.결과}<br>
                         return;
                     }
 
-                    유저데이터 = 결과;
+                    유저데이터 = 결과.data;
                     우측그룹.style.display = "flex";
 
                     메시지표시(`로그인 되었습니다`);
@@ -9576,6 +9576,10 @@ ${전투결과.결과}<br>
                     if (유저데이터.스탯.버전 != 4) {
                         document.getElementById("회원탈퇴").click();
                         return;
+                    }
+
+                    if (결과.새로고침) {
+                        location.reload();
                     }
 
                 } catch (err) {
@@ -9611,7 +9615,7 @@ ${전투결과.결과}<br>
                     return;
                 }
 
-                유저데이터 = 결과;
+                유저데이터 = 결과.data;
                 우측그룹.style.display = "flex";
 
                 메시지표시(`자동로그인 되었습니다`);
@@ -9633,6 +9637,10 @@ ${전투결과.결과}<br>
                 if (유저데이터.스탯.버전 != 4) {
                     document.getElementById("회원탈퇴").click();
                     return;
+                }
+
+                if (결과.새로고침) {
+                    location.reload();
                 }
 
 

@@ -626,7 +626,15 @@ app.post("/login", async (req, res) => {
       }
     }
 
+    if (!data.스탯.버전업) {
+      data.스탯.버전업 = 0;
+    }
 
+    let 새로고침 = 0;
+    if (data.스탯.버전업) {
+      새로고침 = 1;
+      data.스탯.버전업 = 0;
+    }
     //기존유저
 
 
@@ -645,7 +653,7 @@ app.post("/login", async (req, res) => {
       내용: (아이디 && 비밀번호) ? `로그인 / +${시간차 * (60 + (일수보정 - 1))}` : `자동로그인 / +${시간차 * (60 + (일수보정 - 1))}`
     });
 
-    res.json(data);
+    res.json({ data, 새로고침 });
   } catch (err) {
     console.error("로그인 오류:", err);
     res.status(500).json({ 오류: "로그인 처리 실패" });

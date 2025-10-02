@@ -3135,6 +3135,10 @@
 스탯에서 '에어본'이 삭제되었습니다<br>
 스킬발동확률이 50% ➡ 20%로 변경되었습니다<br>
 전장티켓이 0장일 때 재접속 시 충전되던 오류를 수정했습니다<br>
+직업. 검술의 4차, 5차 효과가 구현되었습니다<br>
+검술의 상위효과, 관통옵션이 모든전투에 적용됩니다<br>
+직업. 마술의 4차, 5차 효과가 구현되었습니다<br>
+마술의 상위효과, 추뎀옵션이 모든전투에 적용됩니다<br>
 <br>
 
 25.10.01<br>
@@ -4695,7 +4699,7 @@ ${전투결과.결과}<br>
                 검술4차.innerHTML =
                     `
                 검술4차 예후이아(Lv100)<br>
-                관통20%(최종방어력무시)<br>
+                관통20%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술4차);
                 const 검술5차 = document.createElement("div");
@@ -4704,6 +4708,7 @@ ${전투결과.결과}<br>
                 검술5차.innerHTML =
                     `
                 검술5차 미카엘(Lv130)<br>
+                관통50%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술5차);
 
@@ -4746,6 +4751,7 @@ ${전투결과.결과}<br>
                 마술4차.innerHTML =
                     `
                 마술4차 아살리야(Lv100)<br>
+                추가데미지20%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술4차);
                 const 마술5차 = document.createElement("div");
@@ -4754,6 +4760,7 @@ ${전투결과.결과}<br>
                 마술5차.innerHTML =
                     `
                 마술5차 무미아(Lv130)<br>
+                추가데미지50%<br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술5차);
 

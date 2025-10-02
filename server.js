@@ -3252,18 +3252,6 @@ app.post("/arenachallenge", async (req, res) => {
 
     }
 
-    const { error: 업데이트에러 } = await supabaseAdmin
-      .from("전장순위")
-      .update({
-        스탯: 내유저.스탯,
-        유저닉네임: 내유저.스탯.계정.유저닉네임
-      })
-      .eq("유저아이디", 내유저.스탯.계정.유저아이디);
-
-    if (업데이트에러) {
-      console.error("전장순위 update 실패:", 업데이트에러);
-    }
-
 
     res.json({ me: 내유저, 전투결과 });
 

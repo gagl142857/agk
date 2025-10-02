@@ -635,6 +635,12 @@ app.post("/login", async (req, res) => {
       새로고침 = 1;
       data.스탯.버전업 = 0;
     }
+
+    if (!data.스탯.클로버) {
+      data.스탯.클로버 = 0;
+    }
+
+
     //기존유저
 
 
@@ -985,7 +991,7 @@ app.post("/lamponeshot", async (req, res) => {
     }
 
     if (유저데이터.스탯.주인장인가) {
-      유저데이터.스탯.램프.수량 = 9999;
+      유저데이터.스탯.램프.수량 = 3333;
     }
 
     if (유저데이터.스탯.계정.유저아이디 === "rkrmf") {
@@ -2299,6 +2305,8 @@ app.post("/Enhance1", async (req, res) => {
       if (옵션키) {
         조각상[옵션키] = (조각상[옵션키] || 0) + 20;
       }
+    } else {
+      data.스탯.클로버 += 1;
     }
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -2348,6 +2356,8 @@ app.post("/Enhance1Auto", async (req, res) => {
         const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
         if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
         break;
+      } else {
+        data.스탯.클로버 += 1;
       }
     }
 
@@ -2458,6 +2468,8 @@ app.post("/Enhance2", async (req, res) => {
       if (옵션키) {
         조각상[옵션키] = (조각상[옵션키] || 0) + 20;
       }
+    } else {
+      data.스탯.클로버 += 1;
     }
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -2507,6 +2519,8 @@ app.post("/Enhance2Auto", async (req, res) => {
         const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
         if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
         break;
+      } else {
+        data.스탯.클로버 += 1;
       }
     }
 
@@ -2625,6 +2639,8 @@ app.post("/Enhance3", async (req, res) => {
       if (옵션키) {
         조각상[옵션키] = (조각상[옵션키] || 0) + 20;
       }
+    } else {
+      data.스탯.클로버 += 1;
     }
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -2674,6 +2690,8 @@ app.post("/Enhance3Auto", async (req, res) => {
         const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
         if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
         break;
+      } else {
+        data.스탯.클로버 += 1;
       }
     }
 
@@ -2792,6 +2810,8 @@ app.post("/Enhance4", async (req, res) => {
       if (옵션키) {
         조각상[옵션키] = (조각상[옵션키] || 0) + 20;
       }
+    } else {
+      data.스탯.클로버 += 1;
     }
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -2841,6 +2861,8 @@ app.post("/Enhance4Auto", async (req, res) => {
         const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
         if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
         break;
+      } else {
+        data.스탯.클로버 += 1;
       }
     }
 
@@ -2859,6 +2881,182 @@ app.post("/Enhance4Auto", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/reroll5", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.계정.레벨 < 50) {
+      return res.status(400).json({ 오류: "계정 50레벨 이상부터 가능합니다" });
+    }
+
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
+    }
+
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
+
+    data.스탯.조각상5 = {};
+    data.스탯.조각상5[랜덤스탯] = 0;
+    data.스탯.조각상5.등급 = "기본";
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    data.스탯.스톤 -= 10;
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance5", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.계정.레벨 < 50) {
+      return res.status(400).json({ 오류: "계정 50레벨 이상부터 가능합니다" });
+    }
+
+    if (!Object.keys(data.스탯.조각상5 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    const 조각상 = data.스탯.조각상5;
+    const 현재등급 = 조각상.등급 || "기본";
+
+    const 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+
+    if (현재인덱스 === -1 && 현재등급 !== "기본") {
+      return res.status(400).json({ 오류: "잘못된 등급입니다" });
+    }
+    if (현재인덱스 === 등급순서.length - 1) {
+      return res.status(400).json({ 오류: "더 이상 강화할 수 없습니다" });
+    }
+
+    const 다음등급 = 등급순서[현재인덱스 + 1];
+
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
+    }
+
+    data.스탯.스톤 -= 필요가루;
+
+    const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+
+    if (Math.random() < 성공확률) {
+      조각상.등급 = 다음등급;
+      const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+      if (옵션키) {
+        조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+      }
+    } else {
+      data.스탯.클로버 += 1;
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance5Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상5 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    if (data.스탯.계정.레벨 < 50) {
+      return res.status(400).json({ 오류: "계정 50레벨 이상부터 가능합니다" });
+    }
+
+    let 조각상 = data.스탯.조각상5;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      } else {
+        data.스탯.클로버 += 1;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 
 app.post("/wjdfuf", async (req, res) => {
   try {
@@ -4279,6 +4477,7 @@ app.post("/Foodeat1", async (req, res) => {
 
       } else {
         진화성공 = false;
+        data.스탯.클로버 += 100;
       }
     } else {
       // 일반 구간 → 무조건 레벨업
@@ -4389,6 +4588,7 @@ app.post("/Foodeat2", async (req, res) => {
 
       } else {
         진화성공 = false;
+        data.스탯.클로버 += 100;
       }
     } else {
       // 일반 구간 → 무조건 레벨업
@@ -4499,6 +4699,7 @@ app.post("/Foodeat3", async (req, res) => {
 
       } else {
         진화성공 = false;
+        data.스탯.클로버 += 100;
       }
     } else {
       // 일반 구간 → 무조건 레벨업

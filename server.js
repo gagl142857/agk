@@ -3061,6 +3061,181 @@ app.post("/Enhance5Auto", async (req, res) => {
 });
 
 
+app.post("/reroll6", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.계정.레벨 < 70) {
+      return res.status(400).json({ 오류: "계정 70레벨 이상부터 가능합니다" });
+    }
+
+    if (data.스탯.스톤 < 10) {
+      return res.status(404).json({ 오류: "스톤이 부족합니다" });
+    }
+
+    const 랜덤스탯 = 조각상스탯목록[Math.floor(Math.random() * 조각상스탯목록.length)];
+
+    data.스탯.조각상6 = {};
+    data.스탯.조각상6[랜덤스탯] = 0;
+    data.스탯.조각상6.등급 = "기본";
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+    data.스탯.스톤 -= 10;
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance6", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (data.스탯.계정.레벨 < 70) {
+      return res.status(400).json({ 오류: "계정 70레벨 이상부터 가능합니다" });
+    }
+
+    if (!Object.keys(data.스탯.조각상6 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    const 조각상 = data.스탯.조각상6;
+    const 현재등급 = 조각상.등급 || "기본";
+
+    const 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+
+    if (현재인덱스 === -1 && 현재등급 !== "기본") {
+      return res.status(400).json({ 오류: "잘못된 등급입니다" });
+    }
+    if (현재인덱스 === 등급순서.length - 1) {
+      return res.status(400).json({ 오류: "더 이상 강화할 수 없습니다" });
+    }
+
+    const 다음등급 = 등급순서[현재인덱스 + 1];
+
+    const 필요가루 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+
+    if (data.스탯.스톤 < 필요가루) {
+      return res.status(400).json({ 오류: "스톤이 부족합니다" });
+    }
+
+    data.스탯.스톤 -= 필요가루;
+
+    const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+
+    if (Math.random() < 성공확률) {
+      조각상.등급 = 다음등급;
+      const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+      if (옵션키) {
+        조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+      }
+    } else {
+      data.스탯.클로버 += 1;
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/Enhance6Auto", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const { data, error } = await supabaseAdmin.from("users").select("*").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ 오류: "유저 없음" });
+
+    if (!Object.keys(data.스탯.조각상6 || {}).find(k => k !== "등급")) {
+      return res.status(400).json({ 오류: "먼저 리롤로 옵션을 획득하세요" });
+    }
+
+    if (data.스탯.계정.레벨 < 70) {
+      return res.status(400).json({ 오류: "계정 70레벨 이상부터 가능합니다" });
+    }
+
+    let 조각상 = data.스탯.조각상6;
+    let 현재등급 = 조각상.등급 || "기본";
+    let 현재인덱스 = 현재등급 === "기본" ? -1 : 등급순서.indexOf(현재등급);
+
+    while (true) {
+      if (현재인덱스 === 등급순서.length - 1) break;
+
+      const 필요스톤 = 현재등급 === "기본" ? 20 : (현재인덱스 + 3) * 10;
+      if ((data.스탯.스톤 || 0) < 필요스톤) break;
+
+      data.스탯.스톤 -= 필요스톤;
+      const 성공확률 = 조각상강화확률표[현재인덱스 + 1];
+      if (Math.random() < 성공확률) {
+        const 다음등급 = 등급순서[현재인덱스 + 1];
+        조각상.등급 = 다음등급;
+        const 옵션키 = Object.keys(조각상).find(k => k !== "등급");
+        if (옵션키) 조각상[옵션키] = (조각상[옵션키] || 0) + 20;
+        break;
+      } else {
+        data.스탯.클로버 += 1;
+      }
+    }
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) return res.status(500).json({ 오류: "업데이트 실패" });
+    res.json(data);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/wjdfuf", async (req, res) => {
   try {
     // ② 전장순위 전체 재정렬
@@ -4852,7 +5027,43 @@ app.post("/Guildcreation", async (req, res) => {
   }
 });
 
+app.post("/ranking", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
 
+    const { data: 유저데이터, error: 내에러 } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (내에러 || !유저데이터)
+      return res.status(404).json({ 오류: "내 유저 조회 실패" });
+
+    const 내서버 = 유저데이터.스탯?.서버;
+    if (!내서버)
+      return res.status(400).json({ 오류: "서버 값 없음" });
+
+    const { data: 전체유저, error: 전체에러 } = await supabaseAdmin
+      .from("users")
+      .select("스탯")
+      .eq("스탯->>서버", 내서버.toString());
+
+    if (전체에러)
+      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+
+    const 전당리스트 = 전체유저
+      .filter(u => u.스탯 && u.스탯.전투력)
+      .sort((a, b) => b.스탯.전투력 - a.스탯.전투력);
+
+    res.json({ 전당리스트 });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 

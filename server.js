@@ -210,6 +210,7 @@ app.post("/register", async (req, res) => {
       .split(",")[0]
       .trim();
 
+    //신규유저
     const 기본스탯 = {
       주인장인가: 아이디 === "codl" ? 1 : 0,
       생성시각: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }), //"2025. 8. 26. 오후 4:37:00",
@@ -264,7 +265,6 @@ app.post("/register", async (req, res) => {
         },
       ],
     };
-    //신규유저
 
 
     const { error: dbError } = await supabaseAdmin
@@ -593,61 +593,14 @@ app.post("/login", async (req, res) => {
       data.스탯.클로버 = 0;
     }
 
+    if (!data.스탯.월드보스) {
+      data.스탯.월드보스 = { 기회: 2, 최고데미지: 0 };
+    }
+
 
 
 
     //기존유저
-
-    const { data: 기존, error: 기존에러 } = await supabaseAdmin
-      .from("전장순위")
-      .select("순위")
-      .eq("유저아이디", data.스탯.계정.유저아이디)
-      .single();
-
-    if (기존에러 && 기존에러.code !== "PGRST116") {
-      console.error("전장순위 조회 실패:", 기존에러);
-    } else if (!기존) {
-      const { data: 순위데이터, error: 순위에러 } = await supabaseAdmin
-        .from("전장순위")
-        .select("순위")
-        .order("순위", { ascending: false })
-        .limit(1);
-
-      if (순위에러) {
-        console.error("전장순위순위조회실패:", 순위에러);
-      }
-
-      let 신규순위 = 1;
-      if (순위데이터 && 순위데이터.length > 0) {
-        신규순위 = 순위데이터[0].순위 + 1;
-      }
-
-      const { error: 추가에러 } = await supabaseAdmin
-        .from("전장순위")
-        .insert({
-          스탯: data.스탯,
-          유저아이디: data.스탯.계정.유저아이디,
-          유저닉네임: data.스탯.계정.유저닉네임,
-          순위: 신규순위,
-        });
-
-      if (추가에러) {
-        console.error("전장순위 insert 실패:", 추가에러);
-      }
-    } else {
-      const { error: 업데이트에러 } = await supabaseAdmin
-        .from("전장순위")
-        .update({
-          스탯: data.스탯,
-          유저닉네임: data.스탯.계정.유저닉네임
-        })
-        .eq("유저아이디", data.스탯.계정.유저아이디);
-
-      if (업데이트에러) {
-        console.error("전장순위 update 실패:", 업데이트에러);
-      }
-    }
-
 
     if (기기ID) data.스탯.기기ID = 기기ID;
     data.스탯.접속IP = clientIP;
@@ -1678,7 +1631,6 @@ app.post("/change-nickname", async (req, res) => {
   }
 });
 
-
 app.post("/pump", async (req, res) => {
   try {
     const { id } = req.body;
@@ -1749,7 +1701,7 @@ app.post("/GenieDungeon", async (req, res) => {
     }
 
     const 지니 = 던전스탯생성(유저데이터.스탯.던전.지니.레벨);
-    지니.스탯.치명 = 10 * 유저데이터.스탯.던전.지니.레벨;
+    지니.스탯.치명 = Math.min(10 * 유저데이터.스탯.던전.지니.레벨, 70);
     지니.스탯.치명피해 = 150 + 25 * 유저데이터.스탯.던전.지니.레벨;
     지니.스탯.치명저항 = 10 * 유저데이터.스탯.던전.지니.레벨;
 
@@ -1808,7 +1760,7 @@ app.post("/RokugyuDungeon", async (req, res) => {
     }
 
     const 로쿠규 = 던전스탯생성(유저데이터.스탯.던전.로쿠규.레벨);
-    로쿠규.스탯.콤보 = 10 * 유저데이터.스탯.던전.로쿠규.레벨;
+    로쿠규.스탯.콤보 = Math.min(10 * 유저데이터.스탯.던전.로쿠규.레벨, 70);
     로쿠규.스탯.콤보계수 = 100 + 10 * 유저데이터.스탯.던전.로쿠규.레벨;
     로쿠규.스탯.콤보피해감소 = 10 * 유저데이터.스탯.던전.로쿠규.레벨;
 
@@ -3818,6 +3770,45 @@ app.post("/digieggkey10", async (req, res) => {
   }
 });
 
+app.post("/worldbosschance", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 1000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 1000;
+
+    유저데이터.스탯.월드보스.기회 += 1;
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
 app.post("/swordart", async (req, res) => {
   try {
     const { id } = req.body;
@@ -4983,7 +4974,6 @@ app.post("/Coupon", async (req, res) => {
   }
 });
 
-
 app.post("/Guildcreation", async (req, res) => {
   try {
     const { id, 길드명 } = req.body;
@@ -5065,7 +5055,106 @@ app.post("/ranking", async (req, res) => {
   }
 });
 
+app.post("/worldboss", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
 
+    const { data: 유저데이터, error: 내에러 } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (내에러 || !유저데이터)
+      return res.status(404).json({ 오류: "내 유저 조회 실패" });
+
+    const 내서버 = 유저데이터.스탯?.서버;
+    if (!내서버)
+      return res.status(400).json({ 오류: "서버 값 없음" });
+
+    const { data: 전체유저, error: 전체에러 } = await supabaseAdmin
+      .from("users")
+      .select("스탯")
+      .eq("스탯->>서버", 내서버.toString());
+
+    if (전체에러)
+      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+
+    const 월드보스순위 = 전체유저
+      .filter(u => u.스탯 && u.스탯.월드보스 && u.스탯.월드보스.최고데미지 > 0)
+      // .filter(u => u.스탯 && u.스탯.월드보스)
+      .sort((a, b) => b.스탯.월드보스.최고데미지 - a.스탯.월드보스.최고데미지);
+
+    res.json(월드보스순위);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/worldbossattack", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (!유저데이터.스탯.월드보스.기회) {
+      return res.status(400).json({ 오류: "금일 기회를 모두 소진하였습니다" });
+    }
+
+    const 메가트론 = 던전스탯생성(50);
+    메가트론.스탯.최종공속 = 0.5;
+    메가트론.스탯.최종HP = 10000000;
+    메가트론.스탯.최종공격력 = 600000;
+    메가트론.스탯.최종방어력 = 200000;
+    메가트론.스탯.전투력 =
+      (메가트론.스탯.최종HP) * 0.05 +
+      (메가트론.스탯.최종공격력) +
+      (메가트론.스탯.최종방어력) * 2 +
+      (1) * 50;
+
+
+    const 전투결과 = 전투시뮬레이션(
+      JSON.parse(JSON.stringify(유저데이터)), // 복사본
+      JSON.parse(JSON.stringify(메가트론))  // 복사본
+    );
+
+    if (유저데이터.스탯.월드보스.최고데미지 < 전투결과.나총데미지) {
+      유저데이터.스탯.월드보스.최고데미지 = 전투결과.나총데미지;
+    }
+
+    유저데이터.스탯.월드보스.기회 -= 1;
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    // res.json(유저데이터);
+    res.json({ 유저데이터, 전투결과 });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
@@ -5185,12 +5274,12 @@ function 전투시뮬레이션(나, 상대) {
 
       if (Math.random() * 100 < 나.스탯.치명) {
         if (!Math.random() * 100 < 상대.스탯.치명무시) {
-          최종데미지 = 기본데미지 * (나.스탯.치명피해 / 100) * ((Math.max(0, 100 - 상대.스탯.치명저항)) / 100);
+          최종데미지 = 최종데미지 * (나.스탯.치명피해 / 100) * ((Math.max(0, 100 - 상대.스탯.치명저항)) / 100);
         } else {
-          최종데미지 = 기본데미지 * (나.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 상대.스탯.일반공격피해감소)) / 100);
+          최종데미지 = 최종데미지 * (나.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 상대.스탯.일반공격피해감소)) / 100);
         }
       } else {
-        최종데미지 = 기본데미지 * (나.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 상대.스탯.일반공격피해감소)) / 100);
+        최종데미지 = 최종데미지 * (나.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 상대.스탯.일반공격피해감소)) / 100);
       }
 
       if (Math.random() * 100 < 나.스탯.콤보) {
@@ -5222,7 +5311,10 @@ function 전투시뮬레이션(나, 상대) {
 
       상대.스탯.최종HP -= 최종데미지;
       나총데미지 += 최종데미지;
-      if (상대.스탯.최종HP <= 0) break;
+      if (상대.스탯.최종HP <= 0) {
+        상대.스탯.최종HP = 0;
+        break;
+      }
 
       if (Math.random() * 100 < 상대.스탯.반격) {
         if (!(Math.random() * 100 < 나.스탯.반격무시)) {
@@ -5236,7 +5328,11 @@ function 전투시뮬레이션(나, 상대) {
         } else {
         }
       }
-      if (나.스탯.최종HP <= 0) break;
+      if (나.스탯.최종HP <= 0) {
+        나.스탯.최종HP = 0;
+        break;
+      }
+
 
       if (Math.random() * 100 < 20) {
         if (Math.random() * 100 < 나.스탯.스킬치명) {
@@ -5247,7 +5343,11 @@ function 전투시뮬레이션(나, 상대) {
         상대.스탯.최종HP -= 최종데미지;
         나총데미지 += 최종데미지;
         나총스킬피해량 += 최종데미지;
-        if (상대.스탯.최종HP <= 0) break;
+        if (상대.스탯.최종HP <= 0) {
+          상대.스탯.최종HP = 0;
+          break;
+        }
+
       }
 
       if (Math.random() * 100 < 20) {
@@ -5259,7 +5359,11 @@ function 전투시뮬레이션(나, 상대) {
         상대.스탯.최종HP -= 최종데미지;
         나총데미지 += 최종데미지;
         나총동료피해량 += 최종데미지;
-        if (상대.스탯.최종HP <= 0) break;
+        if (상대.스탯.최종HP <= 0) {
+          상대.스탯.최종HP = 0;
+          break;
+        }
+
       }
 
       if (Math.random() * 100 < 나.스탯.회복) {
@@ -5286,12 +5390,12 @@ function 전투시뮬레이션(나, 상대) {
 
       if (Math.random() * 100 < 상대.스탯.치명) {
         if (!Math.random() * 100 < 나.스탯.치명무시) {
-          최종데미지 = 기본데미지 * (상대.스탯.치명피해 / 100) * ((Math.max(0, 100 - 나.스탯.치명저항)) / 100);
+          최종데미지 = 최종데미지 * (상대.스탯.치명피해 / 100) * ((Math.max(0, 100 - 나.스탯.치명저항)) / 100);
         } else {
-          최종데미지 = 기본데미지 * (상대.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 나.스탯.일반공격피해감소)) / 100);
+          최종데미지 = 최종데미지 * (상대.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 나.스탯.일반공격피해감소)) / 100);
         }
       } else {
-        최종데미지 = 기본데미지 * (상대.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 나.스탯.일반공격피해감소)) / 100);
+        최종데미지 = 최종데미지 * (상대.스탯.일반공격계수 / 100) * ((Math.max(0, 100 - 나.스탯.일반공격피해감소)) / 100);
       }
 
       if (Math.random() * 100 < 상대.스탯.콤보) {
@@ -5322,7 +5426,10 @@ function 전투시뮬레이션(나, 상대) {
       }
       나.스탯.최종HP -= 최종데미지;
       상대총데미지 += 최종데미지;
-      if (나.스탯.최종HP <= 0) break;
+      if (나.스탯.최종HP <= 0) {
+        나.스탯.최종HP = 0;
+        break;
+      }
 
       if (Math.random() * 100 < 나.스탯.반격) {
         if (!(Math.random() * 100 < 상대.스탯.반격무시)) {
@@ -5335,7 +5442,10 @@ function 전투시뮬레이션(나, 상대) {
           나총데미지 += 반격데미지;
         }
       }
-      if (상대.스탯.최종HP <= 0) break;
+      if (상대.스탯.최종HP <= 0) {
+        상대.스탯.최종HP = 0;
+        break;
+      }
 
       //스킬발동
       if (Math.random() * 100 < 20) {
@@ -5347,7 +5457,11 @@ function 전투시뮬레이션(나, 상대) {
         나.스탯.최종HP -= 최종데미지;
         상대총데미지 += 최종데미지;
         상대총스킬피해량 += 최종데미지;
-        if (나.스탯.최종HP <= 0) break;
+        if (나.스탯.최종HP <= 0) {
+          나.스탯.최종HP = 0;
+          break;
+        }
+
       }
 
       //동료발동
@@ -5360,7 +5474,11 @@ function 전투시뮬레이션(나, 상대) {
         나.스탯.최종HP -= 최종데미지;
         상대총데미지 += 최종데미지;
         상대총동료피해량 += 최종데미지;
-        if (나.스탯.최종HP <= 0) break;
+        if (나.스탯.최종HP <= 0) {
+          나.스탯.최종HP = 0;
+          break;
+        }
+
       }
 
       if (Math.random() * 100 < 상대.스탯.회복) {

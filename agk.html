@@ -3181,6 +3181,16 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.10.12<br>
+월드보스 컨텐츠가 개편되었습니다<br>
+월드보스에게 도전할 기회가 하루 2번 ➡ 3번으로 변경되었습니다<br>
+이제 하루한번 월드보스 도전기회가 3회 정상적으로 회복됩니다<br>
+일일보상은 3000다이아부터 순위당 300개차감 지급할예정이며<br>
+오늘순위에 대한 보상만 30다이아로 책정하여 하루 시험운행하고<br>
+모레부터 제대로 보상되게 구현해보겠습니다<br>
+전당 정보창에 닉네임옆에 계정레벨표시가 추가되었습니다<br>
+<br>
+
 25.10.10<br>
 w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다<br>
 상점의 램프원샷 시스템을 재구매할수있던 오류가 수정되었습니다<br>
@@ -3501,7 +3511,6 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
 
 해야할일
 
-월드보스
 전장
 
 git add . && git commit -m "배포" && git push origin main
@@ -9345,7 +9354,7 @@ ${전투결과.결과}<br>
                 for (let i = 0; i < 결과.전당리스트.length; i++) {
                     const 유저 = 결과.전당리스트[i];
                     const 순위 = i + 1;
-                    const 닉네임 = 유저.스탯.계정.유저닉네임 || 유저.유저아이디;
+                    const 닉네임 = (유저.스탯.계정.유저닉네임 || 유저.유저아이디);
 
                     행렬만들기(전당화면컨테이너, `${i}번째유저`, 4);
 
@@ -9414,7 +9423,7 @@ ${전투결과.결과}<br>
 
                         행렬만들기(전장유저정보, "닉네임", 2);
                         닉네임1열.style.display = `block`;
-                        닉네임1열.innerHTML = 유저.스탯.계정.유저닉네임;
+                        닉네임1열.innerHTML = `${유저.스탯.계정.유저닉네임}(Lv${유저.스탯.계정.레벨})`;
                         닉네임2열.style.display = `block`;
                         닉네임2열.innerHTML = 유저.스탯.직업?.이름 ? `${유저.스탯.직업?.이름}(${유저.스탯.직업?.종류})` : `직업 -`;
                         행렬만들기(전장유저정보, "레벨", 2);
@@ -9557,8 +9566,7 @@ ${전투결과.결과}<br>
             `
 월드보스와 대결하여 최고데미지를 갱신하세요<br>
 최고데미지 순위에 따른 일일보상이 우편으로 지급됩니다<br>
-도전기회는 하루에 두번입니다<br>
-일일보상은 구현중에있습니다<br>
+도전기회는 하루에 세번입니다<br>
             `;
         월드보스화면설명.style.textAlign = "center";
         월드보스화면설명.style.paddingBottom = "8px";
@@ -9576,7 +9584,6 @@ ${전투결과.결과}<br>
         월드보스화면컨테이너.style.gap = "8px";
         월드보스화면.append(월드보스화면컨테이너);
 
-        //월드보스화면보여주기함수
         async function 월드보스화면보여주기() {
             try {
                 모든화면숨기기();
@@ -9599,104 +9606,100 @@ ${전투결과.결과}<br>
                     return;
                 }
 
-                행렬만들기(월드보스화면컨테이너, "오행", 2);
-                document.getElementById(`오행1열`).style.flex = "1";
-                document.getElementById(`오행2열`).style.flex = "3";
+                const 오늘요일 = 유저데이터.스탯.접속요일;
+                const 어제요일목록 = ["일", "월", "화", "수", "목", "금", "토"];
+                const 어제요일 = 어제요일목록[
+                    (어제요일목록.indexOf(오늘요일) + 6) % 7
+                ];
 
-                행렬만들기(오행1열, "오행일", 1);
-                행렬만들기(오행1열, "오행이", 1);
+                행렬만들기(월드보스화면컨테이너, "오행", 3);
 
-                오행일1열.innerHTML = 비장비아이콘변환(월드보스아이콘);
-                오행이1열.innerHTML = `메가트론`;
+                const 월드보스타이틀 = document.createElement("div");
+                월드보스타이틀.style.display = "flex";
+                월드보스타이틀.innerHTML = `월드보스`;
+                document.getElementById("오행2열").append(월드보스타이틀);
 
-                행렬만들기(오행2열, `월보순위타이틀`, 4);
+                const 보스아이콘 = document.createElement("div");
+                보스아이콘.style.display = "flex";
+                보스아이콘.innerHTML = `${비장비아이콘변환(월드보스아이콘)}`;
+                document.getElementById("오행2열").append(보스아이콘);
 
-                document.getElementById(`월보순위타이틀1열`).style.flex = "2";
-                document.getElementById(`월보순위타이틀2열`).style.flex = "3";
-                document.getElementById(`월보순위타이틀3열`).style.flex = "3";
-                document.getElementById(`월보순위타이틀4열`).style.flex = "3";
+                const 보스이름 = document.createElement("div");
+                보스이름.style.display = "flex";
+                보스이름.innerHTML = `메가트론`;
+                document.getElementById("오행2열").append(보스이름);
 
-                // document.getElementById(`월보순위타이틀`).style.borderBottom = "0.2px solid #dadada";
+                const 어제보스순위 = document.createElement("div");
+                어제보스순위.style.display = "flex";
+                어제보스순위.innerHTML = `어제보스순위`;
+                document.getElementById("오행1열").append(어제보스순위);
 
-                document.getElementById(`월보순위타이틀1열`).innerText = `순위`;
+                const 내닉네임 = 유저데이터.스탯.계정.유저닉네임;
+                let 내객체 = null;
 
-                document.getElementById(`월보순위타이틀2열`).innerText = `닉네임`;
-
-                document.getElementById(`월보순위타이틀3열`).innerText = `데미지`;
-
-                document.getElementById(`월보순위타이틀4열`).innerText = `일일보상`;
-
-                for (let i = 0; i < Math.min(결과.length, 9); i++) {
-                    const 유저 = 결과[i];
+                for (let i = 0; i < 결과.어제월드보스순위.length; i++) {
+                    const 유저 = 결과.어제월드보스순위[i];
                     const 순위 = i;
                     const 닉네임 = 유저.스탯.계정.유저닉네임;
 
-                    행렬만들기(오행2열, `${i}월보순위`, 4);
-
-                    document.getElementById(`${i}월보순위1열`).style.flex = "2";
-                    document.getElementById(`${i}월보순위2열`).style.flex = "3";
-                    document.getElementById(`${i}월보순위3열`).style.flex = "3";
-                    document.getElementById(`${i}월보순위4열`).style.flex = "3";
-
-                    document.getElementById(`${i}월보순위`).style.borderBottom = "0.2px solid #dadada";
-
-                    document.getElementById(`${i}월보순위1열`).innerText = `${순위 + 1}위`;
-
-                    document.getElementById(`${i}월보순위2열`).innerText = 닉네임;
-
-                    document.getElementById(`${i}월보순위3열`).innerText = 단위변환함수(유저.스탯.월드보스.최고데미지) || 0;
-
-                    document.getElementById(`${i}월보순위4열`).innerText = `${4000 - (순위 * 200)}`;
-
-                }
-
-                행렬만들기(오행2열, `월보순위밖`, 4);
-
-                document.getElementById(`월보순위밖1열`).style.flex = "2";
-                document.getElementById(`월보순위밖2열`).style.flex = "3";
-                document.getElementById(`월보순위밖3열`).style.flex = "3";
-                document.getElementById(`월보순위밖4열`).style.flex = "3";
-
-                document.getElementById(`월보순위밖`).style.borderBottom = "0.2px solid #dadada";
-
-                document.getElementById(`월보순위밖1열`).innerText = `순위밖`;
-
-                document.getElementById(`월보순위밖2열`).innerText = `-`;
-
-                document.getElementById(`월보순위밖3열`).innerText = `-`;
-
-                document.getElementById(`월보순위밖4열`).innerText = `1000`;
-
-
-                for (let i = 0; i < 결과.length; i++) {
-                    const 유저 = 결과[i];
-                    const 순위 = i;
-                    const 닉네임 = 유저.스탯.계정.유저닉네임;
-                    if (닉네임 === 유저데이터.스탯.계정.유저닉네임) {
-                        행렬만들기(오행2열, `${i}월보내순위`, 4);
-                        document.getElementById(`${i}월보내순위`).style.backgroundColor = "#303030";
-
-                        document.getElementById(`${i}월보내순위1열`).style.flex = "2";
-                        document.getElementById(`${i}월보내순위2열`).style.flex = "3";
-                        document.getElementById(`${i}월보내순위3열`).style.flex = "3";
-                        document.getElementById(`${i}월보내순위4열`).style.flex = "3";
-
-                        document.getElementById(`${i}월보내순위`).style.borderBottom = "0.2px solid #dadada";
-
-                        document.getElementById(`${i}월보내순위1열`).innerText = `${순위 + 1}위`;
-
-                        document.getElementById(`${i}월보내순위2열`).innerText = 닉네임;
-
-                        document.getElementById(`${i}월보내순위3열`).innerText = 단위변환함수(유저.스탯.월드보스.최고데미지) || 0;
-
-                        if (순위 > 8) {
-                            document.getElementById(`${i}월보내순위4열`).innerText = `1000`;
-                        } else {
-                            document.getElementById(`${i}월보내순위4열`).innerText = `${4000 - (순위 * 200)}`;
-                        }
-
+                    if (i < 9) {
+                        const 객체 = document.createElement("div");
+                        객체.style.display = "flex";
+                        객체.style.borderBottom = "0.2px solid #dadada";
+                        객체.style.fontSize = "12px";
+                        객체.style.width = "100%";
+                        객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
+                        document.getElementById("오행1열").append(객체);
                     }
 
+                    if (닉네임 === 내닉네임) {
+                        내객체 = document.createElement("div");
+                        내객체.style.display = "flex";
+                        내객체.style.borderBottom = "0.2px solid #dadada";
+                        내객체.style.backgroundColor = "#303030";
+                        내객체.style.fontSize = "12px";
+                        내객체.style.width = "100%";
+                        내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
+                    }
+                }
+
+                if (내객체) {
+                    document.getElementById("오행1열").append(내객체);
+                }
+
+                const 오늘보스순위 = document.createElement("div");
+                오늘보스순위.style.display = "flex";
+                오늘보스순위.innerHTML = `오늘보스순위`;
+                document.getElementById("오행3열").append(오늘보스순위);
+
+                for (let i = 0; i < 결과.오늘월드보스순위.length; i++) {
+                    const 유저 = 결과.오늘월드보스순위[i];
+                    const 순위 = i;
+                    const 닉네임 = 유저.스탯.계정.유저닉네임;
+
+                    if (i < 9) {
+                        const 객체 = document.createElement("div");
+                        객체.style.display = "flex";
+                        객체.style.borderBottom = "0.2px solid #dadada";
+                        객체.style.fontSize = "12px";
+                        객체.style.width = "100%";
+                        객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
+                        document.getElementById("오행3열").append(객체);
+                    }
+
+                    if (닉네임 === 내닉네임) {
+                        내객체 = document.createElement("div");
+                        내객체.style.display = "flex";
+                        내객체.style.borderBottom = "0.2px solid #dadada";
+                        내객체.style.backgroundColor = "#303030";
+                        내객체.style.fontSize = "12px";
+                        내객체.style.width = "100%";
+                        내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
+                    }
+                }
+
+                if (내객체) {
+                    document.getElementById("오행3열").append(내객체);
                 }
 
                 행렬만들기(월드보스화면컨테이너, `도전`, 5);
@@ -9776,7 +9779,6 @@ ${전투결과.결과}<br>
                 화면해제();
             }
         }
-
 
 
 

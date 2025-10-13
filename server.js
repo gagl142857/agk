@@ -652,6 +652,11 @@ app.post("/login", async (req, res) => {
       data.스탯.클로버 = 0;
     }
 
+    if (!data.스탯.버전표시) {
+      data.스탯.버전표시 = ``;
+    }
+    data.스탯.버전표시 = `v1.0.0`;
+
 
 
 

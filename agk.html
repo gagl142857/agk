@@ -1162,7 +1162,7 @@
                 }
 
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화일행", 3);
-                메인화면컨테이너재화일행1열.innerHTML = `클로버 ${단위변환함수(유저데이터.스탯.클로버 || 0)}`;
+                // 메인화면컨테이너재화일행1열.innerHTML = `클로버 ${단위변환함수(유저데이터.스탯.클로버 || 0)}`;
                 메인화면컨테이너재화일행2열.innerHTML = `램프 ${단위변환함수(유저데이터.스탯.램프.수량 || 0)}`;
                 메인화면컨테이너재화일행3열.innerHTML = `낙엽 ${단위변환함수(유저데이터.스탯.낙엽 || 0)}`;
                 행렬만들기(메인화면컨테이너, "메인화면컨테이너재화이행", 3);
@@ -3201,6 +3201,17 @@
 우편함 모두받기 버튼 우측에 버전표시가 추가되었습니다<br>
 버전업데이트 시 우편으로 알려드릴테니, 버전이 다르다면<br>
 새로고침을 하고 게임을 진행하시면 되겠습니다<br>
+로그아웃 단축키가 E로 설정되었습니다<br>
+최근 업데이트되었던 재화 '클로버'를 삭제했습니다<br>
+신규컨텐츠와 신규재화로 찾아오겠습니다<br>
+던전화면에도 메인화면과 같은 재화표시가 추가되었습니다<br>
+던전화면에 신규시스템 '풀자동'버튼이 구현되었습니다<br>
+던전화면의 풀자동 버튼 클릭 시 지니, 로쿠규, 락골렘, 디지에그<br>
+4종 던전의 모든 열쇠를 한번에 소모합니다<br>
+현재 스킬과 동료데미지가 발동만 된다면 타 종류의 데미지들보다<br>
+화력이 압도적이게 코딩되어있습니다<br>
+조금더 지켜보고, 발동확률을 너프하던지 데미지식을 수정하던지<br>
+하겠습니다. 너프없이 유지될수도 있습니다<br>
 <br>
 
 25.10.12<br>
@@ -3575,7 +3586,7 @@ nodemon server.js
         던전화면설명.style.flex = "1";
         던전화면설명.style.display = "flex";
         던전화면설명.style.flexDirection = "column";
-        던전화면설명.innerHTML = `던전들의 입장열쇠는 하루에 4개씩 충전되며<br>최대수량(4개)을 초과하여 충전되지 않습니다<br>던전의 몬스터들은 고유한 속성값을 가지고 있습니다`;
+        던전화면설명.innerHTML = `던전들의 입장열쇠는 하루에 4개씩 충전되며<br>최대수량(4개)을 초과하여 충전되지 않습니다<br>던전의 몬스터들은 고유한 속성값을 가지고 있습니다<br>풀자동 시 지니/로쿠규/락골렘/디지에그의 열쇠를 한번에 소모합니다`;
         던전화면설명.style.textAlign = "center";
         던전화면설명.style.paddingBottom = "8px";
         던전화면.append(던전화면설명);
@@ -3599,6 +3610,64 @@ nodemon server.js
 
                 던전화면.style.display = "flex";
                 던전화면컨테이너.innerHTML = "";
+
+                행렬만들기(던전화면컨테이너, "던전화면컨테이너재화일행", 3);
+                // 던전화면컨테이너재화일행1열.innerHTML = `클로버 ${단위변환함수(유저데이터.스탯.클로버 || 0)}`;
+                던전화면컨테이너재화일행2열.innerHTML = `램프 ${단위변환함수(유저데이터.스탯.램프.수량 || 0)}`;
+                던전화면컨테이너재화일행3열.innerHTML = `낙엽 ${단위변환함수(유저데이터.스탯.낙엽 || 0)}`;
+                행렬만들기(던전화면컨테이너, "던전화면컨테이너재화이행", 3);
+                던전화면컨테이너재화이행1열.innerHTML = `스톤 ${단위변환함수(유저데이터.스탯.스톤 || 0)}`;
+                던전화면컨테이너재화이행2열.innerHTML = `가루 ${단위변환함수(유저데이터.스탯.가루 || 0)}`;
+                던전화면컨테이너재화이행3열.innerHTML = `디지에그 ${단위변환함수(유저데이터.스탯.디지에그 || 0)}`;
+
+                행렬만들기(던전화면컨테이너, "던전풀자동", 5);
+                던전풀자동3열.innerHTML = `풀자동`;
+                던전풀자동3열.style.boxSizing = "border-box";
+                던전풀자동3열.style.border = "0.2px solid #dadada";
+                던전풀자동3열.style.borderRadius = "8px";
+                던전풀자동3열.style.cursor = `pointer`;
+                던전풀자동3열.style.padding = "3px 6px";
+
+                던전풀자동3열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+
+                        if (!유저데이터.스탯.던전.지니.열쇠 && !유저데이터.스탯.던전.로쿠규.열쇠 && !유저데이터.스탯.던전.락골렘.열쇠 && !유저데이터.스탯.던전.디지에그.열쇠) {
+                            메시지표시(`열쇠가 부족합니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/ejswjsvnfwkehd", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+
+                        던전화면보여주기();
+
+                        메시지표시(`모든 열쇠를 소모했습니다`);
+
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
 
                 //지니
                 행렬만들기(던전화면컨테이너, "던전화면컨테이너일행", 4);
@@ -4018,6 +4087,7 @@ nodemon server.js
 
                 //페어리
                 행렬만들기(던전화면컨테이너, "던전화면배치", 4);
+                던전화면배치.style.marginTop = `50px`;
                 document.getElementById("던전화면배치").style.borderBottom = "0.2px solid #dadada";
                 document.getElementById("던전화면배치2열").style.gap = "";
                 const 다섯번째몬스터 = document.createElement("div");
@@ -10862,9 +10932,12 @@ ${전투결과.결과}<br>
                     case "q":
                         document.querySelector("#회원탈퇴")?.click();
                         break;
-                    // case "w":
-                    //     document.querySelector("#로그아웃")?.click();
-                    //     break;
+                    case "w":
+                        document.querySelector("#월드보스")?.click();
+                        break;
+                    case "e":
+                        document.querySelector("#로그아웃")?.click();
+                        break;
                     case "o":
                         document.querySelector("#우편함")?.click();
                         break;
@@ -10912,9 +10985,6 @@ ${전투결과.결과}<br>
                         break;
                     case "r":
                         document.querySelector("#전당")?.click();
-                        break;
-                    case "w":
-                        document.querySelector("#월드보스")?.click();
                         break;
                 }
 

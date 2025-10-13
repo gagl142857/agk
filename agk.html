@@ -3181,6 +3181,18 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.10.13<br>
+월드보스 어제 순위 표시 수정되었습니다<br>
+어제 순위에 따른 다이아 보상이 우편으로 정상<br>
+지급되는걸 확인했습니다<br>
+내일부턴 3000다이아부터 순위 차등지급됩니다<br>
+상점화면에 첫번째 패키지상품이 추가되었습니다<br>
+패키지상품 클릭 시 확인팝업이 안내되니 겁먹지 마시고<br>
+한번 클릭해보시길 추천드립니다<br>
+체술의 4차 5차 직업효과가 구현되었습니다<br>
+체술의 상위직업효과가 모든 전투시뮬레이션에 적용됩니다<br>
+<br>
+
 25.10.12<br>
 월드보스 컨텐츠가 개편되었습니다<br>
 월드보스에게 도전할 기회가 하루 2번 ➡ 3번으로 변경되었습니다<br>
@@ -3512,6 +3524,15 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
 해야할일
 
 전장
+
+마법진 컨텐츠
+상위직업능력치구현
+칭호
+램프느낌표 드랍확률팝업
+전당정보에 조각상 등급표시추가
+
+체술 피해감소 적용
+전투시뮬레이션에 피해감소 적용
 
 git add . && git commit -m "배포" && git push origin main
 
@@ -4771,6 +4792,7 @@ ${전투결과.결과}<br>
                     `
                 검술3차 라우비아(Lv70)<br>
                 피해감소10%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술3차);
                 const 검술4차 = document.createElement("div");
@@ -4780,6 +4802,7 @@ ${전투결과.결과}<br>
                     `
                 검술4차 예후이아(Lv100)<br>
                 관통20%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술4차);
                 const 검술5차 = document.createElement("div");
@@ -4789,6 +4812,7 @@ ${전투결과.결과}<br>
                     `
                 검술5차 미카엘(Lv130)<br>
                 관통50%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행1열").append(검술5차);
 
@@ -4814,6 +4838,7 @@ ${전투결과.결과}<br>
                     `
                 마술2차 니트하이아(Lv50)<br>
                 공격력보너스30%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술2차);
                 const 마술3차 = document.createElement("div");
@@ -4823,6 +4848,7 @@ ${전투결과.결과}<br>
                     `
                 마술3차 아니엘(Lv70)<br>
                 콤보계수100%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술3차);
                 const 마술4차 = document.createElement("div");
@@ -4832,6 +4858,7 @@ ${전투결과.결과}<br>
                     `
                 마술4차 아살리야(Lv100)<br>
                 추가데미지20%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술4차);
                 const 마술5차 = document.createElement("div");
@@ -4841,6 +4868,7 @@ ${전투결과.결과}<br>
                     `
                 마술5차 무미아(Lv130)<br>
                 추가데미지50%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너일행2열").append(마술5차);
 
@@ -4881,6 +4909,7 @@ ${전투결과.결과}<br>
                     `
                 체술3차 르하엘(Lv70)<br>
                 반격피해100%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술3차);
                 const 체술4차 = document.createElement("div");
@@ -4889,6 +4918,8 @@ ${전투결과.결과}<br>
                 체술4차.innerHTML =
                     `
                 체술4차 미츠라엘(Lv100)<br>
+                피해감소20%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술4차);
                 const 체술5차 = document.createElement("div");
@@ -4897,6 +4928,9 @@ ${전투결과.결과}<br>
                 체술5차.innerHTML =
                     `
                 체술5차 하라헬(Lv130)<br>
+                피해감소50%<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행1열").append(체술5차);
 
@@ -4923,6 +4957,7 @@ ${전투결과.결과}<br>
                     `
                 신술2차 마하시아(Lv50)<br>
                 HP보너스30%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술2차);
                 const 신술3차 = document.createElement("div");
@@ -4932,6 +4967,7 @@ ${전투결과.결과}<br>
                     `
                 신술3차 하후이아(Lv70)<br>
                 치유량5%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술3차);
                 const 신술4차 = document.createElement("div");
@@ -4940,6 +4976,8 @@ ${전투결과.결과}<br>
                 신술4차.innerHTML =
                     `
                 신술4차 하하헬(Lv100)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술4차);
                 const 신술5차 = document.createElement("div");
@@ -4948,6 +4986,8 @@ ${전투결과.결과}<br>
                 신술5차.innerHTML =
                     `
                 신술5차 라파엘(Lv130)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너이행2열").append(신술5차);
 
@@ -4976,6 +5016,7 @@ ${전투결과.결과}<br>
                     `
                 궁술2차 레이옐(Lv50)<br>
                 공격력보너스30%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술2차);
                 const 궁술3차 = document.createElement("div");
@@ -4985,6 +5026,7 @@ ${전투결과.결과}<br>
                     `
                 궁술3차 옐라히아(Lv70)<br>
                 치명피해100%<br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술3차);
                 const 궁술4차 = document.createElement("div");
@@ -4993,6 +5035,8 @@ ${전투결과.결과}<br>
                 궁술4차.innerHTML =
                     `
                 궁술4차 세알리아(Lv100)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술4차);
                 const 궁술5차 = document.createElement("div");
@@ -5001,6 +5045,8 @@ ${전투결과.결과}<br>
                 궁술5차.innerHTML =
                     `
                 궁술5차 가브리엘(Lv130)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행1열").append(궁술5차);
 
@@ -5049,6 +5095,8 @@ ${전투결과.결과}<br>
                 인술4차.innerHTML =
                     `
                 인술4차 우마벨(Lv100)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술4차);
                 const 인술5차 = document.createElement("div");
@@ -5057,6 +5105,8 @@ ${전투결과.결과}<br>
                 인술5차.innerHTML =
                     `
                 인술5차 사리에(Lv130)<br>
+                <br>
+                <br>
                 `;
                 document.getElementById("직업화면컨테이너삼행2열").append(인술5차);
 
@@ -6649,6 +6699,52 @@ ${전투결과.결과}<br>
                     }
                 });
 
+                시스템2열.innerHTML = `패키지<br>던전몬스터4종열쇠<br>3300다이아`;
+                시스템2열.style.cursor = `pointer`;
+                시스템2열.style.textAlign = `center`;
+                시스템2열.style.boxSizing = "border-box";
+                시스템2열.style.border = "0.2px solid #dadada";
+                시스템2열.style.borderRadius = "8px";
+                시스템2열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 3300) {
+                            메시지표시(`3300다이아가 필요합니다`);
+                            return;
+                        }
+
+                        const 확인 = await 팝업(`패키지상품<br>지니열쇠×1<br>로쿠규열쇠×1<br>락골렘열쇠×1<br>디지에그열쇠×1<br>를 3300다이아로 구매하겠습니까?`);
+                        if (!확인) return;
+
+                        //수정중
+                        화면잠금();
+                        const 응답 = await fetch("/vozlwl", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`패키지를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+
 
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록삼행", 3);
 
@@ -7807,7 +7903,7 @@ ${전투결과.결과}<br>
 원하는옵션이 등장했다면 강화하세요<br>
 옵션 리롤 시 강화수치가 초기화됩니다<br>
 등장하는 리롤목록은 agk사전을 참고하세요<br>
-자동은 1회 강화를 자동으로 시뮬레이션해줍니다<br>
+자동은 1회 강화성공시까지 자동강화됩니다<br>
             `;
         조각상화면설명.style.textAlign = "center";
         조각상화면설명.style.paddingBottom = "8px";
@@ -9607,7 +9703,7 @@ ${전투결과.결과}<br>
                 }
 
                 const 오늘요일 = 유저데이터.스탯.접속요일;
-                const 어제요일목록 = ["일", "월", "화", "수", "목", "금", "토"];
+                const 어제요일목록 = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
                 const 어제요일 = 어제요일목록[
                     (어제요일목록.indexOf(오늘요일) + 6) % 7
                 ];
@@ -9646,7 +9742,7 @@ ${전투결과.결과}<br>
                         const 객체 = document.createElement("div");
                         객체.style.display = "flex";
                         객체.style.borderBottom = "0.2px solid #dadada";
-                        객체.style.fontSize = "12px";
+                        객체.style.fontSize = "10px";
                         객체.style.width = "100%";
                         객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
                         document.getElementById("오행1열").append(객체);
@@ -9657,7 +9753,7 @@ ${전투결과.결과}<br>
                         내객체.style.display = "flex";
                         내객체.style.borderBottom = "0.2px solid #dadada";
                         내객체.style.backgroundColor = "#303030";
-                        내객체.style.fontSize = "12px";
+                        내객체.style.fontSize = "10px";
                         내객체.style.width = "100%";
                         내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
                     }
@@ -9681,7 +9777,7 @@ ${전투결과.결과}<br>
                         const 객체 = document.createElement("div");
                         객체.style.display = "flex";
                         객체.style.borderBottom = "0.2px solid #dadada";
-                        객체.style.fontSize = "12px";
+                        객체.style.fontSize = "10px";
                         객체.style.width = "100%";
                         객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
                         document.getElementById("오행3열").append(객체);
@@ -9692,7 +9788,7 @@ ${전투결과.결과}<br>
                         내객체.style.display = "flex";
                         내객체.style.borderBottom = "0.2px solid #dadada";
                         내객체.style.backgroundColor = "#303030";
-                        내객체.style.fontSize = "12px";
+                        내객체.style.fontSize = "10px";
                         내객체.style.width = "100%";
                         내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
                     }

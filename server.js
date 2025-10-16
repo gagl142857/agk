@@ -263,6 +263,12 @@ app.post("/register", async (req, res) => {
           시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
           메모: "25년 9월 30일 조각상 자동강화 시스템 구현 기념",
         },
+        {
+          이름: "열쇠꾸러미",
+          수량: 1,
+          시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+          메모: "25년 10월 13일 상점 패키지상품 구현 기념",
+        },
       ],
     };
 
@@ -655,7 +661,7 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.버전표시) {
       data.스탯.버전표시 = ``;
     }
-    data.스탯.버전표시 = `v1.0.1`;
+    data.스탯.버전표시 = `v1.0.2`;
 
 
 

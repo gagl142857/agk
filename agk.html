@@ -2379,15 +2379,15 @@
                     "일반공격계수",
                     "일반공격피해감소",
                 ];
-                for (const 항목 of 스탯리스트1열) {
-                    const div = document.createElement("div");
-                    div.style.display = "flex";
-                    div.style.justifyContent = "space-between";
-                    div.style.width = "100%";
-                    div.style.borderBottom = `0.2px solid #dadada`;
-                    div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속") ? "" : "%"}</span>`;
-                    document.getElementById("메인화면컨테이너사행1열").append(div);
-                }
+                // for (const 항목 of 스탯리스트1열) {
+                //     const div = document.createElement("div");
+                //     div.style.display = "flex";
+                //     div.style.justifyContent = "space-between";
+                //     div.style.width = "100%";
+                //     div.style.borderBottom = `0.2px solid #dadada`;
+                //     div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속") ? "" : "%"}</span>`;
+                //     document.getElementById("메인화면컨테이너사행1열").append(div);
+                // }
 
                 // const 스탯리스트2열 = ["보스피해", "보스피해감소", "동료피해", "동료피해감소", "치유량", "관통", "관통무시", "막기", "막기무시", "동료찬사", "동료찬사무시", "동료저항", "동료저항무시", "피해감소", "HP보너스", "공격력보너스", "방어력보너스", "공속보너스", "최종HP", "최종공격력", "최종방어력", "최종공속"];
                 const 스탯리스트2열 = [
@@ -2414,15 +2414,80 @@
                     "최종방어력",
                     "최종공속"
                 ];
+                // for (const 항목 of 스탯리스트2열) {
+                //     const div = document.createElement("div");
+                //     div.style.display = "flex";
+                //     div.style.justifyContent = "space-between";
+                //     div.style.width = "100%";
+                //     div.style.borderBottom = `0.2px solid #dadada`;
+                //     div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
+                //     document.getElementById("메인화면컨테이너사행2열").append(div);
+                // }
+
+                // for (const 항목 of 스탯리스트1열) {
+                //     const div = document.createElement("div");
+                //     div.style.display = "flex";
+                //     div.style.justifyContent = "space-between";
+                //     div.style.width = "100%";
+                //     div.style.borderBottom = `0.2px solid #dadada`;
+                //     let 값 = 유저데이터.스탯[항목];
+                //     const 퍼센트여부 = !(항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속"));
+                //     if (퍼센트여부) 값 = Number(값).toFixed(2);
+                //     div.innerHTML = `<span>${항목}</span><span>${값}${퍼센트여부 ? "%" : ""}</span>`;
+                //     메인화면컨테이너사행1열.append(div);
+                // }
+
+                // for (const 항목 of 스탯리스트2열) {
+                //     const div = document.createElement("div");
+                //     div.style.display = "flex";
+                //     div.style.justifyContent = "space-between";
+                //     div.style.width = "100%";
+                //     div.style.borderBottom = `0.2px solid #dadada`;
+                //     let 값 = 유저데이터.스탯[항목];
+                //     const 퍼센트여부 = !(항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속"));
+                //     if (퍼센트여부) 값 = Number(값).toFixed(2);
+                //     div.innerHTML = `<span>${항목}</span><span>${값}${퍼센트여부 ? "%" : ""}</span>`;
+                //     메인화면컨테이너사행2열.append(div);
+                // }
+
+                for (const 항목 of 스탯리스트1열) {
+                    const div = document.createElement("div");
+                    div.style.display = "flex";
+                    div.style.justifyContent = "space-between";
+                    div.style.width = "100%";
+                    div.style.borderBottom = `0.2px solid #dadada`;
+
+                    let 값 = 유저데이터.스탯[항목];
+                    const 퍼센트여부 = !(항목.includes("HP") || 항목.includes("공격력") || 항목.includes("방어력") || 항목.includes("공속"));
+
+                    if (퍼센트여부 && Number(값) !== 0) {
+                        const 소수 = Number(값);
+                        값 = (소수 % 1 === 0) ? 소수 : 소수.toFixed(2);
+                    }
+
+                    div.innerHTML = `<span>${항목}</span><span>${값}${퍼센트여부 ? "%" : ""}</span>`;
+                    메인화면컨테이너사행1열.append(div);
+                }
+
                 for (const 항목 of 스탯리스트2열) {
                     const div = document.createElement("div");
                     div.style.display = "flex";
                     div.style.justifyContent = "space-between";
                     div.style.width = "100%";
                     div.style.borderBottom = `0.2px solid #dadada`;
-                    div.innerHTML = `<span>${항목}</span><span>${유저데이터.스탯[항목]}${항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속") ? "" : "%"}</span>`;
-                    document.getElementById("메인화면컨테이너사행2열").append(div);
+
+                    let 값 = 유저데이터.스탯[항목];
+                    const 퍼센트여부 = !(항목.includes("최종HP") || 항목.includes("최종공격력") || 항목.includes("최종방어력") || 항목.includes("최종공속"));
+
+                    if (퍼센트여부 && Number(값) !== 0) {
+                        const 소수 = Number(값);
+                        값 = (소수 % 1 === 0) ? 소수 : 소수.toFixed(2);
+                    }
+
+                    div.innerHTML = `<span>${항목}</span><span>${값}${퍼센트여부 ? "%" : ""}</span>`;
+                    메인화면컨테이너사행2열.append(div);
                 }
+
 
                 if (유저데이터.스탯.드랍?.이름) {
                     드랍장비보여주기();
@@ -3282,6 +3347,11 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.10.20<br>
+페어리 서버오류가 수정되었습니다<br>
+스탯 소수점 표시가 수정되었습니다<br>
+<br>
 
 25.10.19<br>
 월드보스의 레벨이 50 ➡ 40으로 변경되었습니다<br>

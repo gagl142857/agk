@@ -244,6 +244,8 @@
         ];
 
         //아이콘모음
+        //Cursed star 
+        const 마법진아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 512px; width: 512px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="1"></path><g class="" transform="translate(0,0)" style=""><path d="M259.125 16.938 216.22 128.094 97.343 164.25l106.53-4.22-36.436 94.407L270.156 106.25l50.22 64.406-61.25-153.72zm50.406 63.687 36.376 102.28-102.344-6.75 172.063 53.876-46.5 67.126 128.47-104.28-116.94-7.69-71.124-104.56zm-123.467 98.97L20.97 190.437l87.936 71.375-.375 127.125 27.75-104.907 82.345 66.845L109.345 207.5l76.718-27.906zm71.156 18.968c-22.404 0-44.817 25.943-67.22 77.875 43.462 77.53 88.133 86.365 134.438 0-22.403-51.93-44.816-77.875-67.22-77.875zm.405 15.687c11.05 8.62 19 30.54 19 56.438 0 25.896-7.95 47.818-19 56.437-11.05-8.62-19-30.54-19-56.438 0-25.896 7.95-47.818 19-56.437zm82.53 10.594 5.19 180.22L266.75 383l140.47 87.438-30.408-111.313 73.563-103.47-82.875 69.376-27.344-100.186zM152.94 309.03l-43.594 159.595 98.906-61.53 120.656 39.436-90.5-58.217 87.094-54.188-171.22 56.53-1.343-81.624z" fill="#fff" fill-opacity="1"></path></g></svg>`;
         //info
         const 정보아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 512px; width: 512px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="1"></path><g class="" transform="translate(0,0)" style=""><path d="M256 21C126.426 21 21 126.426 21 256s105.426 235 235 235 235-105.426 235-235S385.574 21 256 21zm0 36c110.118 0 199 88.882 199 199s-88.882 199-199 199S57 366.118 57 256 145.882 57 256 57zm-7.352 36.744c-8.227 0-15.317 2.976-21.27 8.928-5.776 5.952-8.665 12.955-8.665 21.008 0 8.227 2.89 15.23 8.666 21.006 5.95 5.776 13.04 8.666 21.268 8.666 8.228 0 15.23-2.89 21.006-8.666 5.777-5.777 8.666-12.78 8.666-21.006 0-8.053-2.976-15.056-8.927-21.008-5.777-5.952-12.692-8.928-20.745-8.928zm-62.757 82.453v28.096h46.215v186.13H185.89v27.833h140.22v-27.834h-45.69V176.197h-94.53z" fill="#fff" fill-opacity="1"></path></g></svg>`;
         //Help 
@@ -1652,28 +1654,27 @@
                     });
                 });
 
-                const 날개박스 = document.createElement("날개박스");
-                날개박스.id = "날개";
-                날개박스.style.display = "flex";
-                날개박스.innerHTML = `미정`;
-                날개박스.style.textAlign = "center";
-                날개박스.style.color = "#CCCCCC";
-                // 날개박스.style.fontSize = "11px";
-                날개박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
-                날개박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
-                날개박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
-                날개박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
-                날개박스.style.cursor = "pointer";
-                날개박스.style.width = "32px";
-                날개박스.style.height = "32px";
-                날개박스.style.padding = "8px";
-                날개박스.style.marginTop = "8px";
-                날개박스.style.borderRadius = "8px";
-                날개박스.style.border = `0.2px solid #CCCCCC`;
-                날개박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행4열").append(날개박스);
+                const 마법진박스 = document.createElement("마법진박스");
+                마법진박스.id = "마법진";
+                마법진박스.style.display = "flex";
+                마법진박스.innerHTML = 비장비아이콘변환(마법진아이콘);
+                마법진박스.style.textAlign = "center";
+                마법진박스.style.color = "#CCCCCC";
+                마법진박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                마법진박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                마법진박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                마법진박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                마법진박스.style.cursor = "pointer";
+                마법진박스.style.width = "32px";
+                마법진박스.style.height = "32px";
+                마법진박스.style.padding = "8px";
+                마법진박스.style.marginTop = "8px";
+                마법진박스.style.borderRadius = "8px";
+                마법진박스.style.border = `0.2px solid #CCCCCC`;
+                마법진박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행4열").append(마법진박스);
 
-                날개박스.addEventListener("click", (e) => {
+                마법진박스.addEventListener("click", (e) => {
                     e.stopPropagation();
                     메시지표시(`구현중입니다`);
                 });
@@ -3281,6 +3282,13 @@
                 모든 램프를 한번에 소진함<br>
                 <br>
 
+                전장주간보상<br>
+                월요일~금요일 합산 PT 순위보상<br>
+                1위 50000다이아 / 2위 30000다이아 / 3위 10000다이아<br>
+                4위 8000다이아 / 5위 6000다이아 / 6위 4000다이아<br>
+                7위 2000다이아 / 8위 1000다이아 / 9위 500다이아<br>
+                <br>
+
 
                 `;
 
@@ -3367,6 +3375,7 @@
 이번주는 보상없이 테스트주 진행하겠습니다<br>
 실제 보상은 다음주부터 정산할 예정이며<br>
 보상은 과감하게 셋팅할 예정입니다<br>
+미접속 3일이 초과된 유저가 모든 순위화면에서 제외됩니다<br>
 <br>
 
 25.10.20<br>
@@ -3744,8 +3753,6 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
                 /*
 
 해야할일
-
-전장(아레나)만드는중
 
 마법진 컨텐츠
 칭호
@@ -4752,10 +4759,24 @@ nodemon server.js
                 전장도전2열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
+
+                        const 오늘요일 = 유저데이터.스탯.접속요일;
+
+                        if (오늘요일 === "토요일") {
+                            메시지표시("오늘은 정산날이며, 정산일에는 도전이 불가합니다");
+                            return;
+                        }
+
+                        if (오늘요일 === "일요일") {
+                            메시지표시("오늘은 전장 초기화 day입니다. 내일을 준비하세요");
+                            return;
+                        }
+
                         if (!유저데이터.스탯.전장.티켓) {
                             메시지표시(`티켓이 부족합니다`);
                             return;
                         }
+
 
                         화면잠금();
                         const 응답 = await fetch("/wjswkdehwjs", {
@@ -9791,9 +9812,16 @@ nodemon server.js
                         document.getElementById(`${i}번째유저1열`).innerText = `${순위}위`;
                     }
 
+                    // document.getElementById(`${i}번째유저2열`).innerHTML = 유저.스탯.직업?.이름 ? `${유저.스탯.직업?.이름}(${유저.스탯.직업?.종류})` : `-`;
+
                     // 전투력
+                    // document.getElementById(`${i}번째유저3열`).innerHTML =
+                    //     `전투력 ${단위변환함수(유저.스탯.전투력)}`;
+
+                    document.getElementById(`${i}번째유저2열`).innerHTML =
+                        ``;
                     document.getElementById(`${i}번째유저3열`).innerHTML =
-                        `전투력 ${단위변환함수(유저.스탯.전투력)}`;
+                        유저.스탯.직업?.종류 ? `${유저.스탯.직업.종류}(${단위변환함수(유저.스탯.전투력)})` : `-(${단위변환함수(유저.스탯.전투력)})`;
 
                     // 닉네임
                     if (순위 === 1) {

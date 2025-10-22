@@ -340,6 +340,12 @@ app.post("/login", async (req, res) => {
       data.스탯.월드보스 = { 기회: 3, 일요일: 0, 월요일: 0, 화요일: 0, 수요일: 0, 목요일: 0, 금요일: 0, 토요일: 0 };
     }
 
+    if (!data.스탯.전장) {
+      data.스탯.전장 = { 포인트: 0, 티켓: 4, 정산: 0 };
+    } else if (data.스탯.전장 && data.스탯.전장.정산 === undefined) {
+      data.스탯.전장.정산 = 0;
+    }
+
     //하루한번
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
     const 요일목록 = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
@@ -374,18 +380,18 @@ app.post("/login", async (req, res) => {
           ((b.스탯.월드보스[어제요일] ?? 0) - (a.스탯.월드보스[어제요일] ?? 0))
         );
 
-      const 내순위 = 어제월드보스순위.findIndex(
+      const 내월드보스순위 = 어제월드보스순위.findIndex(
         u => u.스탯.계정.유저닉네임 === data.스탯.계정.유저닉네임
       );
 
-      if (내순위 >= 0 && 내순위 < 9) {
-        const 보상다이아 = 3000 - (내순위 * 300);
+      if (내월드보스순위 >= 0 && 내월드보스순위 < 9) {
+        const 보상다이아 = 3000 - (내월드보스순위 * 300);
 
         const 어제보스순위보상 = {
           이름: "다이아",
           수량: 보상다이아,
           시간: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
-          메모: `월드보스 ${내순위 + 1}위 일일보상`,
+          메모: `월드보스 ${내월드보스순위 + 1}위 일일보상`,
         };
 
         data.스탯.우편함.unshift(어제보스순위보상);
@@ -394,9 +400,47 @@ app.post("/login", async (req, res) => {
           스탯: data.스탯,
           유저아이디: data.스탯.계정.유저아이디,
           유저닉네임: data.스탯.계정.유저닉네임,
-          내용: `어제 월드보스 ${내순위 + 1}위 일일보상(${보상다이아})`
+          내용: `어제 월드보스 ${내월드보스순위 + 1}위 일일보상(${보상다이아})`
         });
 
+      }
+
+      if (오늘요일 === "토요일" && !data.스탯.전장.정산) {
+        const 전장순위 = 전체유저
+          .filter(u => u.스탯 && u.스탯.전투력 && !u.스탯.주인장인가)
+          .sort((a, b) => b.스탯.전장.포인트 - a.스탯.전장.포인트);
+
+        const 내전장순위 = 전장순위.findIndex(
+          u => u.스탯.계정.유저닉네임 === data.스탯.계정.유저닉네임
+        );
+
+        // const 전장보상표 = [50000, 30000, 10000, 8000, 6000, 4000, 2000, 1000, 500];
+        const 전장보상표 = [500, 300, 100, 80, 60, 40, 20, 10, 5];
+
+        if (내전장순위 >= 0 && 내전장순위 < 전장보상표.length) {
+          const 보상다이아 = 전장보상표[내전장순위];
+
+          const 전장보상 = {
+            이름: "다이아",
+            수량: 보상다이아,
+            시간: new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+            메모: `전장 ${내전장순위 + 1}위 주간보상`,
+          };
+
+          data.스탯.우편함.unshift(전장보상);
+
+          await supabaseAdmin.from("로그기록").insert({
+            스탯: data.스탯,
+            유저아이디: data.스탯.계정.유저아이디,
+            유저닉네임: data.스탯.계정.유저닉네임,
+            내용: `전장 ${내전장순위 + 1}위 주간보상(${보상다이아})`
+          });
+        }
+
+        data.스탯.전장.정산 = 1;
+      } else if (오늘요일 === "일요일") {
+        data.스탯.전장.포인트 = 0;
+        data.스탯.전장.정산 = 0;
       }
 
       if (data.스탯.던전.지니.열쇠 < 4) data.스탯.던전.지니.열쇠 = 4;
@@ -411,6 +455,7 @@ app.post("/login", async (req, res) => {
       // }
 
     }
+
 
     const clientIP = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString().split(",")[0].trim();
@@ -491,10 +536,6 @@ app.post("/login", async (req, res) => {
 
     if (data.스탯.던전.디지에그.레벨 > 20) {
       data.스탯.던전.디지에그.레벨 = 20;
-    }
-
-    if (!data.스탯.전장) {
-      data.스탯.전장 = { 포인트: 0, 티켓: 4 };
     }
 
     if (!data.스탯.무기외형이름) {
@@ -5398,7 +5439,11 @@ app.post("/wjswkdfltmxm", async (req, res) => {
       return res.status(500).json({ 오류: "전체 유저 조회 실패" });
 
     const 전장리스트 = 전체유저
-      .filter(u => u.스탯 && u.스탯.전투력 && !u.스탯.주인장인가)
+      .filter(u => {
+        if (!u.스탯 || !u.스탯.전투력 || !u.스탯.접속시각 || u.스탯.주인장인가) return false
+        const 경과시간 = Math.floor(new Date().getTime() / 3600000) - u.스탯.접속시각
+        return 경과시간 < 72
+      })
       .sort((a, b) => b.스탯.전장.포인트 - a.스탯.전장.포인트);
 
     res.json({ 전장리스트 });

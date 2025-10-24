@@ -699,6 +699,10 @@ app.post("/login", async (req, res) => {
       data.스탯.버전업 = 0;
     }
 
+    if (!data.스탯.질문) {
+      data.스탯.질문 = ``;
+    }
+
     let 새로고침 = 0;
     if (data.스탯.버전업) {
       새로고침 = 1;
@@ -708,7 +712,7 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.버전표시) {
       data.스탯.버전표시 = ``;
     }
-    data.스탯.버전표시 = `v1.0.5`;
+    data.스탯.버전표시 = `v1.0.6`;
 
 
 
@@ -1354,8 +1358,71 @@ app.post("/receive-all-mail", async (req, res) => {
           유저닉네임: data.스탯.계정.유저닉네임,
           내용: `잘못된 우편 삭제(${mail.이름})`,
         });
+      } else {
+        await supabaseAdmin.from("로그기록").insert({
+          스탯: data.스탯,
+          유저아이디: data.스탯.계정.유저아이디,
+          유저닉네임: data.스탯.계정.유저닉네임,
+          내용: `우편 수령(${mail.이름} ${mail.수량}개)`,
+        });
       }
       data.스탯.우편함.splice(i, 1);
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/receive-mail", async (req, res) => {
+  try {
+    const { id, index } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    const mail = data.스탯.우편함[index];
+    if (!mail) return res.status(400).json({ 오류: "해당 우편 없음" });
+
+    const 처리됨 = 우편목록(data, mail);
+    data.스탯.우편함.splice(index, 1);
+
+    if (!처리됨) {
+      await supabaseAdmin.from("로그기록").insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `잘못된 우편 삭제(${mail.이름})`,
+      });
+    } else {
+      await supabaseAdmin.from("로그기록").insert({
+        스탯: data.스탯,
+        유저아이디: data.스탯.계정.유저아이디,
+        유저닉네임: data.스탯.계정.유저닉네임,
+        내용: `우편 수령(${mail.이름} ${mail.수량}개)`,
+      });
     }
 
     const { error: updateError } = await supabaseAdmin
@@ -1428,56 +1495,6 @@ function 우편목록(data, mail) {
   }
   return false;
 }
-
-app.post("/receive-mail", async (req, res) => {
-  try {
-    const { id, index } = req.body;
-    if (!id) return res.status(400).json({ 오류: "id 필요" });
-
-    const { data, error } = await supabaseAdmin
-      .from("users")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ 오류: "DB조회 실패" });
-    }
-
-    const mail = data.스탯.우편함[index];
-    if (!mail) return res.status(400).json({ 오류: "해당 우편 없음" });
-
-    const 처리됨 = 우편목록(data, mail);
-    data.스탯.우편함.splice(index, 1);
-
-    if (!처리됨) {
-      await supabaseAdmin.from("로그기록").insert({
-        스탯: data.스탯,
-        유저아이디: data.스탯.계정.유저아이디,
-        유저닉네임: data.스탯.계정.유저닉네임,
-        내용: `잘못된 우편 삭제(${mail.이름})`,
-      });
-      return res.status(400).json({ 오류: "잘못된 우편이므로 자동 삭제되었습니다" });
-    }
-
-    const { error: updateError } = await supabaseAdmin
-      .from("users")
-      .update({ 스탯: data.스탯 })
-      .eq("id", id);
-
-    if (updateError) {
-      console.error(updateError);
-      return res.status(500).json({ 오류: "DB저장 실패" });
-    }
-
-    res.json(data);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ 오류: "서버 오류" });
-  }
-});
 
 app.post("/master", async (req, res) => {
   try {
@@ -1756,6 +1773,63 @@ app.post("/pump", async (req, res) => {
     data.스탯.탈것.회피 = 4 + Math.floor(((data.스탯.탈것.레벨 || 1) - 1) / 10) * 2;
 
     data.스탯.탈것.레벨++;
+
+    data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: data.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      console.error(updateError);
+      return res.status(500).json({ 오류: "DB저장 실패" });
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/dusfydhfdls", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (data.스탯.낙엽 < 2 * (data.스탯.탈것.레벨 + 1) - 1) {
+      return res.status(400).json({ 오류: "낙엽이 부족합니다" });
+    }
+
+    while (data.스탯.낙엽) {
+      if (data.스탯.낙엽 < 2 * (data.스탯.탈것.레벨 + 1) - 1) {
+        break;
+      }
+
+      data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
+
+      data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
+      data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
+      data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
+      data.스탯.탈것.회피 = 4 + Math.floor(((data.스탯.탈것.레벨 || 1) - 1) / 10) * 2;
+
+      data.스탯.탈것.레벨++;
+
+    }
+
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
@@ -3866,6 +3940,48 @@ app.post("/vozlwl", async (req, res) => {
   }
 });
 
+app.post("/vozlwlekqkf", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 3300) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 33000;
+
+    유저데이터.스탯.던전.락골렘.열쇠 += 10;
+    유저데이터.스탯.던전.지니.열쇠 += 10;
+    유저데이터.스탯.던전.로쿠규.열쇠 += 10;
+    유저데이터.스탯.던전.디지에그.열쇠 += 10;
+
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/StoreTicket10", async (req, res) => {
   try {
     const { id } = req.body;
@@ -4888,6 +5004,119 @@ app.post("/Foodeat1", async (req, res) => {
   }
 });
 
+app.post("/ehdfy1dhfdls", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    let 진화성공 = null;  // 기본은 null
+
+    while (유저데이터.스탯.디지에그) {
+      const 현재레벨 = 유저데이터.스탯.동료1.레벨;
+      let 필요수량 = 현재레벨 + 1;
+      let 진화확률 = null;
+      let 배율 = 1;
+      let 새시기 = 유저데이터.스탯.동료1.시기;
+      let 새이름 = 유저데이터.스탯.동료1.이름;
+
+      // 진화 구간 판정
+      if ([29, 49, 69, 99, 129].includes(현재레벨)) {
+        const n = 현재레벨;
+        필요수량 = (n * (n + 1)) / 2; // 등차수열 합
+        if (현재레벨 === 29) { 진화확률 = 80; 새이름 = "토코몬"; 새시기 = `유년기Ⅱ`; }
+        else if (현재레벨 === 49) { 진화확률 = 60; 새이름 = "파피몬"; 새시기 = `유아기`; }
+        else if (현재레벨 === 69) { 진화확률 = 40; 새이름 = "엔젤몬"; 새시기 = `성장기`; }
+        else if (현재레벨 === 99) { 진화확률 = 20; 새이름 = "홀리엔젤몬"; 새시기 = `완전체`; }
+        else if (현재레벨 === 129) { 진화확률 = 20; 새이름 = "세라피몬"; 새시기 = `궁극체`; }
+      }
+
+      if (유저데이터.스탯.디지에그 < 필요수량) {
+        break;
+      }
+
+      // 먹이 차감
+      유저데이터.스탯.디지에그 -= 필요수량;
+
+
+      if (진화확률 !== null) {
+        // 확률 판정
+        if (Math.random() * 100 < 진화확률) {
+          진화성공 = true;
+          유저데이터.스탯.동료1.레벨 += 1;
+
+          // 기본 배율 계산 (레벨 구간별 적용)
+          if (유저데이터.스탯.동료1.레벨 < 30) 배율 = 1;
+          else if (유저데이터.스탯.동료1.레벨 < 50) 배율 = 2;
+          else if (유저데이터.스탯.동료1.레벨 < 70) 배율 = 3;
+          else if (유저데이터.스탯.동료1.레벨 < 100) 배율 = 4;
+          else if (유저데이터.스탯.동료1.레벨 < 130) 배율 = 5;
+          else 배율 = 6;
+
+          유저데이터.스탯.동료1.시기 = 새시기;
+          유저데이터.스탯.동료1.이름 = 새이름;
+
+          for (const 키 in 유저데이터.스탯.동료1) {
+            if (typeof 유저데이터.스탯.동료1[키] === "number" && 키 !== "레벨") {
+              유저데이터.스탯.동료1[키] = 유저데이터.스탯.동료1.레벨 * 배율;
+            }
+          }
+
+          유저데이터.스탯.동료1.동료치명 = 유저데이터.스탯.동료1.레벨 * 1;
+
+        } else {
+          진화성공 = false;
+        }
+      } else {
+        // 일반 구간 → 무조건 레벨업
+        유저데이터.스탯.동료1.레벨 += 1;
+
+        // 기본 배율 계산 (레벨 구간별 적용)
+        if (유저데이터.스탯.동료1.레벨 < 30) 배율 = 1;
+        else if (유저데이터.스탯.동료1.레벨 < 50) 배율 = 2;
+        else if (유저데이터.스탯.동료1.레벨 < 70) 배율 = 3;
+        else if (유저데이터.스탯.동료1.레벨 < 100) 배율 = 4;
+        else if (유저데이터.스탯.동료1.레벨 < 130) 배율 = 5;
+        else 배율 = 6;
+
+        for (const 키 in 유저데이터.스탯.동료1) {
+          if (typeof 유저데이터.스탯.동료1[키] === "number" && 키 !== "레벨") {
+            유저데이터.스탯.동료1[키] = 유저데이터.스탯.동료1.레벨 * 배율;
+          }
+        }
+
+        유저데이터.스탯.동료1.동료치명 = 유저데이터.스탯.동료1.레벨 * 1;
+
+      }
+    }
+
+    // 최종스탯 재계산
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json({ me: 유저데이터, 진화성공 });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 app.post("/Foodeat2", async (req, res) => {
   try {
     const { id } = req.body;
@@ -4977,6 +5206,119 @@ app.post("/Foodeat2", async (req, res) => {
 
       유저데이터.스탯.동료2.동료치명 = 유저데이터.스탯.동료2.레벨 * 1;
 
+    }
+
+    // 최종스탯 재계산
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json({ me: 유저데이터, 진화성공 });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/ehdfy2dhfdls", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+    let 진화성공 = null;  // 기본은 null
+
+    while (유저데이터.스탯.디지에그) {
+
+      const 현재레벨 = 유저데이터.스탯.동료2.레벨;
+      let 필요수량 = 현재레벨 + 1;
+      let 진화확률 = null;
+      let 배율 = 1;
+      let 새시기 = 유저데이터.스탯.동료2.시기;
+      let 새이름 = 유저데이터.스탯.동료2.이름;
+
+      // 진화 구간 판정
+      if ([29, 49, 69, 99, 129].includes(현재레벨)) {
+        const n = 현재레벨;
+        필요수량 = (n * (n + 1)) / 2; // 등차수열 합
+        if (현재레벨 === 29) { 진화확률 = 80; 새이름 = "나타몬"; 새시기 = `유년기Ⅱ`; }
+        else if (현재레벨 === 49) { 진화확률 = 60; 새이름 = "프로트몬"; 새시기 = `유아기`; }
+        else if (현재레벨 === 69) { 진화확률 = 40; 새이름 = "가트몬"; 새시기 = `성장기`; }
+        else if (현재레벨 === 99) { 진화확률 = 20; 새이름 = "엔젤우몬"; 새시기 = `완전체`; }
+        else if (현재레벨 === 129) { 진화확률 = 20; 새이름 = "오파니몬"; 새시기 = `궁극체`; }
+      }
+
+      if (유저데이터.스탯.디지에그 < 필요수량) {
+        break;
+      }
+
+      // 먹이 차감
+      유저데이터.스탯.디지에그 -= 필요수량;
+
+
+      if (진화확률 !== null) {
+        // 확률 판정
+        if (Math.random() * 100 < 진화확률) {
+          진화성공 = true;
+          유저데이터.스탯.동료2.레벨 += 1;
+
+          // 기본 배율 계산 (레벨 구간별 적용)
+          if (유저데이터.스탯.동료2.레벨 < 30) 배율 = 1;
+          else if (유저데이터.스탯.동료2.레벨 < 50) 배율 = 2;
+          else if (유저데이터.스탯.동료2.레벨 < 70) 배율 = 3;
+          else if (유저데이터.스탯.동료2.레벨 < 100) 배율 = 4;
+          else if (유저데이터.스탯.동료2.레벨 < 130) 배율 = 5;
+          else 배율 = 6;
+
+          유저데이터.스탯.동료2.시기 = 새시기;
+          유저데이터.스탯.동료2.이름 = 새이름;
+
+          for (const 키 in 유저데이터.스탯.동료2) {
+            if (typeof 유저데이터.스탯.동료2[키] === "number" && 키 !== "레벨") {
+              유저데이터.스탯.동료2[키] = 유저데이터.스탯.동료2.레벨 * 배율;
+            }
+          }
+
+          유저데이터.스탯.동료2.동료치명 = 유저데이터.스탯.동료2.레벨 * 1;
+
+        } else {
+          진화성공 = false;
+        }
+      } else {
+        // 일반 구간 → 무조건 레벨업
+        유저데이터.스탯.동료2.레벨 += 1;
+
+        // 기본 배율 계산 (레벨 구간별 적용)
+        if (유저데이터.스탯.동료2.레벨 < 30) 배율 = 1;
+        else if (유저데이터.스탯.동료2.레벨 < 50) 배율 = 2;
+        else if (유저데이터.스탯.동료2.레벨 < 70) 배율 = 3;
+        else if (유저데이터.스탯.동료2.레벨 < 100) 배율 = 4;
+        else if (유저데이터.스탯.동료2.레벨 < 130) 배율 = 5;
+        else 배율 = 6;
+
+        for (const 키 in 유저데이터.스탯.동료2) {
+          if (typeof 유저데이터.스탯.동료2[키] === "number" && 키 !== "레벨") {
+            유저데이터.스탯.동료2[키] = 유저데이터.스탯.동료2.레벨 * 배율;
+          }
+        }
+
+        유저데이터.스탯.동료2.동료치명 = 유저데이터.스탯.동료2.레벨 * 1;
+
+      }
     }
 
     // 최종스탯 재계산
@@ -5107,6 +5449,121 @@ app.post("/Foodeat3", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/ehdfy3dhfdls", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    let 진화성공 = null;  // 기본은 null
+
+    while (유저데이터.스탯.디지에그) {
+
+      const 현재레벨 = 유저데이터.스탯.동료3.레벨;
+      let 필요수량 = 현재레벨 + 1;
+      let 진화확률 = null;
+      let 배율 = 1;
+      let 새시기 = 유저데이터.스탯.동료3.시기;
+      let 새이름 = 유저데이터.스탯.동료3.이름;
+
+      // 진화 구간 판정
+      if ([29, 49, 69, 99, 129].includes(현재레벨)) {
+        const n = 현재레벨;
+        필요수량 = (n * (n + 1)) / 2; // 등차수열 합
+        if (현재레벨 === 29) { 진화확률 = 80; 새이름 = "츠나몬"; 새시기 = `유년기Ⅱ`; }
+        else if (현재레벨 === 49) { 진화확률 = 60; 새이름 = "루나몬"; 새시기 = `유아기`; }
+        else if (현재레벨 === 69) { 진화확률 = 40; 새이름 = "레프리몬"; 새시기 = `성장기`; }
+        else if (현재레벨 === 99) { 진화확률 = 20; 새이름 = "렉시몬"; 새시기 = `완전체`; }
+        else if (현재레벨 === 129) { 진화확률 = 20; 새이름 = "케루비몬"; 새시기 = `궁극체`; }
+      }
+
+      if (유저데이터.스탯.디지에그 < 필요수량) {
+        break;
+      }
+
+      // 먹이 차감
+      유저데이터.스탯.디지에그 -= 필요수량;
+
+
+      if (진화확률 !== null) {
+        // 확률 판정
+        if (Math.random() * 100 < 진화확률) {
+          진화성공 = true;
+          유저데이터.스탯.동료3.레벨 += 1;
+
+          // 기본 배율 계산 (레벨 구간별 적용)
+          if (유저데이터.스탯.동료3.레벨 < 30) 배율 = 1;
+          else if (유저데이터.스탯.동료3.레벨 < 50) 배율 = 2;
+          else if (유저데이터.스탯.동료3.레벨 < 70) 배율 = 3;
+          else if (유저데이터.스탯.동료3.레벨 < 100) 배율 = 4;
+          else if (유저데이터.스탯.동료3.레벨 < 130) 배율 = 5;
+          else 배율 = 6;
+
+          유저데이터.스탯.동료3.시기 = 새시기;
+          유저데이터.스탯.동료3.이름 = 새이름;
+
+          for (const 키 in 유저데이터.스탯.동료3) {
+            if (typeof 유저데이터.스탯.동료3[키] === "number" && 키 !== "레벨") {
+              유저데이터.스탯.동료3[키] = 유저데이터.스탯.동료3.레벨 * 배율;
+            }
+          }
+
+          유저데이터.스탯.동료2.동료치명 = 유저데이터.스탯.동료2.레벨 * 1;
+
+        } else {
+          진화성공 = false;
+        }
+      } else {
+        // 일반 구간 → 무조건 레벨업
+        유저데이터.스탯.동료3.레벨 += 1;
+
+        // 기본 배율 계산 (레벨 구간별 적용)
+        if (유저데이터.스탯.동료3.레벨 < 30) 배율 = 1;
+        else if (유저데이터.스탯.동료3.레벨 < 50) 배율 = 2;
+        else if (유저데이터.스탯.동료3.레벨 < 70) 배율 = 3;
+        else if (유저데이터.스탯.동료3.레벨 < 100) 배율 = 4;
+        else if (유저데이터.스탯.동료3.레벨 < 130) 배율 = 5;
+        else 배율 = 6;
+
+        for (const 키 in 유저데이터.스탯.동료3) {
+          if (typeof 유저데이터.스탯.동료3[키] === "number" && 키 !== "레벨") {
+            유저데이터.스탯.동료3[키] = 유저데이터.스탯.동료3.레벨 * 배율;
+          }
+        }
+
+        유저데이터.스탯.동료3.동료치명 = 유저데이터.스탯.동료3.레벨 * 1;
+
+      }
+    }
+
+    // 최종스탯 재계산
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json({ me: 유저데이터, 진화성공 });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 
 
 const 쿠폰목록 = {
@@ -5543,6 +6000,235 @@ app.post("/wjswkdehwjs", async (req, res) => {
     res.status(500).json({ 오류: "서버 오류" });
   }
 });
+
+app.post("/wlfansgkrl", async (req, res) => {
+  try {
+    const { id, 질문내용 } = req.body;
+    if (!id || !질문내용) {
+      return res.status(400).json({ 오류: "id와 질문내용 필요" });
+    }
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.질문) {
+      유저데이터.스탯.질문 = ``;
+    }
+
+    유저데이터.스탯.질문 = 질문내용;
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/wlfansfltmxm", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 유저데이터, error: 내에러 } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (내에러 || !유저데이터)
+      return res.status(404).json({ 오류: "내 유저 조회 실패" });
+
+    if (!유저데이터.스탯.주인장인가) {
+      return res.status(400).json({ 오류: "넌 주인장이 아니란다" });
+    }
+
+
+    const { data: 전체유저, error: 전체에러 } = await supabaseAdmin
+      .from("users")
+      .select("스탯")
+
+    if (전체에러)
+      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+
+
+    const 질문리스트 = 전체유저
+      .filter(u =>
+        u.스탯?.질문 &&
+        typeof u.스탯.질문 === "string" &&
+        u.스탯.질문.trim() !== "" &&
+        !u.스탯.주인장인가
+      )
+      .map(u => ({
+        닉네임: u.스탯.계정?.유저닉네임 || "이름없음",
+        질문: u.스탯.질문.trim()
+      }));
+
+
+    // res.json(유저데이터);
+    res.json({ 유저데이터, 질문리스트 });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/ekqqus", async (req, res) => {
+  try {
+    const { 대상닉네임, 이름, 수량, 메모, id } = req.body;
+
+    const { data, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ 오류: "DB조회 실패" });
+    }
+
+    if (!data.스탯.주인장인가) {
+      return res.status(500).json({ 오류: "주인장이 아닙니다" });
+    }
+
+
+    if (!대상닉네임 || !이름 || !수량) {
+      return res.status(400).json({ 오류: "대상, 이름, 수량은 필수입니다" });
+    }
+
+    // 1. 대상 유저 찾기 (닉네임으로 검색)
+    const { data: 대상유저, error: 조회에러 } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("스탯->계정->>유저닉네임", 대상닉네임)
+      .single();
+
+    if (조회에러 || !대상유저) {
+      console.error("대상 조회 실패:", 조회에러);
+      return res.status(404).json({ 오류: "대상 유저를 찾을 수 없습니다" });
+    }
+
+    // 2. 기존 우편함 불러오기
+    const 우편함 = 대상유저.스탯.우편함 || [];
+
+    // 3. 새 우편 생성
+    const now = new Date();
+    const 새우편 = {
+      이름,
+      수량: Number(수량),
+      시간: now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      메모: 메모 || "",
+    };
+
+    // 4. 배열에 추가
+    우편함.unshift(새우편);
+    대상유저.스탯.우편함 = 우편함;
+
+    // 5. DB 업데이트
+    const { error: 업데이트에러 } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 대상유저.스탯 })
+      .eq("id", 대상유저.id);
+
+    if (업데이트에러) {
+      console.error("업데이트 오류:", 업데이트에러);
+      return res.status(500).json({ 오류: "우편 저장 실패" });
+    }
+
+    await supabaseAdmin
+      .from("로그기록")
+      .insert({
+        스탯: "개인우편",
+        유저아이디: 대상유저.스탯.계정.유저아이디,
+        유저닉네임: 대상유저.스탯.계정.유저닉네임,
+        내용: JSON.stringify(새우편),
+      });
+
+
+    res.json({ 성공: true, 메시지: "우편 발송 완료" });
+  } catch (err) {
+    console.error("서버 오류:", err);
+    res.status(500).json({ 오류: "서버 오류 발생" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

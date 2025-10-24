@@ -10766,6 +10766,7 @@ nodemon server.js
             `
             하늘섬을 배회하는 몬스터들을 사냥하고<br>
             전리품을 획득하세요<br>
+            구 현 중 입 니 다<br>
             `;
         하늘섬화면설명.style.textAlign = "center";
         하늘섬화면설명.style.paddingBottom = "8px";
@@ -10790,7 +10791,142 @@ nodemon server.js
                 하늘섬화면.style.display = "flex";
                 하늘섬화면컨테이너.innerHTML = "";
 
-                행렬만들기(하늘섬화면컨테이너, "하늘섬소개", 3);
+                행렬만들기(하늘섬화면컨테이너, "하늘섬몬스터컨테이너", 1);
+                하늘섬몬스터컨테이너.style.boxSizing = "border-box";
+                하늘섬몬스터컨테이너.style.border = "0.2px solid #CCCCCC";
+                하늘섬몬스터컨테이너.style.borderRadius = "8px";
+                하늘섬몬스터컨테이너1열.style.marginTop = "8px";
+                하늘섬몬스터컨테이너1열.style.gap = "";
+                행렬만들기(하늘섬몬스터컨테이너1열, "하늘섬몬스터", 3);
+                하늘섬몬스터1열.innerHTML = `<span style="font-size:20px; color:#C586C0;">사이다오리</span>`;
+                하늘섬몬스터2열.innerHTML = `일반몬스터`;
+                하늘섬몬스터3열.innerHTML = `1층`;
+                행렬만들기(하늘섬몬스터컨테이너1열, "하늘섬몬스터속성", 1);
+                하늘섬몬스터속성.style.padding = `8px`;
+                하늘섬몬스터속성.style.boxSizing = "border-box";
+                하늘섬몬스터속성.style.border = "0.2px solid #CCCCCC";
+                하늘섬몬스터속성.style.borderRadius = "8px";
+                const 하늘섬몬스터속성게이지 = document.createElement("div");
+                하늘섬몬스터속성게이지.style.display = "flex";
+                하늘섬몬스터속성게이지.style.justifyContent = "space-between";
+                하늘섬몬스터속성게이지.style.width = "100%";
+                하늘섬몬스터속성게이지.innerHTML = `<span>체력</span><span>49999/99999</span>`;
+                document.getElementById("하늘섬몬스터속성1열").append(하늘섬몬스터속성게이지);
+                const 하늘섬몬스터속성바 = document.createElement("div");
+                하늘섬몬스터속성바.style.width = "100%";
+                하늘섬몬스터속성바.style.backgroundColor = "#CCCCCC";
+                하늘섬몬스터속성바.style.borderRadius = "4px";
+                const 하늘섬몬스터속성진행 = document.createElement("div");
+                하늘섬몬스터속성진행.style.width = "50%";
+                하늘섬몬스터속성진행.style.height = "8px";
+                하늘섬몬스터속성진행.style.backgroundColor = "#C586C0";
+                하늘섬몬스터속성진행.style.borderRadius = "4px";
+                하늘섬몬스터속성바.append(하늘섬몬스터속성진행);
+                document.getElementById("하늘섬몬스터속성1열").append(하늘섬몬스터속성바);
+                행렬만들기(하늘섬몬스터속성1열, "속성일", 2);
+                const 하늘섬몬스터공격력 = document.createElement("div");
+                하늘섬몬스터공격력.style.display = "flex";
+                하늘섬몬스터공격력.style.justifyContent = "space-between";
+                하늘섬몬스터공격력.style.width = "100%";
+                하늘섬몬스터공격력.innerHTML = `<span>공격력</span><span>99999</span>`;
+                하늘섬몬스터공격력.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("속성일1열").append(하늘섬몬스터공격력);
+                const 하늘섬몬스터방어력 = document.createElement("div");
+                하늘섬몬스터방어력.style.display = "flex";
+                하늘섬몬스터방어력.style.justifyContent = "space-between";
+                하늘섬몬스터방어력.style.width = "100%";
+                하늘섬몬스터방어력.innerHTML = `<span>방어력</span><span>99999</span>`;
+                하늘섬몬스터방어력.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("속성일2열").append(하늘섬몬스터방어력);
+                행렬만들기(하늘섬몬스터속성1열, "속성이", 2);
+                const 하늘섬몬스터치명 = document.createElement("div");
+                하늘섬몬스터치명.style.display = "flex";
+                하늘섬몬스터치명.style.justifyContent = "space-between";
+                하늘섬몬스터치명.style.width = "100%";
+                하늘섬몬스터치명.innerHTML = `<span>치명</span><span>99999</span>`;
+                하늘섬몬스터치명.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("속성이1열").append(하늘섬몬스터치명);
+                const 하늘섬몬스터치명무시 = document.createElement("div");
+                하늘섬몬스터치명무시.style.display = "flex";
+                하늘섬몬스터치명무시.style.justifyContent = "space-between";
+                하늘섬몬스터치명무시.style.width = "100%";
+                하늘섬몬스터치명무시.innerHTML = `<span>치명무시</span><span>99999</span>`;
+                하늘섬몬스터치명무시.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("속성이2열").append(하늘섬몬스터치명무시);
+
+
+
+                행렬만들기(하늘섬화면컨테이너, "하늘섬유저컨테이너", 1);
+                하늘섬유저컨테이너.style.boxSizing = "border-box";
+                하늘섬유저컨테이너.style.border = "0.2px solid #CCCCCC";
+                하늘섬유저컨테이너.style.borderRadius = "8px";
+                하늘섬유저컨테이너1열.style.marginTop = "8px";
+                하늘섬유저컨테이너1열.style.gap = "";
+                행렬만들기(하늘섬유저컨테이너1열, "하늘섬유저", 3);
+                하늘섬유저1열.innerHTML = `<span style="font-size:20px; color:#4FC1FF;">${유저데이터.스탯.계정.유저닉네임}</span>`;
+                행렬만들기(하늘섬유저컨테이너1열, "하늘섬유저속성", 1);
+                하늘섬유저속성.style.padding = `8px`;
+                하늘섬유저속성.style.boxSizing = "border-box";
+                하늘섬유저속성.style.border = "0.2px solid #CCCCCC";
+                하늘섬유저속성.style.borderRadius = "8px";
+                const 하늘섬유저속성게이지 = document.createElement("div");
+                하늘섬유저속성게이지.style.display = "flex";
+                하늘섬유저속성게이지.style.justifyContent = "space-between";
+                하늘섬유저속성게이지.style.width = "100%";
+                하늘섬유저속성게이지.innerHTML = `<span>체력</span><span>49999/99999</span>`;
+                document.getElementById("하늘섬유저속성1열").append(하늘섬유저속성게이지);
+                const 하늘섬유저속성바 = document.createElement("div");
+                하늘섬유저속성바.style.width = "100%";
+                하늘섬유저속성바.style.backgroundColor = "#CCCCCC";
+                하늘섬유저속성바.style.borderRadius = "4px";
+                const 하늘섬유저속성진행 = document.createElement("div");
+                하늘섬유저속성진행.style.width = "50%";
+                하늘섬유저속성진행.style.height = "8px";
+                하늘섬유저속성진행.style.backgroundColor = "#4FC1FF";
+                하늘섬유저속성진행.style.borderRadius = "4px";
+                하늘섬유저속성바.append(하늘섬유저속성진행);
+                document.getElementById("하늘섬유저속성1열").append(하늘섬유저속성바);
+                행렬만들기(하늘섬유저속성1열, "유저속성일", 2);
+                const 하늘섬유저공격력 = document.createElement("div");
+                하늘섬유저공격력.style.display = "flex";
+                하늘섬유저공격력.style.justifyContent = "space-between";
+                하늘섬유저공격력.style.width = "100%";
+                하늘섬유저공격력.innerHTML = `<span>공격력</span><span>99999</span>`;
+                하늘섬유저공격력.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("유저속성일1열").append(하늘섬유저공격력);
+                const 하늘섬유저방어력 = document.createElement("div");
+                하늘섬유저방어력.style.display = "flex";
+                하늘섬유저방어력.style.justifyContent = "space-between";
+                하늘섬유저방어력.style.width = "100%";
+                하늘섬유저방어력.innerHTML = `<span>방어력</span><span>99999</span>`;
+                하늘섬유저방어력.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("유저속성일2열").append(하늘섬유저방어력);
+                행렬만들기(하늘섬유저속성1열, "유저속성이", 2);
+                const 하늘섬유저치명 = document.createElement("div");
+                하늘섬유저치명.style.display = "flex";
+                하늘섬유저치명.style.justifyContent = "space-between";
+                하늘섬유저치명.style.width = "100%";
+                하늘섬유저치명.innerHTML = `<span>치명</span><span>99999</span>`;
+                하늘섬유저치명.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("유저속성이1열").append(하늘섬유저치명);
+                const 하늘섬유저치명무시 = document.createElement("div");
+                하늘섬유저치명무시.style.display = "flex";
+                하늘섬유저치명무시.style.justifyContent = "space-between";
+                하늘섬유저치명무시.style.width = "100%";
+                하늘섬유저치명무시.innerHTML = `<span>치명무시</span><span>99999</span>`;
+                하늘섬유저치명무시.style.borderBottom = "0.2px solid #CCCCCC";
+                document.getElementById("유저속성이2열").append(하늘섬유저치명무시);
+
+
+                행렬만들기(하늘섬화면컨테이너, "자동어택", 5);
+                자동어택3열.style.boxSizing = "border-box";
+                자동어택3열.style.border = "0.2px solid #CCCCCC";
+                자동어택3열.style.borderRadius = "8px";
+                자동어택3열.style.padding = "3px 8px";
+                자동어택3열.innerHTML = "자동어택";
+
+
+
 
 
 
@@ -12243,7 +12379,7 @@ nodemon server.js
                 메시지표시(`자동로그인 되었습니다`);
 
                 if (유저데이터.스탯.주인장인가) {
-                    패치노트화면보여주기();
+                    하늘섬화면보여주기();
 
                 } else {
                     메인화면보여주기();

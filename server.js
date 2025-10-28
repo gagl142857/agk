@@ -712,7 +712,7 @@ app.post("/login", async (req, res) => {
     if (!data.스탯.버전표시) {
       data.스탯.버전표시 = ``;
     }
-    data.스탯.버전표시 = `v1.0.7`;
+    data.스탯.버전표시 = `v1.0.8`;
 
     if (!data.스탯.시간시간) {
       data.스탯.시간시간 = Math.floor(new Date().getTime() / 3600000);

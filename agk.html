@@ -696,16 +696,6 @@
         월드.style.cursor = "pointer";
         월드.innerHTML = `월드`;
 
-        // const 전장 = document.createElement("div");
-        // 전장.id = "전장";
-        // 전장.style.boxSizing = "border-box";
-        // 전장.style.display = "flex"; //
-        // 전장.style.justifyContent = "center"; // 자식을 부모의 가로 가운데로
-        // 전장.style.alignItems = "center"; // 자식을 부모의 세로 가운데로
-        // 전장.style.margin = "4px 4px";
-        // 전장.style.cursor = "pointer";
-        // 전장.innerHTML = `전장`;
-
         const 전당 = document.createElement("div");
         전당.id = "전당";
         전당.style.boxSizing = "border-box";
@@ -878,12 +868,12 @@
         월드보스.style.cursor = "pointer";
         월드툴팁.append(월드보스);
 
-        const 전장 = document.createElement("div");
-        전장.id = "전장";
-        전장.style.boxSizing = "border-box";
-        전장.innerHTML = "전장";
-        전장.style.cursor = "pointer";
-        월드툴팁.append(전장);
+        // const 전장 = document.createElement("div");
+        // 전장.id = "전장";
+        // 전장.style.boxSizing = "border-box";
+        // 전장.innerHTML = "전장";
+        // 전장.style.cursor = "pointer";
+        // 월드툴팁.append(전장);
 
         const 하늘섬 = document.createElement("div");
         하늘섬.id = "하늘섬";
@@ -3413,6 +3403,11 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.10.28<br>
+전장 초기화가 생각한대로 작동하질않아서 닫겠습니다<br>
+아이디어가 떠오르면 재오픈하겠습니다<br>
+<br>
 
 25.10.24<br>
 동료화면에 먹이올인 버튼이 구현되었습니다<br>
@@ -10791,6 +10786,10 @@ nodemon server.js
         하늘섬화면컨테이너.style.gap = "8px";
         하늘섬화면.append(하늘섬화면컨테이너);
 
+        let 비행인터벌 = null
+        let 비행중상태 = false
+
+
         //하늘섬화면보여주기함수
         async function 하늘섬화면보여주기() {
             try {
@@ -10837,6 +10836,7 @@ nodemon server.js
                 }, 1000)
 
                 const 비행중 = document.createElement("div");
+                비행중.id = `비행중`;
                 비행중.style.display = "flex";
                 비행중.innerHTML = `비행`;
                 비행중.style.boxSizing = "border-box";
@@ -10845,9 +10845,6 @@ nodemon server.js
                 비행중.style.padding = `3px 6px`;
                 비행중.style.cursor = `pointer`;
                 하늘섬보물지도2열.append(비행중);
-
-                let 비행인터벌 = null
-                let 비행중상태 = false
 
                 비행중.addEventListener("click", () => {
                     if (!비행중상태) {
@@ -10863,7 +10860,6 @@ nodemon server.js
                         비행중.innerHTML = "비행"
                     }
                 })
-
 
 
 
@@ -11143,6 +11139,10 @@ nodemon server.js
                 if (!document.querySelector("#팝업").contains(e.target)) {
                     document.querySelector("#팝업").style.display = "none";
                 }
+            }
+
+            if (!document.querySelector("#비행중").contains(e.target)) {
+                비행중상태 = false;
             }
 
             if (document.querySelector("#전장유저정보").style.display !== "none") {

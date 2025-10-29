@@ -11163,7 +11163,7 @@ nodemon server.js
                 }
             }
 
-            if (!document.querySelector("#비행중").contains(e.target)) {
+            if (document.querySelector("#비행중") && !document.querySelector("#비행중").contains(e.target)) {
                 비행중상태 = false;
                 비행중.innerHTML = "비행"
             }

@@ -80,7 +80,7 @@
 
         .황금박스 {
             position: fixed;
-            top: 30%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 9999;
@@ -1739,29 +1739,30 @@
 
                 });
 
-                const 룬박스 = document.createElement("룬박스");
-                룬박스.id = "룬";
-                룬박스.style.display = "flex";
-                룬박스.innerHTML = 비장비아이콘변환(룬스톤아이콘);
-                룬박스.style.textAlign = "center";
-                룬박스.style.color = "#D4D4D4";
-                룬박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
-                룬박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
-                룬박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
-                룬박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
-                룬박스.style.cursor = "pointer";
-                룬박스.style.width = "32px";
-                룬박스.style.height = "32px";
-                룬박스.style.padding = "8px";
-                룬박스.style.marginTop = "8px";
-                룬박스.style.borderRadius = "8px";
-                룬박스.style.border = `0.2px solid #D4D4D4`;
-                룬박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                document.getElementById("메인화면컨테이너이행4열").append(룬박스);
+                const 룬석박스 = document.createElement("룬석박스");
+                룬석박스.id = "룬석";
+                룬석박스.style.display = "flex";
+                룬석박스.innerHTML = 비장비아이콘변환(룬스톤아이콘);
+                룬석박스.style.textAlign = "center";
+                룬석박스.style.color = "#D4D4D4";
+                룬석박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                룬석박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                룬석박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                룬석박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                룬석박스.style.cursor = "pointer";
+                룬석박스.style.width = "32px";
+                룬석박스.style.height = "32px";
+                룬석박스.style.padding = "8px";
+                룬석박스.style.marginTop = "8px";
+                룬석박스.style.borderRadius = "8px";
+                룬석박스.style.border = `0.2px solid #D4D4D4`;
+                룬석박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                document.getElementById("메인화면컨테이너이행4열").append(룬석박스);
 
-                룬박스.addEventListener("click", (e) => {
+                룬석박스.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    메시지표시(`구현중입니다`);
+
+                    룬석화면보여주기();
                 });
 
                 const 외형박스 = document.createElement("외형박스");
@@ -3356,11 +3357,8 @@
                 모든 램프를 한번에 소진함<br>
                 <br>
 
-                전장주간보상<br>
-                월요일~금요일 합산 PT 순위보상<br>
-                1위 50000다이아 / 2위 30000다이아 / 3위 10000다이아<br>
-                4위 8000다이아 / 5위 6000다이아 / 6위 4000다이아<br>
-                7위 2000다이아 / 8위 1000다이아 / 9위 500다이아<br>
+                월드보스<br>
+                뭘까~요<br>
                 <br>
 
 
@@ -3376,6 +3374,14 @@
                 화면해제();
             }
         }
+
+        //         전장주간보상<br>
+        // 월요일~금요일 합산 PT 순위보상<br>
+        // 1위 50000다이아 / 2위 30000다이아 / 3위 10000다이아<br>
+        // 4위 8000다이아 / 5위 6000다이아 / 6위 4000다이아<br>
+        // 7위 2000다이아 / 8위 1000다이아 / 9위 500다이아<br>
+        // <br>
+
 
         const 패치노트화면 = document.createElement("div");
         패치노트화면.style.position = "absolute";
@@ -3423,6 +3429,26 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.11.06<br>
+마술의 3차 이상 직업효과의 콤보계수가 콤보무시로<br>
+적용되고있던 오류를 수정했습니다<br>
+신규 월드컨텐츠, 하늘섬이 구현되었습니다<br>
+하늘섬에서는 보물지도를 가지고 비행해 룬석을 획득할수있습니다<br>
+획득된 룬석은 자동으로 스탯에 적용됩니다<br>
+룬석으로 획득되는 스탯은 메인화면 장비 마지막칸에 위치한<br>
+룬석화면을 통해 확인해주세요<br>
+현재 탈것의 스탯이 다른컨텐츠에 비해 오버밸런스로 보여집니다<br>
+다음 업데이트에서 탈것을 다른컨텐츠와 어울리게 조정하겠습니다<br>
+탈것 업데이트 시 페어리가 한동안 정체될 수 있는점 양해바랍니다<br>
+그리고 개인전으로 진행되고있는 월드보스 컨텐츠도<br>
+전 유저 누적데미지 합산 합동컨텐츠로 전환할 예정입니다<br>
+다음업데이트에서 구현해보겠습니다<br>
+<br>
+
+25.11.05<br>
+던전 페어리의 자동도전 오류를 수정했습니다<br>
+<br>
 
 25.11.03<br>
 사라진 전장의 주간보상이 지급되던 오류를 수정했습니다<br>
@@ -3846,6 +3872,9 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
                 /*
 
 해야할일
+
+월드보스 합동컨으로 변경
+탈것 스탯 하향
 
 탈것 하향
 칭호
@@ -4894,7 +4923,6 @@ nodemon server.js
 
                         전장화면보여주기();
 
-                        //수정중
                         //전투로그보여주기
                         전투로그컨테이너.style.display = "flex";
                         전투로그컨테이너.innerHTML = "";
@@ -10336,25 +10364,25 @@ nodemon server.js
                         탈것박스.style.background = `radial-gradient(circle, ${등급색상[탈것등급변수].좌} 40%, ${등급색상[탈것등급변수].우} 100%)`;
                         document.getElementById("전장유저장비3열").append(탈것박스);
 
-                        const 룬박스 = document.createElement("룬박스");
-                        룬박스.id = "룬";
-                        룬박스.style.display = "flex";
-                        룬박스.innerHTML = 장비아이콘변환(룬스톤아이콘);
-                        룬박스.style.textAlign = "center";
-                        룬박스.style.color = "#D4D4D4";
-                        룬박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
-                        룬박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
-                        룬박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
-                        룬박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
-                        룬박스.style.cursor = "pointer";
-                        룬박스.style.width = "32px";
-                        룬박스.style.height = "32px";
-                        룬박스.style.padding = "8px";
-                        룬박스.style.marginTop = "8px";
-                        룬박스.style.borderRadius = "8px";
-                        룬박스.style.border = `0.2px solid #D4D4D4`;
-                        룬박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
-                        document.getElementById("전장유저장비4열").append(룬박스);
+                        const 룬석박스 = document.createElement("룬석박스");
+                        룬석박스.id = "룬석";
+                        룬석박스.style.display = "flex";
+                        룬석박스.innerHTML = 장비아이콘변환(룬스톤아이콘);
+                        룬석박스.style.textAlign = "center";
+                        룬석박스.style.color = "#D4D4D4";
+                        룬석박스.style.justifyContent = "center";     // 자식을 부모의 가로 가운데로
+                        룬석박스.style.alignItems = "center";    // 자식을 부모의 세로 가운데로
+                        룬석박스.style.flexDirection = "row";     // 자식을 왼쪽에서오른쪽으로(기본값)
+                        룬석박스.style.flexDirection = "column";   // 자식을 왼쪽에서아래로
+                        룬석박스.style.cursor = "pointer";
+                        룬석박스.style.width = "32px";
+                        룬석박스.style.height = "32px";
+                        룬석박스.style.padding = "8px";
+                        룬석박스.style.marginTop = "8px";
+                        룬석박스.style.borderRadius = "8px";
+                        룬석박스.style.border = `0.2px solid #D4D4D4`;
+                        룬석박스.style.background = `radial-gradient(circle, ${등급색상["기본"].좌} 40%, ${등급색상["기본"].우} 100%)`;
+                        document.getElementById("전장유저장비4열").append(룬석박스);
 
 
                     });
@@ -10792,8 +10820,10 @@ nodemon server.js
         하늘섬화면설명.style.flexDirection = "column";
         하늘섬화면설명.innerHTML =
             `
-            하늘섬에서 숨겨진 보물들을 찾아봅시다<br>
-            구현중입니다
+            하늘섬을 비행하며 보물을 발견하세요<br>
+            진주의 드랍률은 0.3%, 진주 외 보석들은 3%입니다<br>
+            하단 수량은 금일 획득수량만 표시됩니다<br>
+            총 누적수량은 메인화면의 룬석 카테고리로 확인하세요<br>
             `;
         하늘섬화면설명.style.textAlign = "center";
         하늘섬화면설명.style.paddingBottom = "8px";
@@ -10823,6 +10853,18 @@ nodemon server.js
 
                 행렬만들기(하늘섬화면컨테이너, "하늘섬보물지도", 2);
                 하늘섬보물지도1열.innerHTML = 비장비아이콘변환(보물지도아이콘);
+                하늘섬보물지도.style.borderBottom = "0.2px solid #D4D4D4";
+
+                const 하늘섬남은기회 = document.createElement("div")
+                하늘섬남은기회.style.display = "flex"
+                하늘섬남은기회.style.flexDirection = "column"
+                하늘섬남은기회.style.alignItems = "center"
+                하늘섬남은기회.style.justifyContent = "center"
+                하늘섬남은기회.style.textAlign = "center"
+                하늘섬남은기회.style.padding = `3px 6px`
+                하늘섬남은기회.innerHTML = `오늘남은기회(${유저데이터.스탯.하늘섬}/360)`;
+                하늘섬보물지도2열.append(하늘섬남은기회)
+
 
                 const 하늘섬시간표시 = document.createElement("div")
                 하늘섬시간표시.style.display = "flex"
@@ -10847,7 +10889,7 @@ nodemon server.js
                     + `${d.getSeconds().toString().padStart(2, "0")}초`
 
                 if (window.하늘섬시간인터벌) clearInterval(window.하늘섬시간인터벌)
-                window.하늘섬시간인터벌 = setInterval(() => {
+                window.하늘섬시간인터벌 = setInterval(async () => {
                     d = new Date()
                     요일 = 요일목록[d.getDay()]
                     오전오후 = d.getHours() >= 12 ? "오후" : "오전"
@@ -10858,7 +10900,10 @@ nodemon server.js
                         + `${오전오후} ${시.toString().padStart(2, "0")}시 `
                         + `${d.getMinutes().toString().padStart(2, "0")}분 `
                         + `${d.getSeconds().toString().padStart(2, "0")}초`
+
+
                 }, 1000)
+                //수정중
 
                 const 비행중 = document.createElement("div");
                 비행중.id = `비행중`;
@@ -10872,6 +10917,12 @@ nodemon server.js
                 하늘섬보물지도2열.append(비행중);
 
                 비행중.addEventListener("click", () => {
+                    if (유저데이터.스탯.하늘섬 > 360) {
+                        메시지표시(`오늘은 더이상 날 수 없습니다`);
+                        return;
+                    }
+
+
                     if (비행인터벌) {
                         clearInterval(비행인터벌)
                         비행인터벌 = null
@@ -10880,17 +10931,128 @@ nodemon server.js
                     if (!비행중상태) {
                         비행중상태 = true
                         let 점 = 0
-                        비행인터벌 = setInterval(() => {
+                        비행인터벌 = setInterval(async () => {
                             if (!비행중상태) return
                             // 메시지표시(``)
                             점 = (점 + 1) % 4
                             비행중.innerHTML = "비행중" + ".".repeat(점)
+
+
+                            const 현재초 = Math.floor(Date.now() / 1000)
+                            if (현재초 - 유저데이터.스탯.시간초 > 10) {
+                                try {
+
+                                    if (유저데이터.스탯.하늘섬 > 360) {
+                                        비행중상태 = false;
+                                        비행중.innerHTML = "비행"
+                                        메시지표시(`오늘은 더이상 날 수 없습니다`);
+                                        return;
+                                    }
+
+
+                                    const 응답 = await fetch("/gksmftja", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            id: 유저데이터.id
+                                        })
+                                    });
+
+                                    const 결과 = await 응답.json();
+
+                                    if (!응답.ok) {
+                                        메시지표시(결과.오류);
+                                        return;
+                                    }
+
+                                    유저데이터 = 결과.유저데이터;
+
+                                    const 보석리스트 = ["루비", "크리스탈", "에메랄드", "사파이어", "자수정", "토파즈", "진주"];
+
+                                    if (!결과.획득) {
+                                        네온박스.style.display = "none";
+
+                                        if (window.네온타이머) clearTimeout(window.네온타이머);
+
+                                        네온박스.innerText = `먼거릴 날아왔지만 이곳엔 아무것도 없었습니다`;
+                                        네온박스.style.display = "block";
+
+                                        하늘섬남은기회.innerHTML = `오늘남은기회(${유저데이터.스탯.하늘섬}/360)`;
+
+                                        window.네온타이머 = setTimeout(() => {
+                                            네온박스.style.display = "none";
+                                        }, 3000);
+                                    } else {
+                                        황금박스.style.display = "none";
+
+                                        if (window.황금타이머) clearTimeout(window.황금타이머);
+
+                                        황금박스.innerText = `${보석리스트[결과.획득 - 1]} 발견!`;
+                                        황금박스.style.display = "block";
+
+
+                                        하늘섬남은기회.innerHTML = `오늘남은기회(${유저데이터.스탯.하늘섬}/360)`;
+
+                                        오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}`;
+                                        오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}`;
+                                        오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}`;
+                                        오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}`;
+                                        오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}`;
+                                        오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}`;
+                                        오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}`;
+
+
+                                        // 오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}(${유저데이터.스탯.치명저항})`;
+                                        // 오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}(${유저데이터.스탯.콤보피해감소})`;
+                                        // 오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}(${유저데이터.스탯.반격피해감소})`;
+                                        // 오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}(${유저데이터.스탯.일반공격피해감소})`;
+                                        // 오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}(${유저데이터.스탯.스킬피해감소})`;
+                                        // 오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}(${유저데이터.스탯.동료피해감소})`;
+                                        // 오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}(${유저데이터.스탯.추가데미지})`;
+
+                                        window.황금타이머 = setTimeout(() => {
+                                            황금박스.style.display = "none";
+                                        }, 3000);
+
+                                    }
+
+                                } catch {
+                                    메시지표시("서버연결실패")
+                                }
+                            }
+
+
+
                         }, 500)
                     } else {
                         비행중상태 = false
                         비행중.innerHTML = "비행"
                     }
                 })
+
+
+
+                행렬만들기(하늘섬화면컨테이너, "오늘하늘섬일", 3);
+                행렬만들기(하늘섬화면컨테이너, "오늘하늘섬이", 3);
+                행렬만들기(하늘섬화면컨테이너, "오늘하늘섬삼", 3);
+                오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}`;
+                오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}`;
+                오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}`;
+                오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}`;
+                오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}`;
+                오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}`;
+                오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}`;
+
+
+                // 오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}(${유저데이터.스탯.치명저항})`;
+                // 오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}(${유저데이터.스탯.콤보피해감소})`;
+                // 오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}(${유저데이터.스탯.반격피해감소})`;
+                // 오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}(${유저데이터.스탯.일반공격피해감소})`;
+                // 오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}(${유저데이터.스탯.스킬피해감소})`;
+                // 오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}(${유저데이터.스탯.동료피해감소})`;
+                // 오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}(${유저데이터.스탯.추가데미지})`;
+
+
 
 
             } catch (e) {
@@ -11101,8 +11263,134 @@ nodemon server.js
             }
         }
 
+        const 룬석화면 = document.createElement("div");
+        룬석화면.style.position = "absolute";
+        룬석화면.className = "화면숨기기";
+        룬석화면.style.boxSizing = "border-box";
+        룬석화면.style.top = "64px";
+        룬석화면.style.width = "400px";
+        룬석화면.style.display = "none";
+        룬석화면.style.flexDirection = "column";
+        룬석화면.style.gap = "8px";
+        document.body.append(룬석화면);
+
+        const 룬석화면설명 = document.createElement("div");
+        룬석화면설명.style.boxSizing = "border-box";
+        룬석화면설명.style.borderBottom = "0.2px solid #D4D4D4";
+        룬석화면설명.style.flex = "1";
+        룬석화면설명.style.display = "flex";
+        룬석화면설명.style.flexDirection = "column";
+        룬석화면설명.innerHTML =
+            `
+
+            `;
+        룬석화면설명.style.textAlign = "center";
+        룬석화면설명.style.paddingBottom = "8px";
+        룬석화면.append(룬석화면설명);
+
+        const 룬석화면컨테이너 = document.createElement("div");
+        룬석화면컨테이너.id = "룬석화면컨테이너";
+        룬석화면컨테이너.style.boxSizing = "border-box";
+        룬석화면컨테이너.style.border = "0.2px solid #D4D4D4";
+        룬석화면컨테이너.style.borderRadius = "8px";
+        룬석화면컨테이너.style.flex = "1";
+        룬석화면컨테이너.style.display = "flex";
+        룬석화면컨테이너.style.flexDirection = "column";
+        룬석화면컨테이너.style.padding = "8px";
+        룬석화면컨테이너.style.gap = "8px";
+        룬석화면.append(룬석화면컨테이너);
+
+        //룬석화면보여주기함수
+        async function 룬석화면보여주기() {
+            try {
+                모든화면숨기기();
+                룬석화면.style.display = "flex";
+                룬석화면컨테이너.innerHTML = "";
+
+                // 행렬만들기(룬석화면컨테이너, "룬석루비", 5);
+                // 룬석루비3열.innerHTML = 비장비아이콘변환(루비아이콘) + `치명저항 ${유저데이터.스탯.룬석.루비}%`;
+                // 행렬만들기(룬석화면컨테이너, "룬석크리스탈", 5);
+                // 룬석크리스탈1열.innerHTML = 비장비아이콘변환(크리스탈아이콘);
+                // 룬석크리스탈5열.innerHTML = 비장비아이콘변환(에메랄드아이콘);
+
+                // 행렬만들기(룬석화면컨테이너, "룬석진주", 5);
+                // 룬석진주3열.innerHTML = 비장비아이콘변환(진주아이콘);
+
+                // 행렬만들기(룬석화면컨테이너, "룬석사파이어", 5);
+                // 룬석사파이어1열.innerHTML = 비장비아이콘변환(사파이어아이콘);
+                // 룬석사파이어5열.innerHTML = 비장비아이콘변환(자수정아이콘);
+
+                // 행렬만들기(룬석화면컨테이너, "룬석토파즈", 5);
+                // 룬석토파즈3열.innerHTML = 비장비아이콘변환(토파즈아이콘);
+
+                // 행렬만들기(룬석화면컨테이너, "룬석루비", 5);
+                // 룬석루비3열.innerHTML = `루비(${유저데이터.스탯.룬석.루비 || 0})` + 비장비아이콘변환(루비아이콘) + `치명저항 ${유저데이터.스탯.룬석.루비 || 0}%`;
+                // 룬석루비3열.style.fontSize = `9px`;
+
+                // 행렬만들기(룬석화면컨테이너, "룬석크리스탈", 5);
+                // 룬석크리스탈1열.innerHTML = `크리스탈(${유저데이터.스탯.룬석.크리스탈 || 0})` + 비장비아이콘변환(크리스탈아이콘) + `콤보피해감소 ${유저데이터.스탯.룬석.크리스탈 || 0}%`;
+                // 룬석크리스탈1열.style.fontSize = `9px`;
+                // 룬석크리스탈5열.innerHTML = `에메랄드(${유저데이터.스탯.룬석.에메랄드 || 0})` + 비장비아이콘변환(에메랄드아이콘) + `반격피해감소 ${유저데이터.스탯.룬석.에메랄드 || 0}%`;
+                // 룬석크리스탈5열.style.fontSize = `9px`;
+
+                // 행렬만들기(룬석화면컨테이너, "룬석진주", 5);
+                // 룬석진주3열.innerHTML = `진주(${유저데이터.스탯.룬석.진주 || 0})` + 비장비아이콘변환(진주아이콘) + `추가데미지 ${유저데이터.스탯.룬석.진주 || 0}%`;
+                // 룬석진주3열.style.fontSize = `9px`;
+
+                // 행렬만들기(룬석화면컨테이너, "룬석사파이어", 5);
+                // 룬석사파이어1열.innerHTML = `사파이어(${유저데이터.스탯.룬석.사파이어 || 0})` + 비장비아이콘변환(사파이어아이콘) + `일공피해감소 ${유저데이터.스탯.룬석.사파이어 || 0}%`;
+                // 룬석사파이어1열.style.fontSize = `9px`;
+                // 룬석사파이어5열.innerHTML = `자수정(${유저데이터.스탯.룬석.자수정 || 0})` + 비장비아이콘변환(자수정아이콘) + `스킬피해감소 ${유저데이터.스탯.룬석.자수정 || 0}%`;
+                // 룬석사파이어5열.style.fontSize = `9px`;
+
+                // 행렬만들기(룬석화면컨테이너, "룬석토파즈", 5);
+                // 룬석토파즈3열.innerHTML = `토파즈(${유저데이터.스탯.룬석.토파즈 || 0})` + 비장비아이콘변환(토파즈아이콘) + `동료피해감소 ${유저데이터.스탯.룬석.토파즈 || 0}%`;
+                // 룬석토파즈3열.style.fontSize = `9px`;
+
+                행렬만들기(룬석화면컨테이너, "룬석일행", 3);
+                행렬만들기(룬석화면컨테이너, "룬석이행", 3);
+                행렬만들기(룬석화면컨테이너, "룬석삼행", 3);
+                행렬만들기(룬석화면컨테이너, "룬석사행", 3);
+                룬석일행1열.innerHTML = `루비(${유저데이터.스탯.룬석.루비 || 0})` + 비장비아이콘변환(루비아이콘) + `치명저항 ${유저데이터.스탯.룬석.루비 || 0}%`;
+                룬석일행2열.innerHTML = `크리스탈(${유저데이터.스탯.룬석.크리스탈 || 0})` + 비장비아이콘변환(크리스탈아이콘) + `콤보피해감소 ${유저데이터.스탯.룬석.크리스탈 || 0}%`;
+                룬석일행3열.innerHTML = `에메랄드(${유저데이터.스탯.룬석.에메랄드 || 0})` + 비장비아이콘변환(에메랄드아이콘) + `반격피해감소 ${유저데이터.스탯.룬석.에메랄드 || 0}%`;
+                룬석이행1열.innerHTML = `사파이어(${유저데이터.스탯.룬석.사파이어 || 0})` + 비장비아이콘변환(사파이어아이콘) + `일공피해감소 ${유저데이터.스탯.룬석.사파이어 || 0}%`;
+                룬석이행2열.innerHTML = `자수정(${유저데이터.스탯.룬석.자수정 || 0})` + 비장비아이콘변환(자수정아이콘) + `스킬피해감소 ${유저데이터.스탯.룬석.자수정 || 0}%`;
+                룬석이행3열.innerHTML = `토파즈(${유저데이터.스탯.룬석.토파즈 || 0})` + 비장비아이콘변환(토파즈아이콘) + `동료피해감소 ${유저데이터.스탯.룬석.토파즈 || 0}%`;
+                룬석삼행2열.innerHTML = `진주(${유저데이터.스탯.룬석.진주 || 0})` + 비장비아이콘변환(진주아이콘) + `추가데미지 ${유저데이터.스탯.룬석.진주 || 0}%`;
+
+                룬석일행1열.style.boxSizing = "border-box";
+                룬석일행1열.style.border = "0.2px solid #D4D4D4";
+                룬석일행1열.style.borderRadius = "8px";
+                룬석일행2열.style.boxSizing = "border-box";
+                룬석일행2열.style.border = "0.2px solid #D4D4D4";
+                룬석일행2열.style.borderRadius = "8px";
+                룬석일행3열.style.boxSizing = "border-box";
+                룬석일행3열.style.border = "0.2px solid #D4D4D4";
+                룬석일행3열.style.borderRadius = "8px";
+                룬석이행1열.style.boxSizing = "border-box";
+                룬석이행1열.style.border = "0.2px solid #D4D4D4";
+                룬석이행1열.style.borderRadius = "8px";
+                룬석이행2열.style.boxSizing = "border-box";
+                룬석이행2열.style.border = "0.2px solid #D4D4D4";
+                룬석이행2열.style.borderRadius = "8px";
+                룬석이행3열.style.boxSizing = "border-box";
+                룬석이행3열.style.border = "0.2px solid #D4D4D4";
+                룬석이행3열.style.borderRadius = "8px";
+                룬석삼행2열.style.boxSizing = "border-box";
+                룬석삼행2열.style.border = "0.2px solid #D4D4D4";
+                룬석삼행2열.style.borderRadius = "8px";
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
 
 
+        //화면추가
 
 
 
@@ -11162,6 +11450,59 @@ nodemon server.js
 
         //클릭이벤트
         document.addEventListener("click", async (e) => {
+            if (e.target.matches("#전장")) {
+                // 메시지표시("점검중입니다");
+                // return;
+
+                전장화면보여주기();
+            }
+
+            if (e.target.matches("#하늘섬")) {
+                // 메시지표시("점검중입니다");
+                // return;
+
+                하늘섬화면보여주기();
+            }
+
+            if (e.target.matches("#전당")) {
+                전당화면보여주기();
+            }
+
+            if (e.target.matches("#상점")) {
+                상점화면보여주기();
+            }
+
+            if (e.target.matches("#쿠폰")) {
+                쿠폰화면보여주기();
+            }
+
+            if (e.target.matches("#큐엔에이")) {
+                큐엔에이화면보여주기();
+            }
+
+            // if (e.target.matches("#채팅")) {
+            //     메시지표시("점검중입니다");
+            //     return;
+            //     // 채팅화면보여주기();
+            // }
+
+            if (e.target.matches("#길드")) {
+                메시지표시("구현중입니다");
+                return;
+                길드화면보여주기();
+            }
+
+            if (e.target.matches("#아레나")) {
+                메시지표시("구현중입니다");
+                return;
+                아레나화면보여주기();
+            }
+
+            if (e.target.matches("#월드보스")) {
+                월드보스화면보여주기();
+            }
+
+
             document.querySelector("#장착장비표시컨테이너").innerHTML = "";
             document.querySelector("#장착장비표시컨테이너").style.display = "none";
 
@@ -11858,58 +12199,6 @@ nodemon server.js
                 }
             }
 
-            if (e.target.matches("#전장")) {
-                // 메시지표시("점검중입니다");
-                // return;
-
-                전장화면보여주기();
-            }
-
-            if (e.target.matches("#하늘섬")) {
-                // 메시지표시("점검중입니다");
-                // return;
-
-                하늘섬화면보여주기();
-            }
-
-            if (e.target.matches("#전당")) {
-                전당화면보여주기();
-            }
-
-            if (e.target.matches("#상점")) {
-                상점화면보여주기();
-            }
-
-            if (e.target.matches("#쿠폰")) {
-                쿠폰화면보여주기();
-            }
-
-            if (e.target.matches("#큐엔에이")) {
-                큐엔에이화면보여주기();
-            }
-
-            // if (e.target.matches("#채팅")) {
-            //     메시지표시("점검중입니다");
-            //     return;
-            //     // 채팅화면보여주기();
-            // }
-
-            if (e.target.matches("#길드")) {
-                메시지표시("구현중입니다");
-                return;
-                길드화면보여주기();
-            }
-
-            if (e.target.matches("#아레나")) {
-                메시지표시("구현중입니다");
-                return;
-                아레나화면보여주기();
-            }
-
-            if (e.target.matches("#월드보스")) {
-                월드보스화면보여주기();
-            }
-
             if (e.target.matches("#타이틀과아이디")) {
                 try {
                     화면잠금();
@@ -12345,7 +12634,8 @@ nodemon server.js
 
                 메인화면보여주기();
                 if (유저데이터.스탯.주인장인가) {
-                    하늘섬화면보여주기();
+                    //주인장화면
+                    룬석화면보여주기();
                 }
 
                 if (유저데이터.스탯.서버점검 === 1 && 유저데이터.스탯.주인장인가 !== 1) {
@@ -12448,6 +12738,9 @@ nodemon server.js
                         break;
                     case "h":
                         document.querySelector("#하늘섬")?.click();
+                        break;
+                    case "g":
+                        document.querySelector("#룬석")?.click();
                         break;
 
 
@@ -12765,7 +13058,7 @@ nodemon server.js
         //                         id: 유저데이터.id
         //                     })
         //                 });
-
+        //수정중
         //                 const 결과 = await 응답.json();
 
         //                 if (!응답.ok) {

@@ -1616,7 +1616,7 @@
                     탈것HP다음보너스.style.justifyContent = "space-between";
                     탈것HP다음보너스.style.width = "100%";
                     탈것HP다음보너스.style.borderBottom = `0.2px solid #D4D4D4`;
-                    탈것HP다음보너스.innerHTML = `<span>HP보너스</span><span>${유저데이터.스탯.탈것.HP보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    탈것HP다음보너스.innerHTML = `<span>HP보너스</span><span>${(유저데이터.스탯.탈것.레벨 + 1) * 5}</span>`;
                     document.getElementById("탈것컨테이너일행3열").append(탈것HP다음보너스);
 
                     const 탈것공격력다음보너스 = document.createElement("div");
@@ -1624,7 +1624,7 @@
                     탈것공격력다음보너스.style.justifyContent = "space-between";
                     탈것공격력다음보너스.style.width = "100%";
                     탈것공격력다음보너스.style.borderBottom = `0.2px solid #D4D4D4`;
-                    탈것공격력다음보너스.innerHTML = `<span>공보너스</span><span>${유저데이터.스탯.탈것.공격력보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    탈것공격력다음보너스.innerHTML = `<span>공보너스</span><span>${(유저데이터.스탯.탈것.레벨 + 1) * 5}</span>`;
                     document.getElementById("탈것컨테이너일행3열").append(탈것공격력다음보너스);
 
                     const 탈것방어력다음보너스 = document.createElement("div");
@@ -1632,7 +1632,7 @@
                     탈것방어력다음보너스.style.justifyContent = "space-between";
                     탈것방어력다음보너스.style.width = "100%";
                     탈것방어력다음보너스.style.borderBottom = `0.2px solid #D4D4D4`;
-                    탈것방어력다음보너스.innerHTML = `<span>방보너스</span><span>${유저데이터.스탯.탈것.방어력보너스 + (유저데이터.스탯.탈것.레벨 + 1)}</span>`;
+                    탈것방어력다음보너스.innerHTML = `<span>방보너스</span><span>${(유저데이터.스탯.탈것.레벨 + 1) * 5}</span>`;
                     document.getElementById("탈것컨테이너일행3열").append(탈것방어력다음보너스);
 
                     행렬만들기(탈것컨테이너, "탈것컨테이너필요낙엽", 1);
@@ -3419,6 +3419,9 @@
         패치노트화면컨테이너.style.textAlign = "center";    // 자식을 부모의 세로 가운데로
         패치노트화면.append(패치노트화면컨테이너);
 
+        //화살표 ➡
+        //곱하기 ×
+
         async function 패치노트화면보여주기() {
             try {
                 화면잠금();
@@ -3429,6 +3432,17 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.11.07<br>
+탈것 계산식이 +=탈것레벨 ➡ =탈것레벨×5로 변경되었습니다<br>
+하늘섬 룬석 드랍률이 3% ➡ 1%로 변경되었습니다<br>
+진주의 드랍률은 0.1%입니다<br>
+하늘섬 비행기회를 한번에 처리하는 양자비행이 구현되었습니다<br>
+양자비행 기능은 상점에서 구매하여 활성화 가능합니다<br>
+상점에서 구매된 영구상품은 비활성화됩니다<br>
+기존에 하늘섬에서 획득된 룬석이 초기화되었습니다<br>
+룬석 스탯이 피해감소 ➡ 피해증가로 변경되었습니다<br>
+<br>
 
 25.11.06<br>
 마술의 3차 이상 직업효과의 콤보계수가 콤보무시로<br>
@@ -3874,11 +3888,8 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
 해야할일
 
 월드보스 합동컨으로 변경
-탈것 스탯 하향
 
-탈것 하향
 칭호
-하늘섬
 
 Ctrl + Shift + P
 Developer: Inspect Editor Tokens and Scopes
@@ -7115,7 +7126,7 @@ nodemon server.js
                         }
 
                         화면잠금();
-                        const 응답 = await fetch("/lamponeshotsystem", {
+                        const 응답 = await fetch("/foavmdnjstittltmxpa", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -7140,6 +7151,15 @@ nodemon server.js
                         화면해제();
                     }
                 });
+
+
+                if (유저데이터.스탯.램프원샷) {
+                    시스템1열.style.opacity = "0.5";           // 흐리게
+                    시스템1열.style.pointerEvents = "none";     // 클릭 막기
+                    시스템1열.innerHTML = `램프원샷(영구)<br>(agk사전참고)<br>적용중`;
+                }
+
+
 
                 시스템2열.innerHTML = `패키지<br>던전몬스터4종열쇠<br>3300다이아`;
                 시스템2열.style.cursor = `pointer`;
@@ -7230,6 +7250,59 @@ nodemon server.js
                 });
 
 
+                행렬만들기(상점화면컨테이너, "하늘섬양자비행", 3);
+
+                하늘섬양자비행1열.innerHTML = `양자비행(영구)<br>하늘섬기능<br>3000다이아`;
+                하늘섬양자비행1열.style.cursor = `pointer`;
+                하늘섬양자비행1열.style.textAlign = `center`;
+                하늘섬양자비행1열.style.boxSizing = "border-box";
+                하늘섬양자비행1열.style.border = "0.2px solid #D4D4D4";
+                하늘섬양자비행1열.style.borderRadius = "8px";
+                하늘섬양자비행1열.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    try {
+                        if (유저데이터.스탯.다이아 < 3000) {
+                            메시지표시(`3000다이아가 필요합니다`);
+                            return;
+                        }
+
+                        if (유저데이터.스탯.양자비행) {
+                            메시지표시(`양자비행이 적용중입니다`);
+                            return;
+                        }
+
+                        화면잠금();
+                        const 응답 = await fetch("/didwkqlgodtltmxpa", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: 유저데이터.id
+                            })
+                        });
+
+                        const 결과 = await 응답.json();
+
+                        if (!응답.ok) {
+                            메시지표시(결과.오류);
+                            return;
+                        }
+
+                        유저데이터 = 결과;
+                        다이아수량.innerHTML = `${단위변환함수(유저데이터.스탯.다이아 || 0)}`;
+                        메시지표시(`양자비행를 구매했습니다`);
+                    } catch (e) {
+                        메시지표시("서버요청실패");
+                        console.error(e);
+                    } finally {
+                        화면해제();
+                    }
+                });
+
+                if (유저데이터.스탯.양자비행) {
+                    하늘섬양자비행1열.style.opacity = "0.5";           // 흐리게
+                    하늘섬양자비행1열.style.pointerEvents = "none";     // 클릭 막기
+                    하늘섬양자비행1열.innerHTML = `양자비행(영구)<br>하늘섬기능<br>적용중`;
+                }
 
 
                 행렬만들기(상점화면컨테이너, "상점화면컨테이너상품목록삼행", 3);
@@ -10418,9 +10491,8 @@ nodemon server.js
         월드보스화면설명.style.flexDirection = "column";
         월드보스화면설명.innerHTML =
             `
-월드보스와 대결하여 최고데미지를 갱신하세요<br>
-최고데미지 순위에 따른 일일보상이 우편으로 지급됩니다<br>
-도전기회는 하루에 세번입니다<br>
+            월드보스에게 도전하세요<br>
+            도전 데미지는 전 유저 누적 합산되어 미션에 반영됩니다<br>
             `;
         월드보스화면설명.style.textAlign = "center";
         월드보스화면설명.style.paddingBottom = "8px";
@@ -10698,6 +10770,22 @@ nodemon server.js
                 });
 
 
+                // 화면잠금();
+                // const 응답 = await fetch("/dnjfemqhtm", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify({
+                //         id: 유저데이터.id
+                //     })
+                // });
+
+                // const 결과 = await 응답.json();
+
+                // if (!응답.ok) {
+                //     메시지표시(결과.오류);
+                //     return;
+                // }
+
 
 
 
@@ -10917,16 +11005,18 @@ nodemon server.js
                 하늘섬보물지도2열.append(비행중);
 
                 비행중.addEventListener("click", () => {
-                    if (유저데이터.스탯.하늘섬 > 360) {
-                        메시지표시(`오늘은 더이상 날 수 없습니다`);
-                        return;
-                    }
-
-
                     if (비행인터벌) {
                         clearInterval(비행인터벌)
                         비행인터벌 = null
                     }
+
+                    if (유저데이터.스탯.하늘섬 > 359) {
+                        비행중상태 = false;
+                        비행중.innerHTML = "비행"
+                        메시지표시(`오늘은 더이상 날 수 없습니다`);
+                        return;
+                    }
+
 
                     if (!비행중상태) {
                         비행중상태 = true
@@ -10937,12 +11027,13 @@ nodemon server.js
                             점 = (점 + 1) % 4
                             비행중.innerHTML = "비행중" + ".".repeat(점)
 
+                            const 딜레이 = 유저데이터.스탯.주인장인가 ? 3 : 10;
 
                             const 현재초 = Math.floor(Date.now() / 1000)
-                            if (현재초 - 유저데이터.스탯.시간초 > 10) {
+                            if (현재초 - 유저데이터.스탯.시간초 > 딜레이) {
                                 try {
 
-                                    if (유저데이터.스탯.하늘섬 > 360) {
+                                    if (유저데이터.스탯.하늘섬 > 359) {
                                         비행중상태 = false;
                                         비행중.innerHTML = "비행"
                                         메시지표시(`오늘은 더이상 날 수 없습니다`);
@@ -10987,7 +11078,7 @@ nodemon server.js
 
                                         if (window.황금타이머) clearTimeout(window.황금타이머);
 
-                                        황금박스.innerText = `${보석리스트[결과.획득 - 1]} 발견!`;
+                                        황금박스.innerText = `${결과.획득} 발견!`;
                                         황금박스.style.display = "block";
 
 
@@ -11030,7 +11121,67 @@ nodemon server.js
                     }
                 })
 
+                const 양자비행 = document.createElement("div");
+                양자비행.id = `양자비행`;
+                양자비행.style.display = "flex";
+                양자비행.innerHTML = `양자비행`;
+                양자비행.style.boxSizing = "border-box";
+                양자비행.style.border = "0.2px solid #D4D4D4";
+                양자비행.style.borderRadius = "8px";
+                양자비행.style.padding = `3px 6px`;
+                양자비행.style.cursor = `pointer`;
+                하늘섬보물지도2열.append(양자비행);
 
+                양자비행.addEventListener("click", async () => {
+
+                    if (유저데이터.스탯.하늘섬 > 359) {
+                        메시지표시(`오늘은 더이상 날 수 없습니다`);
+                        return;
+                    }
+
+                    if (!유저데이터.스탯.양자비행) {
+                        메시지표시(`상점에서 양자비행 기능을 구매하세요`);
+                        return;
+                    }
+
+                    const 응답 = await fetch("/didwkqlgod", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id: 유저데이터.id
+                        })
+                    });
+
+                    const 결과 = await 응답.json();
+
+                    if (!응답.ok) {
+                        메시지표시(결과.오류);
+                        return;
+                    }
+
+                    유저데이터 = 결과;
+
+                    하늘섬남은기회.innerHTML = `오늘남은기회(${유저데이터.스탯.하늘섬}/360)`;
+
+                    오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}`;
+                    오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}`;
+                    오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}`;
+                    오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}`;
+                    오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}`;
+                    오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}`;
+                    오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}`;
+
+                    황금박스.style.display = "none";
+
+                    if (window.황금타이머) clearTimeout(window.황금타이머);
+
+                    황금박스.innerText = `양자영역에 다녀왔습니다`;
+                    황금박스.style.display = "block";
+
+                    window.황금타이머 = setTimeout(() => {
+                        황금박스.style.display = "none";
+                    }, 3000);
+                })
 
                 행렬만들기(하늘섬화면컨테이너, "오늘하늘섬일", 3);
                 행렬만들기(하늘섬화면컨테이너, "오늘하늘섬이", 3);
@@ -11042,17 +11193,6 @@ nodemon server.js
                 오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}`;
                 오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}`;
                 오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}`;
-
-
-                // 오늘하늘섬일1열.innerHTML = `루비 × ${유저데이터.스탯.오늘하늘섬.루비 || 0}(${유저데이터.스탯.치명저항})`;
-                // 오늘하늘섬일2열.innerHTML = `크리스탈 × ${유저데이터.스탯.오늘하늘섬.크리스탈 || 0}(${유저데이터.스탯.콤보피해감소})`;
-                // 오늘하늘섬일3열.innerHTML = `에메랄드 × ${유저데이터.스탯.오늘하늘섬.에메랄드 || 0}(${유저데이터.스탯.반격피해감소})`;
-                // 오늘하늘섬이1열.innerHTML = `사파이어 × ${유저데이터.스탯.오늘하늘섬.사파이어 || 0}(${유저데이터.스탯.일반공격피해감소})`;
-                // 오늘하늘섬이2열.innerHTML = `자수정 × ${유저데이터.스탯.오늘하늘섬.자수정 || 0}(${유저데이터.스탯.스킬피해감소})`;
-                // 오늘하늘섬이3열.innerHTML = `토파즈 × ${유저데이터.스탯.오늘하늘섬.토파즈 || 0}(${유저데이터.스탯.동료피해감소})`;
-                // 오늘하늘섬삼2열.innerHTML = `진주 × ${유저데이터.스탯.오늘하늘섬.진주 || 0}(${유저데이터.스탯.추가데미지})`;
-
-
 
 
             } catch (e) {
@@ -12635,7 +12775,7 @@ nodemon server.js
                 메인화면보여주기();
                 if (유저데이터.스탯.주인장인가) {
                     //주인장화면
-                    룬석화면보여주기();
+                    패치노트화면보여주기();
                 }
 
                 if (유저데이터.스탯.서버점검 === 1 && 유저데이터.스탯.주인장인가 !== 1) {

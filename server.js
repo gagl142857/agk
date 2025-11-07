@@ -340,19 +340,32 @@ app.post("/login", async (req, res) => {
       data.스탯.월드보스 = { 기회: 3, 일요일: 0, 월요일: 0, 화요일: 0, 수요일: 0, 목요일: 0, 금요일: 0, 토요일: 0 };
     }
 
-    if (!data.스탯.오늘하늘섬) data.스탯.오늘하늘섬 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
-    if (!data.스탯.룬석) data.스탯.룬석 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
 
     if (!data.스탯.전장) {
       data.스탯.전장 = { 포인트: 0, 티켓: 4, 정산: 0 };
-    } else if (data.스탯.전장 && data.스탯.전장.정산 === undefined) {
+    } else if (data.스탯.전장 && !("정산" in data.스탯.전장)) {
       data.스탯.전장.정산 = 0;
     }
 
+    if (!data.스탯.오늘하늘섬) data.스탯.오늘하늘섬 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
+    if (!data.스탯.룬석) data.스탯.룬석 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
     if (!data.스탯.하늘섬) {
       data.스탯.하늘섬 = 0;
     }
+    if (!data.스탯.양자비행) data.스탯.양자비행 = 0;
 
+    //진짜초기화
+    if (!("하늘섬초기화" in data.스탯)) {
+      data.스탯.하늘섬초기화 = 1;
+    }
+
+    // if (data.스탯.하늘섬초기화 || data.스탯.주인장인가) {
+      if (data.스탯.하늘섬초기화) {
+      data.스탯.오늘하늘섬 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
+      data.스탯.룬석 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
+      data.스탯.하늘섬 = 0;
+      data.스탯.하늘섬초기화 = 0;
+    }
 
     //하루한번
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
@@ -1797,11 +1810,6 @@ app.post("/pump", async (req, res) => {
 
     data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
 
-    data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
-    data.스탯.탈것.회피 = 4 + Math.floor(((data.스탯.탈것.레벨 || 1) - 1) / 10) * 2;
-
     data.스탯.탈것.레벨++;
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
@@ -1851,15 +1859,9 @@ app.post("/dusfydhfdls", async (req, res) => {
 
       data.스탯.낙엽 = data.스탯.낙엽 - (2 * (data.스탯.탈것.레벨 + 1) - 1);
 
-      data.스탯.탈것.HP보너스 += (data.스탯.탈것.레벨 + 1);
-      data.스탯.탈것.공격력보너스 += (data.스탯.탈것.레벨 + 1);
-      data.스탯.탈것.방어력보너스 += (data.스탯.탈것.레벨 + 1);
-      data.스탯.탈것.회피 = 4 + Math.floor(((data.스탯.탈것.레벨 || 1) - 1) / 10) * 2;
-
       data.스탯.탈것.레벨++;
 
     }
-
 
     data.스탯 = { ...data.스탯, ...최종스탯계산(data.스탯) };
 
@@ -3986,7 +3988,7 @@ app.post("/StoreRockgolemkey10", async (req, res) => {
   }
 });
 
-app.post("/lamponeshotsystem", async (req, res) => {
+app.post("/foavmdnjstittltmxpa", async (req, res) => {
   try {
     const { id } = req.body;
 
@@ -4008,6 +4010,44 @@ app.post("/lamponeshotsystem", async (req, res) => {
 
     유저데이터.스탯.램프원샷 = 1;
 
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+app.post("/didwkqlgodtltmxpa", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 3000) {
+      return res.status(404).json({ 오류: "다이아가 부족합니다" });
+    }
+
+    유저데이터.스탯.다이아 = 유저데이터.스탯.다이아 - 3000;
+
+    유저데이터.스탯.양자비행 = 1;
 
     const { error: updateError } = await supabaseAdmin
       .from("users")
@@ -5909,6 +5949,81 @@ app.post("/worldboss", async (req, res) => {
   }
 });
 
+app.post("/dnjfemqhtm", async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ 오류: "id 필요" });
+
+    const { data: 유저데이터, error: 내에러 } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (내에러 || !유저데이터)
+      return res.status(404).json({ 오류: "내 유저 조회 실패" });
+
+    const 내서버 = 유저데이터.스탯?.서버;
+    if (!내서버)
+      return res.status(400).json({ 오류: "서버 값 없음" });
+
+    const { data: 전체유저, error: 전체에러 } = await supabaseAdmin
+      .from("users")
+      .select("스탯")
+      .eq("스탯->>서버", 내서버.toString());
+
+    if (전체에러)
+      return res.status(500).json({ 오류: "전체 유저 조회 실패" });
+
+    const 오늘요일 = 유저데이터.스탯.접속요일;
+    const 요일목록 = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    const 어제요일 = 요일목록[
+      (요일목록.indexOf(오늘요일) + 6) % 7
+    ];
+
+    const 현재시간 = Math.floor(new Date().getTime() / 3600000);
+
+    const 유효유저 = 전체유저.filter(u => {
+      if (!u.스탯 || !u.스탯.전투력 || !u.스탯.접속시각 || u.스탯.주인장인가) return false;
+      const 경과시간 = 현재시간 - u.스탯.접속시각;
+      return 경과시간 < 72;
+    });
+
+    const 오늘월드보스순위 = 유효유저
+      .filter(u => u.스탯.월드보스)
+      .sort((a, b) =>
+        ((b.스탯.월드보스[오늘요일] ?? 0) - (a.스탯.월드보스[오늘요일] ?? 0))
+      );
+
+    const 어제월드보스순위 = 유효유저
+      .filter(u => u.스탯.월드보스)
+      .sort((a, b) =>
+        ((b.스탯.월드보스[어제요일] ?? 0) - (a.스탯.월드보스[어제요일] ?? 0))
+      );
+
+    const 어제월드보스총뎀 = 유효유저.reduce(
+      (acc, u) => acc + (u.스탯?.월드보스?.[어제요일] ?? 0),
+      0
+    );
+
+    const 오늘월드보스총뎀 = 유효유저.reduce(
+      (acc, u) => acc + (u.스탯?.월드보스?.[오늘요일] ?? 0),
+      0
+    );
+
+    res.json({
+      어제월드보스순위,
+      오늘월드보스순위,
+      어제월드보스총뎀,
+      오늘월드보스총뎀
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
 // const 오늘월드보스순위 = 전체유저
 //   // .filter(u => u.스탯 && u.스탯.월드보스 && u.스탯.월드보스[오늘요일] > 0)
 //   .filter(u => u.스탯 && u.스탯.월드보스)
@@ -6296,6 +6411,16 @@ app.post("/ekqqus", async (req, res) => {
   }
 });
 
+const 보석리스트 = [
+  { 이름: "루비", 확률: 1 },
+  { 이름: "크리스탈", 확률: 1 },
+  { 이름: "에메랄드", 확률: 1 },
+  { 이름: "사파이어", 확률: 1 },
+  { 이름: "자수정", 확률: 1 },
+  { 이름: "토파즈", 확률: 1 },
+  { 이름: "진주", 확률: 0.1 },
+];
+
 app.post("/gksmftja", async (req, res) => {
   try {
     const { id } = req.body;
@@ -6310,7 +6435,7 @@ app.post("/gksmftja", async (req, res) => {
       return res.status(404).json({ 오류: "유저 없음" });
     }
 
-    if (유저데이터.스탯.하늘섬 > 360) {
+    if (유저데이터.스탯.하늘섬 > 359) {
       return res.status(404).json({ 오류: "오늘은 더이상 날 수 없습니다" });
     }
 
@@ -6318,28 +6443,23 @@ app.post("/gksmftja", async (req, res) => {
 
     유저데이터.스탯.시간초 = Math.floor(new Date().getTime() / 1000);
 
-    const 보석리스트 = ["루비", "크리스탈", "에메랄드", "사파이어", "자수정", "토파즈", "진주"];
-    const 보석확률 = [3, 3, 3, 3, 3, 3, 0.3];
-    // const 보석확률 = [10, 10, 10, 10, 10, 10, 20];
-    const 확률 = Math.random() * 100;
 
-    let 누적 = 0;
-    let 획득 = 0;
+    const 성공한보석 = 보석리스트.filter(b => Math.random() * 100 < b.확률);
 
-    for (let i = 0; i < 보석리스트.length; i++) {
-      누적 += 보석확률[i];
-      if (확률 < 누적) {
-        획득 = i + 1;
-        const 보석이름 = 보석리스트[i];
+    let 획득 = null;
 
-        if (!유저데이터.스탯.오늘하늘섬[보석이름]) 유저데이터.스탯.오늘하늘섬[보석이름] = 0;
-        유저데이터.스탯.오늘하늘섬[보석이름]++;
+    if (성공한보석.length > 0) {
+      성공한보석.sort((a, b) => a.확률 - b.확률);
+      const 최소확률 = 성공한보석[0].확률;
+      const 후보 = 성공한보석.filter(b => b.확률 === 최소확률);
+      const 선택 = 후보[Math.floor(Math.random() * 후보.length)];
+      획득 = 선택.이름;
 
-        if (!유저데이터.스탯.룬석[보석이름]) 유저데이터.스탯.룬석[보석이름] = 0;
-        유저데이터.스탯.룬석[보석이름]++;
+      if (!유저데이터.스탯.오늘하늘섬[획득]) 유저데이터.스탯.오늘하늘섬[획득] = 0;
+      유저데이터.스탯.오늘하늘섬[획득]++;
 
-        break;
-      }
+      if (!유저데이터.스탯.룬석[획득]) 유저데이터.스탯.룬석[획득] = 0;
+      유저데이터.스탯.룬석[획득]++;
     }
 
     유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
@@ -6361,6 +6481,74 @@ app.post("/gksmftja", async (req, res) => {
   }
 });
 
+app.post("/didwkqlgod", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (!유저데이터.스탯.양자비행) {
+      return res.status(404).json({ 오류: "상점에서 양자비행 기능을 구매하세요" });
+    }
+
+
+    if (유저데이터.스탯.하늘섬 > 359) {
+      return res.status(404).json({ 오류: "오늘은 더이상 날 수 없습니다" });
+    }
+
+    for (let i = 유저데이터.스탯.하늘섬; i < 360; i++) {
+
+      유저데이터.스탯.하늘섬 = i + 1;
+
+      유저데이터.스탯.시간초 = Math.floor(new Date().getTime() / 1000);
+
+      const 성공한보석 = 보석리스트.filter(b => Math.random() * 100 < b.확률);
+
+      let 획득 = null;
+
+      if (성공한보석.length > 0) {
+        성공한보석.sort((a, b) => a.확률 - b.확률);
+        const 최소확률 = 성공한보석[0].확률;
+        const 후보 = 성공한보석.filter(b => b.확률 === 최소확률);
+        const 선택 = 후보[Math.floor(Math.random() * 후보.length)];
+        획득 = 선택.이름;
+
+        if (!유저데이터.스탯.오늘하늘섬[획득]) 유저데이터.스탯.오늘하늘섬[획득] = 0;
+        유저데이터.스탯.오늘하늘섬[획득]++;
+
+        if (!유저데이터.스탯.룬석[획득]) 유저데이터.스탯.룬석[획득] = 0;
+        유저데이터.스탯.룬석[획득]++;
+      }
+
+
+    }
+
+    유저데이터.스탯 = { ...유저데이터.스탯, ...최종스탯계산(유저데이터.스탯) };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
 
 
 
@@ -8035,6 +8223,7 @@ const 장비목록 = [
   "별자리",
 ];
 
+//최종스탯계산함수
 function 최종스탯계산(스탯) {
   const 결과 = {};
 
@@ -8082,6 +8271,11 @@ function 최종스탯계산(스탯) {
     스탯.스킬.스킬피해감소 = 스탯.스킬.최고등급 * 5;
   }
 
+  스탯.탈것.HP보너스 = 스탯.탈것.레벨 * 5;
+  스탯.탈것.공격력보너스 = 스탯.탈것.레벨 * 5;
+  스탯.탈것.방어력보너스 = 스탯.탈것.레벨 * 5;
+  스탯.탈것.회피 = 4 + Math.floor(((스탯.탈것.레벨 || 1) - 1) / 10) * 2;
+
 
   for (const 옵션명 of 스탯목록) {
     let 합계 = 0;
@@ -8093,12 +8287,12 @@ function 최종스탯계산(스탯) {
     결과[옵션명] = Math.round(합계 * 100) * 0.01;
   }
 
-  결과.치명저항 += 스탯.룬석.루비;
-  결과.콤보피해감소 += 스탯.룬석.크리스탈;
-  결과.반격피해감소 += 스탯.룬석.에메랄드;
-  결과.일반공격피해감소 += 스탯.룬석.사파이어;
-  결과.스킬피해감소 += 스탯.룬석.자수정;
-  결과.동료피해감소 += 스탯.룬석.토파즈;
+  결과.치명피해 += 스탯.룬석.루비;
+  결과.콤보계수 += 스탯.룬석.크리스탈;
+  결과.반격계수 += 스탯.룬석.에메랄드;
+  결과.일반공격계수 += 스탯.룬석.사파이어;
+  결과.스킬피해 += 스탯.룬석.자수정;
+  결과.동료피해 += 스탯.룬석.토파즈;
   결과.추가데미지 += 스탯.룬석.진주;
 
   결과.최종HP = Math.floor(결과.HP + (결과.HP * 결과.HP보너스 / 100));

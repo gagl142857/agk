@@ -127,6 +127,12 @@
             }
         }
 
+        @keyframes 무지개흐름 {
+            to {
+                background-position: 200% center;
+            }
+        }
+
         .마법의팔레트주인장 {
             background: linear-gradient(90deg, #ff6ec4, #7873f5, #4adede, #4adede, #ff6ec4);
             background-size: 200% auto;
@@ -139,13 +145,6 @@
             filter: brightness(1.2);
         }
 
-        @keyframes 무지개흐름 {
-            to {
-                background-position: 200% center;
-            }
-        }
-
-        /* 1위 전용 : 황금 팔레트 */
         .마법의팔레트1위 {
             background: linear-gradient(90deg, #ffd700, #ffb400, #fff176, #ffb400, #ffd700);
             background-size: 200% auto;
@@ -154,17 +153,10 @@
             color: transparent;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
-            animation: 금빛흐름 3s linear infinite;
+            animation: 무지개흐름 3s linear infinite;
             filter: brightness(1.2);
         }
 
-        @keyframes 금빛흐름 {
-            to {
-                background-position: 200% center;
-            }
-        }
-
-        /* 2위 전용 : 은빛 팔레트 */
         .마법의팔레트2위 {
             background: linear-gradient(90deg, #cfd8dc, #b0bec5, #eceff1, #b0bec5, #cfd8dc);
             background-size: 200% auto;
@@ -173,17 +165,10 @@
             color: transparent;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
-            animation: 은빛흐름 3s linear infinite;
+            animation: 무지개흐름 3s linear infinite;
             filter: brightness(1.2);
         }
 
-        @keyframes 은빛흐름 {
-            to {
-                background-position: 200% center;
-            }
-        }
-
-        /* 3위 전용 : 동빛 팔레트 */
         .마법의팔레트3위 {
             background: linear-gradient(90deg, #cd7f32, #b87333, #e07b39, #b87333, #cd7f32);
             background-size: 200% auto;
@@ -192,14 +177,20 @@
             color: transparent;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
-            animation: 동빛흐름 3s linear infinite;
+            animation: 무지개흐름 3s linear infinite;
             filter: brightness(1.2);
         }
 
-        @keyframes 동빛흐름 {
-            to {
-                background-position: 200% center;
-            }
+        .마법의팔레트마왕 {
+            background: linear-gradient(90deg, #ff4d4d, #f574a1, #a54add, #dbc64c, #ff4d4d);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
+            filter: brightness(1.2);
         }
     </style>
 </head>
@@ -244,6 +235,11 @@
         ];
 
         //아이콘모음
+
+        //Confirmed    
+        const 확인아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 512px; width: 512px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="1"></path><g class="" transform="translate(0,0)" style=""><path d="M256 16C123.5 16 16 123.5 16 256c0 132.6 107.5 240 240 240 132.6 0 240-107.4 240-240S388.6 16 256 16zm0 60c99.4 0 180 80.6 180 180s-80.6 180-180 180S76 355.4 76 256 156.6 76 256 76zm91.3 64.2c-6.5 0-12.5 2.4-16.8 8.2-52 70.1-69 96.5-106 169.8-8.4-11.1-65.6-72.4-93.9-94.1-14.2-10.9-41.3 27.2-31.6 37.1C142.6 306.1 220.1 406 232.7 405c21.4-1.7 75.1-136.8 148.8-233.7 8-10.4-15-31.3-34.2-31.1z" fill="#fff" fill-opacity="1"></path></g></svg>`;
+
+
 
         //Rupee    
         const 루비아이콘 = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 512px; width: 512px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="1"></path><g class="" transform="translate(0,0)" style=""><path d="M247 25.076 107.053 130.004l64.996 32.486L247 106.297v-81.22zm18 0v81.22l74.95 56.194 65-32.488L265 25.076zm9.277 22.307 36.63 26.437c-25.125-4.207-29.74 9.2-37.348 28.8l.717-55.237zm-37.79 3.926-.274 33.362c-22.052 1.182-56.787 14.423-107.893 43.99L236.488 51.31zM256 122.044l-74 55.48v156.948l74 55.482 74-55.482V177.527l-74-55.482zm4.215 17.67c-37.503 33.84-60.642 164.833-63.65 199.094l-.35-151.095 64-48zM99 146.1v219.8l65-32.488V178.588L99 146.1zm314 0-65 32.488v154.824l65 32.488V146.1zm-301.352 23.31 40.473 20.83c-46.28 38.757-30.79 122.693-41.876 162.572l1.404-183.402zm60.4 180.1-64.995 32.486L247 486.924v-81.22l-74.95-56.194zm167.903 0L265 405.703v81.22l139.947-104.927-64.996-32.486zm-169.415 17.172c-19.594 16.282-16.745 24.365 4.477 54.412l-44.246-38.018 39.77-16.394z" fill="#fff" fill-opacity="1"></path></g></svg>`;
@@ -648,6 +644,7 @@
         타이틀과아이디.style.margin = "4px 8px";
         타이틀과아이디.style.cursor = "pointer";
         타이틀과아이디.innerHTML = `엔젤키우기(agk)`;
+        // 타이틀과아이디.innerHTML = `<span class="마법의팔레트마왕">엔젤키우기(agk)</span>`;
 
         const 네온박스 = document.createElement("div");
         네온박스.className = "네온박스";
@@ -3357,8 +3354,10 @@
                 모든 램프를 한번에 소진함<br>
                 <br>
 
-                월드보스<br>
-                뭘까~요<br>
+                월드보스(일일보상)<br>
+                미션1단계보상 : 1000다이아<br>
+                미션2단계보상 : 2000다이아<br>
+                ...<br>
                 <br>
 
 
@@ -3432,6 +3431,14 @@
                 //패치노트작성
                 패치노트화면컨테이너.innerHTML =
                     `
+
+25.11.10<br>
+월드보스 컨텐츠가 개인데미지 ➡ 합동미션으로 변경되었습니다<br>
+월드보스 개편에 따른 도전기회가 3회 ➡ 2회로 변경되었습니다<br>
+도전데미지는 누적합산되어 적용됩니다<br>
+개인순위 보상은 재화보상대신 추후 업데이트예정인<br>
+칭호 시스템에서 지급될 예정입니다<br>
+<br>
 
 25.11.07<br>
 탈것 계산식이 +=탈것레벨 ➡ =탈것레벨×5로 변경되었습니다<br>
@@ -10493,6 +10500,8 @@ nodemon server.js
             `
             월드보스에게 도전하세요<br>
             도전 데미지는 전 유저 누적 합산되어 미션에 반영됩니다<br>
+            도전기회는 하루 두번이며, 두번의 데미지가 누적합산되어<br>
+            결과에 반영됩니다<br>
             `;
         월드보스화면설명.style.textAlign = "center";
         월드보스화면설명.style.paddingBottom = "8px";
@@ -10517,8 +10526,266 @@ nodemon server.js
                 월드보스화면.style.display = "flex";
                 월드보스화면컨테이너.innerHTML = "";
 
+                // 화면잠금();
+                // const 응답 = await fetch("/worldboss", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify({
+                //         id: 유저데이터.id
+                //     })
+                // });
+
+                // const 결과 = await 응답.json();
+
+                // if (!응답.ok) {
+                //     메시지표시(결과.오류);
+                //     return;
+                // }
+
+                // const 오늘요일 = 유저데이터.스탯.접속요일;
+                // const 어제요일목록 = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+                // const 어제요일 = 어제요일목록[
+                //     (어제요일목록.indexOf(오늘요일) + 6) % 7
+                // ];
+
+                // 행렬만들기(월드보스화면컨테이너, "오행", 3);
+
+                // const 월드보스타이틀 = document.createElement("div");
+                // 월드보스타이틀.style.display = "flex";
+                // 월드보스타이틀.innerHTML = `월드보스`;
+                // document.getElementById("오행2열").append(월드보스타이틀);
+
+                // const 보스아이콘 = document.createElement("div");
+                // 보스아이콘.style.display = "flex";
+                // 보스아이콘.innerHTML = `${비장비아이콘변환(월드보스아이콘)}`;
+                // document.getElementById("오행2열").append(보스아이콘);
+
+                // const 보스이름 = document.createElement("div");
+                // 보스이름.style.display = "flex";
+                // 보스이름.innerHTML = `메가트론`;
+                // document.getElementById("오행2열").append(보스이름);
+
+                // const 어제보스순위 = document.createElement("div");
+                // 어제보스순위.style.display = "flex";
+                // 어제보스순위.innerHTML = `어제보스순위`;
+                // document.getElementById("오행1열").append(어제보스순위);
+
+                // const 내닉네임 = 유저데이터.스탯.계정.유저닉네임;
+                // let 내객체 = null;
+
+                // for (let i = 0; i < 결과.어제월드보스순위.length; i++) {
+                //     const 유저 = 결과.어제월드보스순위[i];
+                //     const 순위 = i;
+                //     const 닉네임 = 유저.스탯.계정.유저닉네임;
+
+                //     if (i < 9) {
+                //         const 객체 = document.createElement("div");
+                //         객체.style.display = "flex";
+                //         객체.style.borderBottom = "0.2px solid #D4D4D4";
+                //         객체.style.fontSize = "10px";
+                //         객체.style.width = "100%";
+                //         객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
+                //         document.getElementById("오행1열").append(객체);
+                //     }
+
+                //     if (닉네임 === 내닉네임) {
+                //         내객체 = document.createElement("div");
+                //         내객체.style.display = "flex";
+                //         내객체.style.borderBottom = "0.2px solid #D4D4D4";
+                //         내객체.style.backgroundColor = "#303030";
+                //         내객체.style.fontSize = "10px";
+                //         내객체.style.width = "100%";
+                //         내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
+                //     }
+                // }
+
+                // if (내객체) {
+                //     document.getElementById("오행1열").append(내객체);
+                // }
+
+                // const 오늘보스순위 = document.createElement("div");
+                // 오늘보스순위.style.display = "flex";
+                // 오늘보스순위.innerHTML = `오늘보스순위`;
+                // document.getElementById("오행3열").append(오늘보스순위);
+
+                // for (let i = 0; i < 결과.오늘월드보스순위.length; i++) {
+                //     const 유저 = 결과.오늘월드보스순위[i];
+                //     const 순위 = i;
+                //     const 닉네임 = 유저.스탯.계정.유저닉네임;
+
+                //     if (i < 9) {
+                //         const 객체 = document.createElement("div");
+                //         객체.style.display = "flex";
+                //         객체.style.borderBottom = "0.2px solid #D4D4D4";
+                //         객체.style.fontSize = "10px";
+                //         객체.style.width = "100%";
+                //         객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
+                //         document.getElementById("오행3열").append(객체);
+                //     }
+
+                //     if (닉네임 === 내닉네임) {
+                //         내객체 = document.createElement("div");
+                //         내객체.style.display = "flex";
+                //         내객체.style.borderBottom = "0.2px solid #D4D4D4";
+                //         내객체.style.backgroundColor = "#303030";
+                //         내객체.style.fontSize = "10px";
+                //         내객체.style.width = "100%";
+                //         내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
+                //     }
+                // }
+
+                // if (내객체) {
+                //     document.getElementById("오행3열").append(내객체);
+                // }
+
+                // 행렬만들기(월드보스화면컨테이너, `도전`, 5);
+
+                // 도전3열.innerHTML = `도전(${유저데이터.스탯.월드보스.기회})`;
+                // 도전3열.style.boxSizing = "border-box";
+                // 도전3열.style.border = "0.2px solid #D4D4D4";
+                // 도전3열.style.borderRadius = "8px";
+                // 도전3열.style.padding = "3px 8px";
+                // 도전3열.style.cursor = "pointer";
+
+                // 도전3열.addEventListener("click", async (e) => {
+                //     e.stopPropagation();
+                //     try {
+                //         if (!유저데이터.스탯.월드보스.기회) {
+                //             메시지표시(`금일 기회를 모두 소진하였습니다`);
+                //             return;
+                //         }
+
+                //         화면잠금();
+                //         const 응답 = await fetch("/worldbossattack", {
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json" },
+                //             body: JSON.stringify({
+                //                 id: 유저데이터.id
+                //             })
+                //         });
+
+                //         const 결과 = await 응답.json();
+
+                //         if (!응답.ok) {
+                //             메시지표시(결과.오류);
+                //             return;
+                //         }
+
+                //         유저데이터 = 결과.유저데이터;
+                //         const 전투결과 = 결과.전투결과;
+
+                //         월드보스화면보여주기();
+
+                //         //                         await 팝업(
+                //         //                             `
+                //         // ${전투결과.결과}<br>
+                //         // <br>
+                //         // 내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
+                //         // <br>
+                //         // 내 남은HP ${단위변환함수(전투결과.나HP)}<br>
+                //         // 내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
+                //         // 상대 남은HP ${단위변환함수(전투결과.상대HP)}<br>
+                //         // 상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
+                //         // 내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
+                //         // 상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
+                //         // 내총동료피해량 ${단위변환함수(전투결과.나총동료피해량)}<br>
+                //         // 상대총동료피해량 ${단위변환함수(전투결과.상대총동료피해량)}<br>
+                //         // 내총데미지 ${단위변환함수(전투결과.나총데미지)} (순간최고데미지 ${단위변환함수(전투결과.나순간최고데미지)})<br>
+                //         // 상대총데미지 ${단위변환함수(전투결과.상대총데미지)} (순간최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)})<br>
+                //         // 진행된 턴수 ${전투결과.턴수}<br>
+                //         //              <br>
+                //         //              `, false);
+
+                //         //전투로그보여주기
+                //         전투로그컨테이너.style.display = "flex";
+                //         전투로그컨테이너.innerHTML = "";
+
+                //         행렬만들기(전투로그컨테이너, "로그삼행", 3);
+                //         로그삼행2열.innerHTML = `${전투결과.결과}`;
+                //         로그삼행2열.style.color = 전투결과.결과 === `승리` ? `#4FC1FF` : `#C586C0`;
+                //         행렬만들기(전투로그컨테이너, "로그사행", 3);
+                //         로그사행2열.innerHTML = `종료턴(${전투결과.턴수})`;
+                //         행렬만들기(전투로그컨테이너, "로그오행", 2);
+                //         const 내닉네임박스 = document.createElement("div");
+                //         내닉네임박스.style.display = "flex";
+                //         내닉네임박스.style.width = "100%";
+                //         내닉네임박스.innerHTML = `${전투결과.나}(${단위변환함수(전투결과.나전투력)})`;
+                //         document.getElementById("로그오행1열").append(내닉네임박스);
+                //         const 내HP박스 = document.createElement("div");
+                //         내HP박스.style.display = "flex";
+                //         내HP박스.style.width = "100%";
+                //         내HP박스.innerHTML = `HP(${단위변환함수(전투결과?.나현재HP)}/${단위변환함수(전투결과?.나최대HP)})`;
+                //         document.getElementById("로그오행1열").append(내HP박스);
+                //         const 내공뎀박스 = document.createElement("div");
+                //         내공뎀박스.style.display = "flex";
+                //         내공뎀박스.style.width = "100%";
+                //         내공뎀박스.innerHTML = `공격데미지 ${단위변환함수(전투결과.나총공격데미지)}`;
+                //         document.getElementById("로그오행1열").append(내공뎀박스);
+                //         const 내스킬뎀박스 = document.createElement("div");
+                //         내스킬뎀박스.style.display = "flex";
+                //         내스킬뎀박스.style.width = "100%";
+                //         내스킬뎀박스.innerHTML = `스킬데미지 ${단위변환함수(전투결과.나총스킬데미지)}`;
+                //         document.getElementById("로그오행1열").append(내스킬뎀박스);
+                //         const 내동료뎀박스 = document.createElement("div");
+                //         내동료뎀박스.style.display = "flex";
+                //         내동료뎀박스.style.width = "100%";
+                //         내동료뎀박스.innerHTML = `동료데미지 ${단위변환함수(전투결과.나총동료데미지)}`;
+                //         document.getElementById("로그오행1열").append(내동료뎀박스);
+                //         const 내총뎀박스 = document.createElement("div");
+                //         내총뎀박스.style.display = "flex";
+                //         내총뎀박스.style.width = "100%";
+                //         내총뎀박스.innerHTML = `총데미지 ${단위변환함수(전투결과.나총데미지)}`;
+                //         document.getElementById("로그오행1열").append(내총뎀박스);
+
+                //         const 상대닉네임박스 = document.createElement("div");
+                //         상대닉네임박스.style.display = "flex";
+                //         상대닉네임박스.style.width = "100%";
+                //         상대닉네임박스.innerHTML = `${전투결과.상대}(${단위변환함수(전투결과.상대전투력)})`;
+                //         document.getElementById("로그오행2열").append(상대닉네임박스);
+                //         const 상대HP박스 = document.createElement("div");
+                //         상대HP박스.style.display = "flex";
+                //         상대HP박스.style.width = "100%";
+                //         상대HP박스.innerHTML = `HP(${단위변환함수(전투결과.상대현재HP)}/${단위변환함수(전투결과.상대최대HP)})`;
+                //         document.getElementById("로그오행2열").append(상대HP박스);
+                //         const 상대공뎀박스 = document.createElement("div");
+                //         상대공뎀박스.style.display = "flex";
+                //         상대공뎀박스.style.width = "100%";
+                //         상대공뎀박스.innerHTML = `공격데미지 ${단위변환함수(전투결과.상대총공격데미지)}`;
+                //         document.getElementById("로그오행2열").append(상대공뎀박스);
+                //         const 상대스킬뎀박스 = document.createElement("div");
+                //         상대스킬뎀박스.style.display = "flex";
+                //         상대스킬뎀박스.style.width = "100%";
+                //         상대스킬뎀박스.innerHTML = `스킬데미지 ${단위변환함수(전투결과.상대총스킬데미지)}`;
+                //         document.getElementById("로그오행2열").append(상대스킬뎀박스);
+                //         const 상대동료뎀박스 = document.createElement("div");
+                //         상대동료뎀박스.style.display = "flex";
+                //         상대동료뎀박스.style.width = "100%";
+                //         상대동료뎀박스.innerHTML = `동료데미지 ${단위변환함수(전투결과.상대총동료데미지)}`;
+                //         document.getElementById("로그오행2열").append(상대동료뎀박스);
+                //         const 상대총뎀박스 = document.createElement("div");
+                //         상대총뎀박스.style.display = "flex";
+                //         상대총뎀박스.style.width = "100%";
+                //         상대총뎀박스.innerHTML = `총데미지 ${단위변환함수(전투결과.상대총데미지)}`;
+                //         document.getElementById("로그오행2열").append(상대총뎀박스);
+
+
+
+                //     } catch (e) {
+                //         메시지표시("서버요청실패");
+                //         console.error(e);
+                //     } finally {
+                //         화면해제();
+                //     }
+                // });
+
+
+
+
+
+
+
                 화면잠금();
-                const 응답 = await fetch("/worldboss", {
+                const 응답 = await fetch("/dnjfemqhtm", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -10539,106 +10806,157 @@ nodemon server.js
                     (어제요일목록.indexOf(오늘요일) + 6) % 7
                 ];
 
-                행렬만들기(월드보스화면컨테이너, "오행", 3);
 
-                const 월드보스타이틀 = document.createElement("div");
-                월드보스타이틀.style.display = "flex";
-                월드보스타이틀.innerHTML = `월드보스`;
-                document.getElementById("오행2열").append(월드보스타이틀);
 
-                const 보스아이콘 = document.createElement("div");
-                보스아이콘.style.display = "flex";
-                보스아이콘.innerHTML = `${비장비아이콘변환(월드보스아이콘)}`;
-                document.getElementById("오행2열").append(보스아이콘);
+                행렬만들기(월드보스화면컨테이너, "어제월보일행", 2);
+                어제월보일행1열.innerHTML = `어제월드보스순위`;
+                어제월보일행2열.innerHTML = `어제미션달성`;
 
-                const 보스이름 = document.createElement("div");
-                보스이름.style.display = "flex";
-                보스이름.innerHTML = `메가트론`;
-                document.getElementById("오행2열").append(보스이름);
+                const 미션목록 = [
+                    { 필요뎀: 33333 },
+                    { 필요뎀: 666666 },
+                    { 필요뎀: 9999999 },
+                    { 필요뎀: 33333333 },
+                    { 필요뎀: 666666666 },
+                    { 필요뎀: 9999999999 },
+                    { 필요뎀: 33333333333 },
+                ];
 
-                const 어제보스순위 = document.createElement("div");
-                어제보스순위.style.display = "flex";
-                어제보스순위.innerHTML = `어제보스순위`;
-                document.getElementById("오행1열").append(어제보스순위);
+                const 어제총뎀 = 결과.어제월드보스총뎀;
 
-                const 내닉네임 = 유저데이터.스탯.계정.유저닉네임;
-                let 내객체 = null;
+                for (let i = 0; i < 미션목록.length; i++) {
+
+                    행렬만들기(월드보스화면컨테이너, `어제월드보스순위${i}`, 2);
+                    document.getElementById(`어제월드보스순위${i}1열`).style.gap = `0`;
+                    document.getElementById(`어제월드보스순위${i}2열`).style.gap = `0`;
+
+                    const 유저 = 결과.어제월드보스순위?.[i];
+                    if (!유저?.스탯?.계정?.유저닉네임) continue;
+                    const 닉네임 = 유저.스탯.계정.유저닉네임 ?? "-";
+                    const 순위 = i;
+
+                    const 객체 = document.createElement("div");
+                    객체.style.display = "flex";
+                    객체.style.justifyContent = "space-between";
+                    객체.style.borderBottom = "0.2px solid #D4D4D4";
+                    객체.style.width = "100%";
+                    객체.innerHTML = `<span>${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)}</span><span>[${닉네임}]</span>`;
+                    document.getElementById(`어제월드보스순위${i}1열`).append(객체);
+
+                    const m = 미션목록[i];
+                    const 박스 = document.createElement("div");
+                    박스.style.display = "flex";
+                    박스.style.boxSizing = "border-box";
+                    박스.style.border = "0.2px solid #D4D4D4";
+                    박스.style.borderRadius = "8px";
+                    박스.style.padding = "3px 6px";
+                    박스.style.justifyContent = "space-between";
+                    박스.style.width = "100%";
+
+                    const 달성 = 어제총뎀 >= m.필요뎀;
+                    const 표시값 = 달성 ? 단위변환함수(m.필요뎀) : 단위변환함수(어제총뎀);
+                    const 아이콘 = 달성 ? 아이콘변환14(확인아이콘) : ``;
+
+                    박스.innerHTML = `<span>${표시값}/${단위변환함수(m.필요뎀)}</span><span>${아이콘}</span>`;
+                    document.getElementById(`어제월드보스순위${i}2열`).append(박스);
+
+                    if (!달성) break;
+                }
+
+                행렬만들기(월드보스화면컨테이너, `어제월드보스순위나`, 2);
 
                 for (let i = 0; i < 결과.어제월드보스순위.length; i++) {
-                    const 유저 = 결과.어제월드보스순위[i];
-                    const 순위 = i;
-                    const 닉네임 = 유저.스탯.계정.유저닉네임;
 
-                    if (i < 9) {
+                    const 유저 = 결과.어제월드보스순위?.[i];
+                    const 닉네임 = 유저.스탯.계정.유저닉네임 ?? "-";
+                    const 순위 = i;
+
+                    if (닉네임 == 유저데이터.스탯.계정.유저닉네임) {
                         const 객체 = document.createElement("div");
                         객체.style.display = "flex";
+                        객체.style.justifyContent = "space-between";
                         객체.style.borderBottom = "0.2px solid #D4D4D4";
-                        객체.style.fontSize = "10px";
                         객체.style.width = "100%";
-                        객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
-                        document.getElementById("오행1열").append(객체);
-                    }
-
-                    if (닉네임 === 내닉네임) {
-                        내객체 = document.createElement("div");
-                        내객체.style.display = "flex";
-                        내객체.style.borderBottom = "0.2px solid #D4D4D4";
-                        내객체.style.backgroundColor = "#303030";
-                        내객체.style.fontSize = "10px";
-                        내객체.style.width = "100%";
-                        내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)} [${닉네임}]`;
+                        객체.innerHTML = `<span>${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[어제요일] || 0)}</span><span>[${닉네임}]</span>`;
+                        document.getElementById(`어제월드보스순위나1열`).append(객체);
                     }
                 }
 
-                if (내객체) {
-                    document.getElementById("오행1열").append(내객체);
-                }
+                행렬만들기(월드보스화면컨테이너, "월보스탯", 3);
+                월보스탯1열.innerHTML = `월드보스` + 비장비아이콘변환(월드보스아이콘) + `메가트론(Lv.40)`;
 
-                const 오늘보스순위 = document.createElement("div");
-                오늘보스순위.style.display = "flex";
-                오늘보스순위.innerHTML = `오늘보스순위`;
-                document.getElementById("오행3열").append(오늘보스순위);
+                const 일번스탯 = document.createElement("div");
+                일번스탯.style.boxSizing = "border-box";
+                일번스탯.style.padding = "3px 6px";
+                일번스탯.style.display = "flex";
+                일번스탯.style.justifyContent = "space-between";
+                일번스탯.style.width = "100%";
+                일번스탯.style.borderBottom = `0.2px solid #D4D4D4`;
+                일번스탯.innerHTML = `<span>모든발동확률</span><span>40%</span>`;
+                document.getElementById("월보스탯2열").append(일번스탯);
 
-                for (let i = 0; i < 결과.오늘월드보스순위.length; i++) {
-                    const 유저 = 결과.오늘월드보스순위[i];
-                    const 순위 = i;
-                    const 닉네임 = 유저.스탯.계정.유저닉네임;
+                const 이번스탯 = document.createElement("div");
+                이번스탯.style.boxSizing = "border-box";
+                이번스탯.style.padding = "3px 6px";
+                이번스탯.style.display = "flex";
+                이번스탯.style.justifyContent = "space-between";
+                이번스탯.style.width = "100%";
+                이번스탯.style.borderBottom = `0.2px solid #D4D4D4`;
+                이번스탯.innerHTML = `<span>모든발동무시</span><span>40%</span>`;
+                document.getElementById("월보스탯2열").append(이번스탯);
 
-                    if (i < 9) {
-                        const 객체 = document.createElement("div");
-                        객체.style.display = "flex";
-                        객체.style.borderBottom = "0.2px solid #D4D4D4";
-                        객체.style.fontSize = "10px";
-                        객체.style.width = "100%";
-                        객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
-                        document.getElementById("오행3열").append(객체);
-                    }
+                const 삼번스탯 = document.createElement("div");
+                삼번스탯.style.boxSizing = "border-box";
+                삼번스탯.style.padding = "3px 6px";
+                삼번스탯.style.display = "flex";
+                삼번스탯.style.justifyContent = "space-between";
+                삼번스탯.style.width = "100%";
+                삼번스탯.style.borderBottom = `0.2px solid #D4D4D4`;
+                삼번스탯.innerHTML = `<span>모든피해계수</span><span>40%</span>`;
+                document.getElementById("월보스탯2열").append(삼번스탯);
 
-                    if (닉네임 === 내닉네임) {
-                        내객체 = document.createElement("div");
-                        내객체.style.display = "flex";
-                        내객체.style.borderBottom = "0.2px solid #D4D4D4";
-                        내객체.style.backgroundColor = "#303030";
-                        내객체.style.fontSize = "10px";
-                        내객체.style.width = "100%";
-                        내객체.innerHTML = `${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)} [${닉네임}]`;
-                    }
-                }
+                const 사번스탯 = document.createElement("div");
+                사번스탯.style.boxSizing = "border-box";
+                사번스탯.style.padding = "3px 6px";
+                사번스탯.style.display = "flex";
+                사번스탯.style.justifyContent = "space-between";
+                사번스탯.style.width = "100%";
+                사번스탯.style.borderBottom = `0.2px solid #D4D4D4`;
+                사번스탯.innerHTML = `<span>모든피해감소</span><span>40%</span>`;
+                document.getElementById("월보스탯2열").append(사번스탯);
 
-                if (내객체) {
-                    document.getElementById("오행3열").append(내객체);
-                }
+                const 오번스탯 = document.createElement("div");
+                오번스탯.style.boxSizing = "border-box";
+                오번스탯.style.padding = "3px 6px";
+                오번스탯.style.display = "flex";
+                오번스탯.style.justifyContent = "space-between";
+                오번스탯.style.width = "100%";
+                오번스탯.style.borderBottom = `0.2px solid #D4D4D4`;
+                오번스탯.innerHTML = `<span>전투력</span><span>${단위변환함수(1500050)}</span>`;
+                document.getElementById("월보스탯2열").append(오번스탯);
 
-                행렬만들기(월드보스화면컨테이너, `도전`, 5);
+                // 월보스탯3열.innerHTML = `도전(${유저데이터.스탯.월드보스.기회})`;
+                // 월보스탯3열.style.boxSizing = "border-box";
+                // 월보스탯3열.style.border = "0.2px solid #D4D4D4";
+                // 월보스탯3열.style.borderRadius = "8px";
+                // 월보스탯3열.style.padding = "3px 8px";
+                // 월보스탯3열.style.cursor = "pointer";
 
-                도전3열.innerHTML = `도전(${유저데이터.스탯.월드보스.기회})`;
-                도전3열.style.boxSizing = "border-box";
-                도전3열.style.border = "0.2px solid #D4D4D4";
-                도전3열.style.borderRadius = "8px";
-                도전3열.style.padding = "3px 8px";
-                도전3열.style.cursor = "pointer";
+                월보스탯1열.style.flex = `2`;
+                월보스탯2열.style.flex = `2`;
+                월보스탯3열.style.flex = `1`;
 
-                도전3열.addEventListener("click", async (e) => {
+                const 월보도전 = document.createElement("div");
+                월보도전.style.display = "flex";
+                월보도전.innerHTML = "도전";
+                월보도전.style.boxSizing = "border-box";
+                월보도전.style.border = "0.2px solid #D4D4D4";
+                월보도전.style.borderRadius = "8px";
+                월보도전.style.padding = "3px 8px";
+                월보도전.style.cursor = "pointer";
+                document.getElementById("월보스탯3열").append(월보도전);
+
+                월보스탯3열.addEventListener("click", async (e) => {
                     e.stopPropagation();
                     try {
                         if (!유저데이터.스탯.월드보스.기회) {
@@ -10647,7 +10965,7 @@ nodemon server.js
                         }
 
                         화면잠금();
-                        const 응답 = await fetch("/worldbossattack", {
+                        const 응답 = await fetch("/dnjfqhehwjs", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -10666,26 +10984,6 @@ nodemon server.js
                         const 전투결과 = 결과.전투결과;
 
                         월드보스화면보여주기();
-
-                        //                         await 팝업(
-                        //                             `
-                        // ${전투결과.결과}<br>
-                        // <br>
-                        // 내전투력(${단위변환함수(전투결과.나전투력)}) vs [${전투결과.상대}]전투력(${단위변환함수(전투결과.상대전투력)})<br>
-                        // <br>
-                        // 내 남은HP ${단위변환함수(전투결과.나HP)}<br>
-                        // 내총회복량 ${단위변환함수(전투결과.나총회복량)}(${단위변환함수(전투결과.나회복량)})<br>
-                        // 상대 남은HP ${단위변환함수(전투결과.상대HP)}<br>
-                        // 상대총회복량 ${단위변환함수(전투결과.상대총회복량)}(${단위변환함수(전투결과.상대회복량)})<br>
-                        // 내총스킬피해량 ${단위변환함수(전투결과.나총스킬피해량)}<br>
-                        // 상대총스킬피해량 ${단위변환함수(전투결과.상대총스킬피해량)}<br>
-                        // 내총동료피해량 ${단위변환함수(전투결과.나총동료피해량)}<br>
-                        // 상대총동료피해량 ${단위변환함수(전투결과.상대총동료피해량)}<br>
-                        // 내총데미지 ${단위변환함수(전투결과.나총데미지)} (순간최고데미지 ${단위변환함수(전투결과.나순간최고데미지)})<br>
-                        // 상대총데미지 ${단위변환함수(전투결과.상대총데미지)} (순간최고데미지 ${단위변환함수(전투결과.상대순간최고데미지)})<br>
-                        // 진행된 턴수 ${전투결과.턴수}<br>
-                        //              <br>
-                        //              `, false);
 
                         //전투로그보여주기
                         전투로그컨테이너.style.display = "flex";
@@ -10771,31 +11069,69 @@ nodemon server.js
 
 
 
+                행렬만들기(월드보스화면컨테이너, "오늘월보일행", 2);
+                오늘월보일행1열.innerHTML = `오늘월드보스순위`;
+                오늘월보일행2열.innerHTML = `오늘미션달성`;
 
+                const 오늘총뎀 = 결과.오늘월드보스총뎀;
 
+                for (let i = 0; i < 미션목록.length; i++) {
 
+                    행렬만들기(월드보스화면컨테이너, `오늘월드보스순위${i}`, 2);
 
-                // 행렬만들기(월드보스화면컨테이너, "월보스탯", 3);
+                    const 유저 = 결과.오늘월드보스순위?.[i];
+                    if (!유저?.스탯?.계정?.유저닉네임) continue;
+                    const 닉네임 = 유저.스탯.계정.유저닉네임 ?? "-";
+                    const 순위 = i;
 
+                    if (i < 3) {
+                    }
+                    const 객체 = document.createElement("div");
+                    객체.style.display = "flex";
+                    객체.style.justifyContent = "space-between";
+                    객체.style.borderBottom = "0.2px solid #D4D4D4";
+                    객체.style.width = "100%";
+                    객체.innerHTML = `<span>${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)}</span><span>[${닉네임}]</span>`;
+                    document.getElementById(`오늘월드보스순위${i}1열`).append(객체);
 
-                // 화면잠금();
-                // const 응답 = await fetch("/dnjfemqhtm", {
-                //     method: "POST",
-                //     headers: { "Content-Type": "application/json" },
-                //     body: JSON.stringify({
-                //         id: 유저데이터.id
-                //     })
-                // });
+                    const m = 미션목록[i];
+                    const 박스 = document.createElement("div");
+                    박스.style.display = "flex";
+                    박스.style.boxSizing = "border-box";
+                    박스.style.border = "0.2px solid #D4D4D4";
+                    박스.style.borderRadius = "8px";
+                    박스.style.padding = "3px 6px";
+                    박스.style.justifyContent = "space-between";
+                    박스.style.width = "100%";
 
-                // const 결과 = await 응답.json();
+                    const 달성 = 오늘총뎀 >= m.필요뎀;
+                    const 표시값 = 달성 ? 단위변환함수(m.필요뎀) : 단위변환함수(오늘총뎀);
+                    const 아이콘 = 달성 ? 아이콘변환14(확인아이콘) : ``;
 
-                // if (!응답.ok) {
-                //     메시지표시(결과.오류);
-                //     return;
-                // }
+                    박스.innerHTML = `<span>${표시값}/${단위변환함수(m.필요뎀)}</span><span>${아이콘}</span>`;
+                    document.getElementById(`오늘월드보스순위${i}2열`).append(박스);
 
+                    if (!달성) break;
+                }
 
+                행렬만들기(월드보스화면컨테이너, `오늘월드보스순위나`, 2);
 
+                for (let i = 0; i < 결과.오늘월드보스순위.length; i++) {
+
+                    const 유저 = 결과.오늘월드보스순위?.[i];
+                    const 닉네임 = 유저.스탯.계정.유저닉네임 ?? "-";
+                    const 순위 = i;
+
+                    if (닉네임 == 유저데이터.스탯.계정.유저닉네임) {
+                        const 객체 = document.createElement("div");
+                        객체.style.display = "flex";
+                        객체.style.justifyContent = "space-between";
+                        객체.style.borderBottom = "0.2px solid #D4D4D4";
+                        객체.style.width = "100%";
+                        객체.innerHTML = `<span>${순위 + 1}. ${단위변환함수(유저.스탯.월드보스[오늘요일] || 0)}</span><span>[${닉네임}]</span>`;
+                        document.getElementById(`오늘월드보스순위나1열`).append(객체);
+                    }
+                }
 
             } catch (e) {
                 메시지표시("서버요청실패");
@@ -11352,6 +11688,10 @@ nodemon server.js
                             document.getElementById(`${i}질문1열`).innerHTML = `Q. ${u.닉네임}<br> ${u.질문}`;
                             document.getElementById(`${i}질문2열`).innerHTML = `답장`;
                             document.getElementById(`${i}질문1열`).style.flex = `6`;
+                            document.getElementById(`${i}질문1열`).style.display = "flex";
+                            document.getElementById(`${i}질문1열`).style.flexDirection = "column";
+                            document.getElementById(`${i}질문1열`).style.alignItems = "flex-start";
+                            document.getElementById(`${i}질문1열`).style.justifyContent = "center";
                             document.getElementById(`${i}질문2열`).style.flex = `1`;
                             document.getElementById(`${i}질문2열`).style.boxSizing = "border-box";
                             document.getElementById(`${i}질문2열`).style.border = "0.2px solid #D4D4D4";

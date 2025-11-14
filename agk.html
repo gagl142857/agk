@@ -181,7 +181,7 @@
             filter: brightness(1.2);
         }
 
-        .마법의팔레트마왕 {
+        .마법의팔레트유니크론 {
             background: linear-gradient(90deg, #ff4d4d, #f574a1, #a54add, #dbc64c, #ff4d4d);
             background-size: 200% auto;
             background-clip: text;
@@ -191,6 +191,50 @@
             font-weight: bold;
             animation: 무지개흐름 3s linear infinite;
             filter: brightness(1.2);
+        }
+
+        .마법의팔레트노랭 {
+            background: linear-gradient(90deg, #fca235, #fbeb36, #c3fa37, #92f938, #fca235);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
+        }
+
+        .마법의팔레트초록 {
+            background: linear-gradient(90deg, #39f84f, #3af799, #3bf6d1, #3cf2f5, #39f84f);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
+        }
+
+        .마법의팔레트보라 {
+            background: linear-gradient(90deg, #447ced, #465ceb, #6847ea, #9047ea, #447ced);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
+        }
+
+        .마법의팔레트핑크 {
+            background: linear-gradient(90deg, #da47ea, #ea47c7, #ea4796, #ea4762, #da47ea);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: 무지개흐름 3s linear infinite;
         }
     </style>
 </head>
@@ -453,6 +497,24 @@
             다이빙헬멧: 다이빙헬멧아이콘,
             사무라이헬멧: 사무라이헬멧아이콘,
         };
+
+        //색상코드함수
+        const 색상코드 = {
+            연한보: "#C586C0",
+            연한파: "#4FC1FF",
+            진한파: "#569CD6",
+            개연한파: "#9CDCFE",
+            연한노: "#DCDCAA",
+            진한노: "#569CD6",
+            문자열: "#CE9178",
+            주석: "#6A9955",
+            연초: "#4EC9B0",
+            개연한초: "#B5CEA8",
+            흰: "#CCCCCC",
+            폰트: "#D4D4D4",
+            배경: "#1F1F1F",
+            문자열: "#CE9178",
+        }
 
         // 옷
         //나시 Tank top
@@ -785,6 +847,13 @@
         우편함.style.cursor = "pointer";
         설정툴팁.append(우편함);
 
+        const 칭호 = document.createElement("div");
+        칭호.id = "칭호";
+        칭호.style.boxSizing = "border-box";
+        칭호.innerHTML = "칭호";
+        칭호.style.cursor = "pointer";
+        설정툴팁.append(칭호);
+
         const 상점노트 = document.createElement("div");
         상점노트.id = "상점";
         상점노트.style.boxSizing = "border-box";
@@ -812,6 +881,13 @@
         큐엔에이.innerHTML = "Q&A";
         큐엔에이.style.cursor = "pointer";
         설정툴팁.append(큐엔에이);
+
+        const 실험실 = document.createElement("div");
+        실험실.id = "실험실";
+        실험실.style.boxSizing = "border-box";
+        실험실.innerHTML = "실험실";
+        실험실.style.cursor = "pointer";
+        설정툴팁.append(실험실);
 
 
 
@@ -3432,6 +3508,12 @@
                 패치노트화면컨테이너.innerHTML =
                     `
 
+25.11.14<br>
+설정-칭호 탭이 구현되었습니다<br>
+현재 칭호는 두가지뿐입니다<br>
+여러 조건에서 칭호를 획득할 수 있도록 업데이트할 예정입니다<br>
+<br>
+
 25.11.10<br>
 월드보스 컨텐츠가 개인데미지 ➡ 합동미션으로 변경되었습니다<br>
 월드보스 개편에 따른 도전기회가 3회 ➡ 2회로 변경되었습니다<br>
@@ -3894,9 +3976,6 @@ w단축키가 로그아웃에서 월드보스 화면으로 변경되었습니다
 
 해야할일
 
-월드보스 합동컨으로 변경
-
-칭호
 
 Ctrl + Shift + P
 Developer: Inspect Editor Tokens and Scopes
@@ -10254,6 +10333,28 @@ nodemon server.js
                     document.getElementById(`${i}번째유저3열`).style.flex = "3";
                     document.getElementById(`${i}번째유저4열`).style.flex = "3";
 
+                    if (유저.스탯.칭호) {
+                        const 활성칭호 = Object.keys(유저.스탯.칭호).find(
+                            k => 유저.스탯.칭호[k] === 1
+                        );
+
+                        if (활성칭호) {
+                            if (활성칭호 === "천왕") {
+                                document.getElementById(`${i}번째유저3열`).innerHTML =
+                                    `<span class="마법의팔레트노랭">${활성칭호}</span>`;
+                            } else if (활성칭호 === "오토봇의구원자") {
+                                document.getElementById(`${i}번째유저3열`).innerHTML =
+                                    `<span class="마법의팔레트초록">${활성칭호}</span>`;
+                            } else if (활성칭호 === "") {
+                                document.getElementById(`${i}번째유저3열`).innerHTML =
+                                    `<span class="마법의팔레트보라">${활성칭호}</span>`;
+                            } else {
+                                document.getElementById(`${i}번째유저3열`).innerHTML =
+                                    활성칭호;
+                            }
+                        }
+
+                    }
 
                     document.getElementById(`${i}번째유저`).style.borderBottom = "0.2px solid #D4D4D4";
 
@@ -10295,8 +10396,7 @@ nodemon server.js
                     // document.getElementById(`${i}번째유저3열`).innerHTML =
                     //     `전투력 ${단위변환함수(유저.스탯.전투력)}`;
 
-                    document.getElementById(`${i}번째유저3열`).innerHTML =
-                        ``;
+                 
                     document.getElementById(`${i}번째유저2열`).innerHTML =
                         유저.스탯.직업?.종류 ? `${유저.스탯.직업.종류}(${단위변환함수(유저.스탯.전투력)})` : `무직(${단위변환함수(유저.스탯.전투력)})`;
 
@@ -11878,6 +11978,416 @@ nodemon server.js
         }
 
 
+
+        const 실험실화면 = document.createElement("div");
+        실험실화면.style.position = "absolute";
+        실험실화면.className = "화면숨기기";
+        실험실화면.style.boxSizing = "border-box";
+        실험실화면.style.top = "64px";
+        실험실화면.style.width = "400px";
+        실험실화면.style.display = "none";
+        실험실화면.style.flexDirection = "column";
+        실험실화면.style.gap = "8px";
+        document.body.append(실험실화면);
+
+        const 실험실화면설명 = document.createElement("div");
+        실험실화면설명.style.boxSizing = "border-box";
+        실험실화면설명.style.borderBottom = "0.2px solid #D4D4D4";
+        실험실화면설명.style.flex = "1";
+        실험실화면설명.style.display = "flex";
+        실험실화면설명.style.flexDirection = "column";
+        실험실화면설명.innerHTML =
+            `
+            오늘은 뭘 실험해볼까나
+
+            `;
+        실험실화면설명.style.textAlign = "center";
+        실험실화면설명.style.paddingBottom = "8px";
+        실험실화면.append(실험실화면설명);
+
+        const 실험실화면컨테이너 = document.createElement("div");
+        실험실화면컨테이너.id = "실험실화면컨테이너";
+        실험실화면컨테이너.style.boxSizing = "border-box";
+        실험실화면컨테이너.style.border = "0.2px solid #D4D4D4";
+        실험실화면컨테이너.style.borderRadius = "8px";
+        실험실화면컨테이너.style.flex = "1";
+        실험실화면컨테이너.style.display = "flex";
+        실험실화면컨테이너.style.flexDirection = "column";
+        실험실화면컨테이너.style.padding = "8px";
+        실험실화면컨테이너.style.gap = "8px";
+        실험실화면.append(실험실화면컨테이너);
+
+        let 전투중 = false
+        let 실험나공격 = null
+        let 실험상대공격 = null
+
+        //실험실화면보여주기함수
+        async function 실험실화면보여주기() {
+            try {
+                모든화면숨기기();
+                실험실화면.style.display = "flex";
+                실험실화면컨테이너.innerHTML = "";
+
+                let 실험상대 = `실험상대`;
+                let 실험상대최대HP = 1000;
+                let 실험상대현재HP = 실험상대최대HP;
+                let 실험상대공속 = 100;
+                let 실험상대공격력 = 60;
+                let 실험상대방어력 = 20;
+                let 실험상대전투력 = 실험상대최대HP * 0.05 + 실험상대공격력 + 실험상대방어력 * 2;
+                let 실험나 = `실험나`;
+                let 실험나최대HP = 1000;
+                let 실험나현재HP = 실험나최대HP;
+                let 실험나공속 = 100;
+                let 실험나공격력 = 60;
+                let 실험나방어력 = 20;
+                let 실험나전투력 = 실험나최대HP * 0.05 + 실험나공격력 + 실험나방어력 * 2;
+
+                행렬만들기(실험실화면컨테이너, "상대컨테이너", 1);
+                상대컨테이너.style.boxSizing = "border-box";
+                상대컨테이너.style.border = "0.2px solid #D4D4D4";
+                상대컨테이너.style.borderRadius = "8px";
+                상대컨테이너.style.display = "flex"
+                상대컨테이너.style.flexDirection = "column"
+                행렬만들기(상대컨테이너, "상대스탯일", 2);
+                상대스탯일1열.style.alignItems = "flex-start";
+                상대스탯일1열.style.justifyContent = "flex-start";
+                상대스탯일1열.style.flexDirection = "row";
+                상대스탯일2열.style.alignItems = "flex-end";
+                상대스탯일2열.style.justifyContent = "flex-end";
+                상대스탯일2열.style.flexDirection = "row";
+                상대스탯일1열.innerHTML = `상대`;
+                상대스탯일2열.innerHTML = `Lv1`;
+                상대스탯일1열.style.marginLeft = "8px";
+                상대스탯일2열.style.marginRight = "8px";
+                행렬만들기(상대컨테이너, "상대스탯이", 1);
+                상대스탯이1열.style.boxSizing = "border-box";
+                상대스탯이1열.style.border = "0.2px solid #D4D4D4";
+                상대스탯이1열.style.borderRadius = "6px";
+                // 상대스탯이1열.style.backgroundColor = 색상코드[`문자열`];
+                상대스탯이1열.style.height = "16px";
+                상대스탯이1열.style.margin = `0px 8px`;
+                상대스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험상대현재HP}/${실험상대최대HP}</div>`;
+                행렬만들기(상대컨테이너, "상대스탯삼", 2);
+                상대스탯삼.style.padding = `0px 8px`;
+                const 상대공격력 = document.createElement("div");
+                상대공격력.style.display = "flex";
+                상대공격력.style.justifyContent = "space-between";
+                상대공격력.style.width = "100%";
+                상대공격력.style.borderBottom = `0.2px solid #D4D4D4`;
+                상대공격력.style.margin = `0`;
+                상대공격력.innerHTML = `<span style="opacity:0.6;">공격력</span><span>${실험상대공격력}</span>`;
+                상대스탯삼1열.append(상대공격력);
+                행렬만들기(상대컨테이너, "상대스탯사", 2);
+                상대스탯사.style.padding = `0px 8px`;
+                const 상대방어력 = document.createElement("div");
+                상대방어력.style.display = "flex";
+                상대방어력.style.justifyContent = "space-between";
+                상대방어력.style.width = "100%";
+                상대방어력.style.borderBottom = `0.2px solid #D4D4D4`;
+                상대방어력.style.margin = `0`;
+                상대방어력.innerHTML = `<span style="opacity:0.6;">방어력</span><span>${실험상대방어력}</span>`;
+                상대스탯사1열.append(상대방어력);
+                행렬만들기(상대컨테이너, "상대스탯오", 2);
+                상대스탯오.style.padding = `0px 8px`;
+                const 상대공속 = document.createElement("div");
+                상대공속.style.display = "flex";
+                상대공속.style.justifyContent = "space-between";
+                상대공속.style.width = "100%";
+                상대공속.style.borderBottom = `0.2px solid #D4D4D4`;
+                상대공속.style.margin = `0`;
+                상대공속.innerHTML = `<span style="opacity:0.6;">공속</span><span>${실험상대공속}</span>`;
+                상대스탯오1열.append(상대공속);
+                행렬만들기(상대컨테이너, "상대스탯육", 2);
+                상대스탯육.style.padding = `0px 8px`;
+                const 상대전투력 = document.createElement("div");
+                상대전투력.style.display = "flex";
+                상대전투력.style.justifyContent = "space-between";
+                상대전투력.style.width = "100%";
+                상대전투력.style.borderBottom = `0.2px solid #D4D4D4`;
+                상대전투력.style.margin = `0`;
+                상대전투력.innerHTML = `<span style="opacity:0.6;">전투력</span><span>${실험상대전투력}</span>`;
+                상대스탯육1열.append(상대전투력);
+
+
+
+                행렬만들기(실험실화면컨테이너, "나컨테이너", 1);
+                나컨테이너.style.boxSizing = "border-box";
+                나컨테이너.style.border = "0.2px solid #D4D4D4";
+                나컨테이너.style.borderRadius = "8px";
+                나컨테이너.style.display = "flex"
+                나컨테이너.style.flexDirection = "column"
+                행렬만들기(나컨테이너, "나스탯일", 2);
+                나스탯일1열.style.alignItems = "flex-start";
+                나스탯일1열.style.justifyContent = "flex-start";
+                나스탯일1열.style.flexDirection = "row";
+                나스탯일2열.style.alignItems = "flex-end";
+                나스탯일2열.style.justifyContent = "flex-end";
+                나스탯일2열.style.flexDirection = "row";
+                나스탯일1열.innerHTML = `나`;
+                나스탯일2열.innerHTML = `Lv1`;
+                나스탯일1열.style.marginLeft = "8px";
+                나스탯일2열.style.marginRight = "8px";
+                행렬만들기(나컨테이너, "나스탯이", 1);
+                나스탯이1열.style.boxSizing = "border-box";
+                나스탯이1열.style.border = "0.2px solid #D4D4D4";
+                나스탯이1열.style.borderRadius = "6px";
+                // 나스탯이1열.style.backgroundColor = 색상코드[`문자열`];
+                나스탯이1열.style.height = "16px";
+                나스탯이1열.style.margin = `0px 8px`;
+                나스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험나현재HP}/${실험나최대HP}</div>`;
+                행렬만들기(나컨테이너, "나스탯삼", 2);
+                나스탯삼.style.padding = `0px 8px`;
+                const 나공격력 = document.createElement("div");
+                나공격력.style.display = "flex";
+                나공격력.style.justifyContent = "space-between";
+                나공격력.style.width = "100%";
+                나공격력.style.borderBottom = `0.2px solid #D4D4D4`;
+                나공격력.style.margin = `0`;
+                나공격력.innerHTML = `<span style="opacity:0.6;">공격력</span><span>${실험나공격력}</span>`;
+                나스탯삼1열.append(나공격력);
+                행렬만들기(나컨테이너, "나스탯사", 2);
+                나스탯사.style.padding = `0px 8px`;
+                const 나방어력 = document.createElement("div");
+                나방어력.style.display = "flex";
+                나방어력.style.justifyContent = "space-between";
+                나방어력.style.width = "100%";
+                나방어력.style.borderBottom = `0.2px solid #D4D4D4`;
+                나방어력.style.margin = `0`;
+                나방어력.innerHTML = `<span style="opacity:0.6;">방어력</span><span>${실험나방어력}</span>`;
+                나스탯사1열.append(나방어력);
+                행렬만들기(나컨테이너, "나스탯오", 2);
+                나스탯오.style.padding = `0px 8px`;
+                const 나공속 = document.createElement("div");
+                나공속.style.display = "flex";
+                나공속.style.justifyContent = "space-between";
+                나공속.style.width = "100%";
+                나공속.style.borderBottom = `0.2px solid #D4D4D4`;
+                나공속.style.margin = `0`;
+                나공속.innerHTML = `<span style="opacity:0.6;">공속</span><span>${실험나공속}</span>`;
+                나스탯오1열.append(나공속);
+                행렬만들기(나컨테이너, "나스탯육", 2);
+                나스탯육.style.padding = `0px 8px`;
+                const 나전투력 = document.createElement("div");
+                나전투력.style.display = "flex";
+                나전투력.style.justifyContent = "space-between";
+                나전투력.style.width = "100%";
+                나전투력.style.borderBottom = `0.2px solid #D4D4D4`;
+                나전투력.style.margin = `0`;
+                나전투력.innerHTML = `<span style="opacity:0.6;">전투력</span><span>${실험나전투력}</span>`;
+                나스탯육1열.append(나전투력);
+
+
+
+
+
+
+
+
+                전투중 = false
+                clearInterval(실험나공격)
+                clearInterval(실험상대공격)
+                메시지표시("전투 중지")
+
+                행렬만들기(실험실화면컨테이너, "일행", 3);
+                일행2열.innerHTML = `도전`;
+                일행2열.style.boxSizing = "border-box";
+                일행2열.style.border = "0.2px solid #D4D4D4";
+                일행2열.style.borderRadius = "8px";
+
+                일행2열.addEventListener("click", async (e) => {
+                    e.stopPropagation()
+
+                    if (전투중) {
+                        전투중 = false
+                        clearInterval(실험나공격)
+                        clearInterval(실험상대공격)
+                        메시지표시("전투 중지")
+                        return
+                    }
+
+                    전투중 = true
+                    메시지표시("전투 시작")
+
+                    // 첫 타 즉시 발동
+                    실험상대현재HP -= Math.max(0, 실험나공격력 - 실험상대방어력)
+                    발동메시지표시(실험나공격력 - 실험상대방어력, 상대스탯이1열, 색상코드[`연한파`])
+                    상대스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험상대현재HP}/${실험상대최대HP}</div>`;
+
+                    실험나현재HP -= Math.max(0, 실험상대공격력 - 실험나방어력)
+                    발동메시지표시(실험상대공격력 - 실험나방어력, 나스탯이1열, 색상코드[`연한보`])
+                    나스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험나현재HP}/${실험나최대HP}</div>`;
+
+                    실험나공격 = setInterval(() => {
+                        if (!전투중) return
+                        실험상대현재HP -= Math.max(0, 실험나공격력 - 실험상대방어력)
+                        발동메시지표시(실험나공격력 - 실험상대방어력, 상대스탯이1열, 색상코드[`연한파`])
+                        상대스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험상대현재HP}/${실험상대최대HP}</div>`;
+                        if (실험상대현재HP <= 0) {
+                            clearInterval(실험나공격)
+                            clearInterval(실험상대공격)
+                            전투중 = false
+                            메시지표시("적 격파!")
+                        }
+                    }, 실험나공속)
+
+                    실험상대공격 = setInterval(() => {
+                        if (!전투중) return
+                        실험나현재HP -= Math.max(0, 실험상대공격력 - 실험나방어력)
+                        발동메시지표시(실험상대공격력 - 실험나방어력, 나스탯이1열, 색상코드[`연한보`])
+                        나스탯이1열.innerHTML = `<div style="width:100%; text-align:right; margin-right:8px; ">${실험나현재HP}/${실험나최대HP}</div>`;
+                        if (실험나현재HP <= 0) {
+                            clearInterval(실험나공격)
+                            clearInterval(실험상대공격)
+                            전투중 = false
+                            메시지표시("패배...")
+                        }
+                    }, 실험상대공속)
+                })
+
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
+
+        const 칭호화면 = document.createElement("div");
+        칭호화면.style.position = "absolute";
+        칭호화면.className = "화면숨기기";
+        칭호화면.style.boxSizing = "border-box";
+        칭호화면.style.top = "64px";
+        칭호화면.style.width = "400px";
+        칭호화면.style.display = "none";
+        칭호화면.style.flexDirection = "column";
+        칭호화면.style.gap = "8px";
+        document.body.append(칭호화면);
+
+        const 칭호화면설명 = document.createElement("div");
+        칭호화면설명.style.boxSizing = "border-box";
+        칭호화면설명.style.borderBottom = "0.2px solid #D4D4D4";
+        칭호화면설명.style.flex = "1";
+        칭호화면설명.style.display = "flex";
+        칭호화면설명.style.flexDirection = "column";
+        칭호화면설명.innerHTML =
+            `
+획득된 칭호들 중 하나를 선택할 수 있습니다<br>
+장착된 칭호는 전당화면에 표시됩니다<br>
+                    `;
+        칭호화면설명.style.textAlign = "center";
+        칭호화면설명.style.paddingBottom = "8px";
+        칭호화면.append(칭호화면설명);
+
+        const 칭호화면컨테이너 = document.createElement("div");
+        칭호화면컨테이너.id = "칭호화면컨테이너";
+        칭호화면컨테이너.style.boxSizing = "border-box";
+        칭호화면컨테이너.style.border = "0.2px solid #D4D4D4";
+        칭호화면컨테이너.style.borderRadius = "8px";
+        칭호화면컨테이너.style.flex = "1";
+        칭호화면컨테이너.style.display = "flex";
+        칭호화면컨테이너.style.flexDirection = "column";
+        칭호화면컨테이너.style.padding = "8px";
+        칭호화면컨테이너.style.gap = "8px";
+        칭호화면.append(칭호화면컨테이너);
+
+        //칭호화면보여주기함수
+        async function 칭호화면보여주기() {
+            try {
+                모든화면숨기기();
+                칭호화면.style.display = "flex";
+                칭호화면컨테이너.innerHTML = "";
+
+                const 칭호데이터 = 유저데이터.스탯.칭호;
+
+                if (!칭호데이터 || Object.keys(칭호데이터).length === 0) {
+                    행렬만들기(칭호화면컨테이너, "칭호없음", 1);
+                    칭호없음1열.innerHTML = "획득된 칭호가 없습니다";
+                    칭호없음1열.style.justifyContent = "center";
+                    return;
+                }
+
+                for (const [이름, 상태] of Object.entries(칭호데이터)) {
+                    행렬만들기(칭호화면컨테이너, `${이름}칭호`, 2);
+                    document.getElementById(`${이름}칭호1열`).style.flex = `3`;
+                    document.getElementById(`${이름}칭호2열`).style.flex = `1`;
+                    document.getElementById(`${이름}칭호`).style.padding = `8px 8px`;
+                    document.getElementById(`${이름}칭호`).style.boxSizing = "border-box";
+                    document.getElementById(`${이름}칭호`).style.border = "0.2px solid #D4D4D4";
+                    document.getElementById(`${이름}칭호`).style.borderRadius = "8px";
+
+                    document.getElementById(`${이름}칭호1열`).innerHTML = 이름;
+
+                    const div = document.createElement("div");
+                    div.id = `${이름}장착`;
+                    div.style.display = "flex";
+                    div.innerHTML = 상태 === 0 ? "장착" : "해제";
+                    div.style.boxSizing = "border-box";
+                    div.style.border = "0.2px solid #D4D4D4";
+                    div.style.borderRadius = "8px";
+                    div.style.padding = "3px 8px";
+                    div.style.cursor = "pointer";
+                    document.getElementById(`${이름}칭호2열`).append(div);
+                    document.getElementById(`${이름}장착`).style.cursor = "pointer";
+
+                    if (이름 === `천왕`) {
+                        document.getElementById(`${이름}칭호1열`).innerHTML = `<span class="마법의팔레트노랭">${이름}</span>`;
+                    } else if (이름 === `오토봇의구원자`) {
+                        document.getElementById(`${이름}칭호1열`).innerHTML = `<span class="마법의팔레트초록">${이름}</span>`;
+                    } else if (이름 === ``) {
+                        document.getElementById(`${이름}칭호1열`).innerHTML = `<span class="마법의팔레트보라">${이름}</span>`;
+                    }
+                    document.getElementById(`${이름}장착`).addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        try {
+                            if (유저데이터.스탯.다이아 < 100) {
+                                메시지표시(`칭호 선택에는 100다이아가 소모됩니다`);
+                                return;
+                            }
+
+                            const 확인 = await 팝업("장착 또는 해제 시 100다이아가 소모됩니다");
+                            if (!확인) return;
+
+                            화면잠금();
+                            const 응답 = await fetch("/cldghtjsxor", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: 유저데이터.id,
+                                    칭호: 이름,
+                                    상태: div.innerHTML,
+                                })
+                            });
+                            //수정중
+                            const 결과 = await 응답.json();
+
+                            if (!응답.ok) {
+                                메시지표시(결과.오류);
+                                return;
+                            }
+
+                            유저데이터 = 결과;
+                            메시지표시(`${이름} ${div.innerHTML} 완료`);
+
+                            칭호화면보여주기();
+                        } catch (e) {
+                            메시지표시("서버요청실패");
+                            console.error(e);
+                        } finally {
+                            화면해제();
+                        }
+                    });
+
+
+                }
+            } catch (e) {
+                메시지표시("서버요청실패");
+                console.error(e);
+            } finally {
+                화면해제();
+            }
+        }
+
         //화면추가
 
 
@@ -11939,17 +12449,25 @@ nodemon server.js
         //클릭이벤트
         document.addEventListener("click", async (e) => {
             if (e.target.matches("#전장")) {
-                // 메시지표시("점검중입니다");
-                // return;
-
                 전장화면보여주기();
             }
 
-            if (e.target.matches("#하늘섬")) {
-                // 메시지표시("점검중입니다");
-                // return;
+            if (e.target.matches("#칭호")) {
+                칭호화면보여주기();
+            }
 
+            if (e.target.matches("#하늘섬")) {
                 하늘섬화면보여주기();
+            }
+
+            if (e.target.matches("#실험실")) {
+                // if (!유저데이터.스탯.주인장인가) {
+                //     메시지표시("주인장 전용 실험실입니다");
+                //     return;
+
+                // }
+
+                실험실화면보여주기();
             }
 
             if (e.target.matches("#전당")) {
@@ -13122,8 +13640,8 @@ nodemon server.js
 
                 메인화면보여주기();
                 if (유저데이터.스탯.주인장인가) {
-                    //주인장화면
-                    패치노트화면보여주기();
+                    //자동로그인화면
+                    칭호화면보여주기();
                 }
 
                 if (유저데이터.스탯.서버점검 === 1 && 유저데이터.스탯.주인장인가 !== 1) {
@@ -13191,12 +13709,16 @@ nodemon server.js
                     case "y":
                         document.querySelector("#큐엔에이")?.click();
                         break;
+                    case "u":
+                        document.querySelector("#칭호")?.click();
+                        break;
                     case "o":
                         document.querySelector("#우편함")?.click();
                         break;
                     case "p":
                         document.querySelector("#패치노트")?.click();
                         break;
+
                     case "a":
                         document.querySelector("#직업")?.click();
                         break;
@@ -13209,6 +13731,9 @@ nodemon server.js
                     case "f":
                         document.querySelector("#동료")?.click();
                         break;
+                    case "g":
+                        document.querySelector("#룬석")?.click();
+                        break;
                     case "j":
                         document.querySelector("#전장")?.click();
                         break;
@@ -13218,8 +13743,12 @@ nodemon server.js
                     case "l":
                         document.querySelector("#외형")?.click();
                         break;
+
                     case "z":
                         document.querySelector("#쿠폰")?.click();
+                        break;
+                    case "x":
+                        document.querySelector("#실험실")?.click();
                         break;
                     case "b":
                         document.querySelector("#조각상")?.click();
@@ -13227,11 +13756,6 @@ nodemon server.js
                     case "h":
                         document.querySelector("#하늘섬")?.click();
                         break;
-                    case "g":
-                        document.querySelector("#룬석")?.click();
-                        break;
-
-
                     case "m":
                         document.querySelector("#메인")?.click();
                         break;
@@ -13338,7 +13862,7 @@ nodemon server.js
             });
         }
 
-
+        //행렬만들기함수
         function 행렬만들기(부모, 행아이디, 열개수) {
             const 행 = document.createElement("div");
             행.id = 행아이디;
@@ -13362,8 +13886,6 @@ nodemon server.js
                 행.append(열);
             }
         }
-
-
 
         function 화면잠금() {
             document.body.style.pointerEvents = "none";
@@ -13412,6 +13934,32 @@ nodemon server.js
                 msg.style.opacity = "0";
                 setTimeout(() => msg.remove(), 1000);
             }, 2000);
+        }
+
+        function 발동메시지표시(내용, 대상객체, 색상) {
+            const msg = document.createElement("div")
+            msg.innerText = 내용
+            msg.style.position = "fixed"
+            const rect = 대상객체.getBoundingClientRect()
+            // msg.style.left = `${rect.right}px`
+            msg.style.left = `${rect.left + rect.width / 2}px`
+            // msg.style.transform = "translateX(-50%)"
+            msg.style.top = `${rect.top - 10}px`
+            msg.style.color = 색상 || "#D4D4D4"
+            msg.style.fontWeight = "bold"
+            msg.style.boxSizing = "border-box"
+            msg.style.backgroundColor = "transparent"
+            msg.style.pointerEvents = "none"
+            msg.style.zIndex = "9999"
+            msg.style.opacity = "1"
+            msg.style.transition = "opacity 1s ease, transform 1s ease"
+            document.body.append(msg)
+            setTimeout(() => {
+                msg.style.opacity = "0"
+                msg.style.transform = "translateY(-10px)"
+                // msg.style.transform = "translateX(-40%) translateY(-10px)"
+                setTimeout(() => msg.remove(), 1000)
+            }, 50)
         }
 
         function 단위변환함수(값) {
@@ -13479,8 +14027,6 @@ nodemon server.js
 
 
 
-
-
         // const 화면설정포맷 = document.createElement("div");
         // 화면설정포맷.style.position = "absolute";
         // 화면설정포맷.className = "화면숨기기";
@@ -13501,7 +14047,7 @@ nodemon server.js
         // 화면설정포맷설명.innerHTML =
         //     `
 
-        //     `;
+        //             `;
         // 화면설정포맷설명.style.textAlign = "center";
         // 화면설정포맷설명.style.paddingBottom = "8px";
         // 화면설정포맷.append(화면설정포맷설명);
@@ -13525,12 +14071,12 @@ nodemon server.js
         //         화면설정포맷.style.display = "flex";
         //         화면설정포맷컨테이너.innerHTML = "";
 
-        //         행렬만들기(화면설정포맷컨테이너, "외형강화일행", 3);
-        //         외형강화일행.style.borderTop = `0.2px solid #D4D4D4`;
-        //         외형강화일행2열.innerHTML = `외형강화 Lv${유저데이터.스탯.외형강화.레벨}`;
-        //         외형강화일행2열.style.marginTop = `8px`;
+        //         행렬만들기(화면설정포맷컨테이너, "일행", 3);
+        //         일행.style.borderTop = `0.2px solid #D4D4D4`;
+        //         일행2열.innerHTML = `${유저데이터.스탯.계정.유저닉네임}`;
+        //         일행2열.style.marginTop = `8px`;
 
-        //         외형강화삼행1열.addEventListener("click", async (e) => {
+        //         일행3열.addEventListener("click", async (e) => {
         //             e.stopPropagation();
         //             try {
         //                 if (유저데이터.스탯.가루 < (20000 * (유저데이터.스탯.외형강화.레벨 + 1) - 10000)) {
@@ -13546,7 +14092,7 @@ nodemon server.js
         //                         id: 유저데이터.id
         //                     })
         //                 });
-        //수정중
+        //                 //수정중
         //                 const 결과 = await 응답.json();
 
         //                 if (!응답.ok) {
@@ -13574,6 +14120,7 @@ nodemon server.js
         //         화면해제();
         //     }
         // }
+
 
 
     </script>

@@ -340,17 +340,22 @@ app.post("/login", async (req, res) => {
       data.스탯.월드보스 = { 기회: 2, 일요일: 0, 월요일: 0, 화요일: 0, 수요일: 0, 목요일: 0, 금요일: 0, 토요일: 0 };
     }
 
-
     if (!data.스탯.전장) {
       data.스탯.전장 = { 포인트: 0, 티켓: 4, 정산: 0 };
     } else if (data.스탯.전장 && !("정산" in data.스탯.전장)) {
       data.스탯.전장.정산 = 0;
     }
 
-    if (!data.스탯.버전표시) {
-      data.스탯.버전표시 = ``;
+    if (!("칭호" in data.스탯)) {
+      data.스탯.칭호 = { 천사: 0 };
     }
-    data.스탯.버전표시 = `v1.1.2`;
+
+    //세라핌 : 치천사
+    //케루빔 : 지천사
+    //오파니몬 : 좌천사
+    if (data.스탯.주인장인가) {
+      data.스탯.칭호 = { ...data.스탯.칭호, 기계섬멸자: 0 };
+    }
 
     if (!data.스탯.오늘하늘섬) data.스탯.오늘하늘섬 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
     if (!data.스탯.룬석) data.스탯.룬석 = { 루비: 0, 크리스탈: 0, 에메랄드: 0, 사파이어: 0, 자수정: 0, 토파즈: 0, 진주: 0, };
@@ -371,6 +376,11 @@ app.post("/login", async (req, res) => {
       data.스탯.하늘섬 = 0;
       data.스탯.하늘섬초기화 = 0;
     }
+
+    if (!data.스탯.버전표시) {
+      data.스탯.버전표시 = ``;
+    }
+    data.스탯.버전표시 = `v1.1.3`;
 
     //하루한번
     const 오늘요일 = new Date().toLocaleDateString("ko-KR", { weekday: "long", timeZone: "Asia/Seoul" });
@@ -473,6 +483,30 @@ app.post("/login", async (req, res) => {
         .sort((a, b) =>
           ((b.스탯.월드보스[어제요일] ?? 0) - (a.스탯.월드보스[어제요일] ?? 0))
         );
+
+      const 내순위 = 어제월드보스순위.findIndex(
+        u => u.스탯.계정?.유저닉네임 === data.스탯.계정.유저닉네임
+      ) + 1;
+
+      if (내순위 === 1) {
+        내유저.스탯.칭호 = { ...내유저.스탯.칭호, 오토봇의구원자: 0 };
+      }
+
+      const 전당순위 = 전체유저
+        .filter(u => {
+          if (!u.스탯 || !u.스탯.전투력 || !u.스탯.접속시각 || u.스탯.주인장인가) return false
+          const 경과시간 = Math.floor(new Date().getTime() / 3600000) - u.스탯.접속시각
+          return 경과시간 < 72
+        })
+        .sort((a, b) => b.스탯.전투력 - a.스탯.전투력)
+
+      const 내전당순위 = 전당순위.findIndex(
+        u => u.스탯.계정.유저닉네임 === data.스탯.계정.유저닉네임
+      );
+
+      if (내전당순위 === 0) {
+        내유저.스탯.칭호 = { ...내유저.스탯.칭호, 천왕: 0 };
+      }
 
       const 어제월드보스총뎀 = 유효유저.reduce(
         (acc, u) => acc + (u.스탯?.월드보스?.[어제요일] ?? 0),
@@ -6544,6 +6578,7 @@ const 보석리스트 = [
   { 이름: "진주", 확률: 0.1 },
 ];
 
+//하늘섬
 app.post("/gksmftja", async (req, res) => {
   try {
     const { id } = req.body;
@@ -6604,6 +6639,7 @@ app.post("/gksmftja", async (req, res) => {
   }
 });
 
+//양자비행
 app.post("/didwkqlgod", async (req, res) => {
   try {
     const { id } = req.body;
@@ -6673,7 +6709,57 @@ app.post("/didwkqlgod", async (req, res) => {
   }
 });
 
+//칭호선택
+app.post("/cldghtjsxor", async (req, res) => {
+  try {
+    const { id, 칭호, 상태 } = req.body;
 
+    if (!id || !칭호 || !상태) {
+      return res.status(400).json({ 오류: "id, 칭호, 상태 필요" });
+    }
+
+    const { data: 유저데이터, error } = await supabaseAdmin
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !유저데이터) {
+      return res.status(404).json({ 오류: "유저 없음" });
+    }
+
+    if (유저데이터.스탯.다이아 < 100) {
+      return res.status(404).json({ 오류: "칭호 선택에는 100다이아가 소모됩니다" });
+    }
+
+    유저데이터.스탯.다이아 -= 100;
+
+    Object.keys(유저데이터.스탯.칭호).forEach(k => {
+      유저데이터.스탯.칭호[k] = 0;
+    });
+
+    if (상태 === "장착") {
+      유저데이터.스탯.칭호[칭호] = 1;
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from("users")
+      .update({ 스탯: 유저데이터.스탯 })
+      .eq("id", id);
+
+    if (updateError) {
+      return res.status(500).json({ 오류: "업데이트 실패" });
+    }
+
+    res.json(유저데이터);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ 오류: "서버 오류" });
+  }
+});
+
+
+//서버코드추가
 
 
 

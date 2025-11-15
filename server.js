@@ -347,7 +347,7 @@ app.post("/login", async (req, res) => {
     }
 
     if (!("칭호" in data.스탯)) {
-      data.스탯.칭호 = { 천사: 0 };
+      data.스탯.칭호 = {};
     }
 
     //세라핌 : 치천사
